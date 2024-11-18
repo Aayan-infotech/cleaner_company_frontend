@@ -1,0 +1,48 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+
+      <c-card-header>Troubleshooting Categories
+        <!-- <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <form [formGroup]="categoryForm">
+
+            <c-input-group class="mb-3">
+              <input aria-describedby="button-addon2" aria-label="Add Category" cFormControl placeholder="Add Category"
+                formControlName="categoryName" />
+              <button cButton color="secondary" id="button-addon2" type="button" variant="outline" size="sm"
+                (click)="addCategory()">
+                Add Category
+              </button>
+            </c-input-group>
+
+          </form>
+        </div> -->
+      </c-card-header>
+
+      <c-card-body>
+        
+        <div class="container">
+          <div class="row">
+            <div *ngFor="let category of categoryData" class="col-lg-3 col-md-3 col-sm-12 mb-4">
+              <c-card class="mb-3">
+                <c-row class="g-0">
+                  <c-card-body cCol [md]="8">
+                    <h5 cCardTitle>{{ category.categoryName }}</h5>
+            
+                    <p cCardText class="text-end">
+                      <button [routerLink]="['/troubleshootingDashboard/items', category._id]" cButton color="primary" size="sm">
+                        View More
+                      </button>
+                    </p>
+                  </c-card-body>
+                </c-row>
+              </c-card>
+            </div>
+            
+          </div>
+        </div>
+
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

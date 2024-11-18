@@ -1,0 +1,21 @@
+/* Custom CSS for the radio button */
+.custom-radio {
+    display: none; 
+    /* Hide the default radio button */
+  }
+  
+  .custom-radio + label {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%; /* Make it a circle */
+    background-color: red; /* Set red color */
+    border: 2px solid black; /* Add border for visual clarity */
+    
+  }
+  
+  .custom-radio:checked + label {
+    background-color: red;
+     /* Keep the color red when checked */
+  }
+  

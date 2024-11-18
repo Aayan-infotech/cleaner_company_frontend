@@ -1,0 +1,107 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header class="d-flex align-items-center justify-content-between">
+        Add Inventory
+        <div>
+          <button (click)="toggleLiveDemo()" cButton color="primary">Add Category</button>
+        </div>
+      </c-card-header>
+
+
+      <!-- start model -->
+      <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Add New Inventory Category</h5>
+          <button (click)="toggleLiveDemo()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+          <form cForm [formGroup]="categoryForm">
+
+            <c-col [md]>
+              <div cFormFloating>
+                <input formControlName="categoryName" cFormControl type="text" id="categoryName"
+                  placeholder="Enter Inventory Category Name" />
+                <label cLabel for="categoryName">Enter Inventory Category Name:</label>
+              </div>
+            </c-col>
+
+          </form>
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+          <button (click)="submit()" (click)="toggleLiveDemo()" cButton color="primary">Save changes</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- end model -->
+
+      <c-card-body class="mt-2">
+        <form [formGroup]="itemForm" cForm class="row g-3">
+          <c-row>
+            <c-col [md]="6">
+              <label cLabel for="inputItemName">Item Name</label>
+              <input formControlName="itemName" cFormControl id="inputItemName" type="text" />
+            </c-col>
+            <c-col [md]="3">
+              <label cLabel for="inputItemID">Item ID</label>
+              <input formControlName="itemID" cFormControl id="inputItemID" type="text" />
+            </c-col>
+            
+            <c-col [md]="3">
+              <label cLabel for="categoryId">Select Category</label>
+              <select formControlName="categoryId" id="categoryId" (change)="onCategoryChange($event)" aria-label="Default select example" cSelect>
+                <option value="" disabled selected>Open this select menu</option>
+                <option *ngIf="categoriesArray.length === 0" value="" style="color: #ff6666;">-- No Category Available --</option>
+                <option *ngFor="let category of categoriesArray" [value]="category._id">
+                  {{ category.categoryName }}
+                </option>
+              </select>
+            </c-col>
+
+          </c-row>
+          <c-row class="my-2">
+            <c-col [xs]="3">
+              <label cLabel for="inputMinimumQuantity">Minimum Quantity</label>
+              <input formControlName="minQuantity" cFormControl id="inputMinimumQuantity" type="number"
+                placeholder="" />
+            </c-col>
+            <c-col [xs]="3">
+              <label cLabel for="orderQuantity">Order Quantity</label>
+              <input formControlName="orderQuantity" cFormControl id="orderQuantity" type="number" placeholder="" />
+            </c-col>
+            <c-col [xs]="6">
+              <label cLabel for="inputComment">Comment</label>
+              <input formControlName="comment" cFormControl id="inputComment" placeholder="" />
+            </c-col>
+          </c-row>
+
+          <c-row class="mb-3">
+            <c-col [md]="6"></c-col>
+            
+            <c-col [md]="3">
+              <c-form-check class="me-3">
+                <input cFormCheckInput formControlName="forWarehouse" id="forWarehouse" type="checkbox" />
+                <label cFormCheckLabel for="forWarehouse">For Warehouse</label>
+              </c-form-check>
+            </c-col>
+
+            <c-col [md]="3">
+              <c-form-check>
+                <input cFormCheckInput formControlName="forVan" id="forVan" type="checkbox" />
+                <label cFormCheckLabel for="forVan">For Van</label>
+              </c-form-check>
+            </c-col>
+            
+          </c-row>
+
+          <c-row>
+            <c-col [xs]="12">
+              <button (click)="addItem()" cButton type="submit">Add</button>
+            </c-col>
+          </c-row>
+        </form>
+      </c-card-body>
+
+    </c-card>
+  </c-col>
+</c-row>

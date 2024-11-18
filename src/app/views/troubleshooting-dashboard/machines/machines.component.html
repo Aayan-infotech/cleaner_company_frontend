@@ -1,0 +1,353 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header class="d-flex justify-content-between">
+        <div>
+          Manage {{ categoryName }}
+        </div>
+        <div>
+          <button (click)="toggleLiveDemo()" cButton color="primary" shape="rounded-1" size="sm"
+            class="px-3">Add</button>
+        </div>
+      </c-card-header>
+
+      <!-- New Model Start -->
+      <c-modal size="lg" id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+        <c-modal-header>
+          <h5 cModalTitle>
+            {{ isEditMode ? 'Edit Item Details' : (isViewClicked ? 'View Upload Files Details' : 'Add New Item') }}
+          </h5>
+          <button (click)="toggleLiveDemo()" cButtonClose size="sm"></button>
+        </c-modal-header>
+        <c-modal-body>
+          <form cForm [formGroup]="itemsForm">
+            <c-row>
+              <c-col>
+                <div cFormFloating>
+                  <input cFormControl formControlName="name" id="name" type="text" placeholder="Name"
+                    class="form-control" maxlength="30" />
+                  <label cLabel for="name">Name (max 30 characters)</label>
+                </div>
+              </c-col>
+
+              <c-col>
+                <div cFormFloating>
+                  <input cFormControl formControlName="partNumber" id="partNumber" type="text" placeholder="Part Number"
+                    class="form-control" maxlength="20" />
+                  <label cLabel for="partNumber">Part Number (max 20 characters)</label>
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row class="my-2">
+              <c-col>
+                <div cFormFloating>
+                  <textarea cFormControl formControlName="shortDescription" id="shortDescription" type="text"  placeholder="Short Description" class="form-control" maxlength="120" style="height: 150px;"></textarea>
+                  <label cLabel for="shortDescription">Short Description (max 120 characters)</label>
+                </div>
+              </c-col>
+
+              <c-col>
+                <div cFormFloating>
+                  <textarea cFormControl formControlName="partDescription" id="partDescription" type="text" placeholder="Part Description" class="form-control" maxlength="700" style="height: 150px;"></textarea>
+                  <label cLabel for="partDescription">Part Description (max 700 characters)</label>
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row>
+              <c-col [md]="4">
+                <div class="mt-3 ms-3 fs-5"><strong>Add Image:</strong></div>
+              </c-col>
+
+              <c-col [md]="8">
+                <div cFormFloating>
+                  <input cFormControl (change)="onFileChanged($event, 'images')" id="images" type="file"
+                    placeholder="Add Image" multiple />
+                  <label cLabel for="images">Add Image (max 9 Images)</label>
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row class="my-2">
+              <c-col [md]="4">
+                <div class="mt-3 ms-3 fs-5"><strong>Add PDF:</strong></div>
+              </c-col>
+
+              <c-col [md]="8">
+                <div cFormFloating>
+                  <input cFormControl (change)="onFileChanged($event, 'pdfs')" id="pdfs" type="file"
+                    placeholder="Add PDF" multiple />
+                  <label cLabel for="pdfs">Add PDF (max 9 PDF)</label>
+                </div>
+              </c-col>
+            </c-row>
+
+            <c-row>
+              <c-col [md]="4">
+                <div class="mt-3 ms-3 fs-5"><strong>Add Videos:</strong></div>
+              </c-col>
+
+              <c-col [md]="8">
+                <div cFormFloating>
+                  <input cFormControl (change)="onFileChanged($event, 'videos')" id="videos" type="file"
+                    placeholder="Add Videos" multiple />
+                  <label cLabel for="videos">Add Videos (max 9 Videos)</label>
+                </div>
+              </c-col>
+            </c-row>
+
+          </form>
+
+          
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemo()" cButton color="secondary" class="me-3" size="sm">Cancel</button>
+          <button (click)="submit()" (click)="toggleLiveDemo()" *ngIf="showSaveChanges" cButton color="success" size="sm">Save</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- New Model End -->
+      
+      <c-card-body>
+
+        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+          <thead cTableColor="light">
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>Part No</th>
+              <th>Short Desc</th>
+              <!-- <th>Pictures</th> -->
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let items of itemsArray">
+              <td></td>
+              <td>{{ items.name }}</td>
+              <td>{{ items.partNumber }}</td>
+              <td>
+                <span *ngIf="!items.expandedShort">{{ items.shortDescription | slice:0:20 }}... </span>
+                <span *ngIf="items.expandedShort">{{ items.shortDescription }}</span>
+                <a (click)="toggleExpand('short', items)" class="toggle-link">{{ items.expandedShort ? 'show less' : 'show more' }}</a>
+              </td>
+              
+              <td>
+
+                <button (click)="getItemById(items._id); toggleLiveDemoEdit(items._id)" size="sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                  </svg>
+                </button>
+
+                <!-- Start Edit Model -->
+                <c-modal size="lg" id="viewEditModal{{items._id}}" [visible]="visibleEdit[items._id]" (visibleChange)="handleLiveDemoChangeEdit($event, items._id)">
+                  <c-modal-header>
+                    <h5 cModalTitle>View Item Details</h5>
+                    <button (click)="toggleLiveDemoEdit(items._id)" cButtonClose size="sm"></button>
+                  </c-modal-header>
+                  <c-modal-body>
+                      <c-row>
+                        <c-col [md]="6">
+                          <c-card class="p-2" style="height: 350px;">
+                            <c-row class="mb-4">
+
+                              <c-col [md]="4">
+                                <c-card class="position-relative d-flex flex-column justify-content-center p-1" style="width: 100px; height: 90px;">
+                                  <img [src]="items.images[0]?.url" alt="First Image" *ngIf="items.images.length > 0 && (items.images[0].url.endsWith('.jpg') || items.images[0].url.endsWith('.jpeg') || items.images[0].url.endsWith('.png'))" style="width: 100%; height: 100%; object-fit: cover;" />                                
+                                  <!-- Default Image when no valid image is found -->
+                                  <img *ngIf="items.images.length === 0 || !(items.images[0].url.endsWith('.jpg') || items.images[0].url.endsWith('.jpeg') || items.images[0].url.endsWith('.png'))" src="assets/images/default-image.jpg" alt="Default Image" style="width: 100%; height: 100%; object-fit: cover;" />
+                                </c-card>
+                              </c-col>
+
+                              <c-col [md]="7">
+                                <div class="d-flex">
+                                  <strong class="me-3">Name:</strong>
+                                  <p>{{ items.name }}</p>
+                                </div>
+          
+                                <div class="d-flex">
+                                  <strong class="me-3">Part No:</strong>
+                                  <p>{{ items.partNumber }}</p>
+                                </div>
+          
+                              </c-col>
+                              
+                            </c-row>
+                            <c-row>
+                              <h5 (click)="toggleSection('shortDescription')" class="pointres">Short Description</h5>
+                              <h5 (click)="toggleSection('partDescription')" class="pointres">Part Description</h5>
+                              <h5 (click)="toggleSection('gallery')" class="pointres">Picture / Gallery</h5>
+                              <h5 (click)="toggleSection('pdfs')" class="pointres">PDF's</h5>
+                              <h5 (click)="toggleSection('videos')" class="pointres">Videos</h5>
+                            </c-row>          
+                          </c-card>
+                        </c-col>
+          
+                        <c-col [md]="6">
+                          <!-- Short Description -->
+                          <c-card class="p-2"*ngIf="selectedSection === 'shortDescription'" style="height: 350px;">
+                            <c-card-header class="sticky-top"><h5>Short Description</h5></c-card-header>
+                            <c-card-body style="overflow-y: auto; overflow-x: hidden;">
+                              <p cCardText>{{ items.shortDescription }}</p>
+                            </c-card-body>  
+                          </c-card>
+
+                          <!-- Part Description -->
+                          <c-card class="p-2"*ngIf="selectedSection === 'partDescription'" style="height: 350px;">
+                            <c-card-header class="sticky-top"><h5>Part Description</h5></c-card-header>
+                            <c-card-body style="overflow-y: auto; overflow-x: hidden;">
+                              <p cCardText>{{ items.partDescription }}</p>
+                            </c-card-body>  
+                          </c-card>
+          
+                          <!-- Picture / Gallery -->
+                          <c-card class="p-2" *ngIf="selectedSection === 'gallery'" style="height: 350px;">
+                            <c-card-header class="sticky-top"><h5>Picture / Gallery</h5></c-card-header>
+                            <c-card-body>
+                              <c-row>
+                                <div class="carousel-container">
+                                  <c-carousel [interval]="0">
+                                    <c-carousel-inner>
+                                      <!-- Carousel Items -->
+                                      <c-carousel-item *ngFor="let imageChunk of visibleImageChunks">
+                                        <div class="image-grid">
+                                          <div *ngFor="let image of items.images" class="image-box">
+                                            <img *ngIf="image.url.endsWith('.jpg') || image.url.endsWith('.jpeg') || image.url.endsWith('.png')" [src]="image.url" alt="Gallery Image" class="d-block" loading="lazy" />
+                                          </div>
+                                        </div>
+                                      </c-carousel-item>
+                                    </c-carousel-inner>
+                                
+                                    <!-- Controls for Previous -->
+                                    <c-carousel-control (click)="prevImage()" caption="Previous" direction="prev" class="prev-control">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="black" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                                      </svg>
+                                    </c-carousel-control>
+                                
+                                    <!-- Controls for Next -->
+                                    <c-carousel-control (click)="nextImage()" caption="Next" direction="next" class="next-control">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="black" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                                      </svg>
+                                    </c-carousel-control>
+                                  </c-carousel>
+                                </div>
+                              </c-row>
+                            </c-card-body>  
+                          </c-card>
+          
+                          <!-- PDF's -->
+                          <c-card class="p-2" *ngIf="selectedSection === 'pdfs'" style="height: 350px;">
+                            <c-card-header class="sticky-top"><h5>PDF's</h5></c-card-header>
+                            <c-card-body  style="overflow-y: auto; overflow-x: hidden;">
+                              <c-row>
+                                <c-col [md]="8">
+                                  <ng-container *ngFor="let media of items.pdfs">
+                                    <c-col [md]="12" class="mb-2" *ngIf="media.url.endsWith('.pdf')">
+                                      <div class="d-flex justify-content-between align-items-center border rounded-2">
+                                        <!-- View PDF file in a new tab -->
+                                        <a *ngIf="!media.canEmbed" [href]="media.url" target="_blank" class="btn btn-link text-nowrap">
+                                          View PDF file
+                                        </a>
+                                        <!-- Download PDF file -->
+                                        <a [href]="media.url" target="_blank" download class="btn btn-light border-3">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" class="bi bi-cloud-arrow-down" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M7.646 10.854a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 9.293V5.5a.5.5 0 0 0-1 0v3.793L6.354 8.146a.5.5 0 1 0-.708.708z"/>
+                                            <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383m.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+                                          </svg>
+                                        </a>
+                                  
+                                      </div>
+                                    </c-col>
+                                  </ng-container>
+                                                                    
+                                </c-col>
+                              </c-row>
+                            </c-card-body>
+                          </c-card>
+          
+                          <!-- Videos -->
+                          <c-card class="p-2" *ngIf="selectedSection === 'videos'" style="height: 350px;">
+                            <c-card-header class="sticky-top"><h5>Videos</h5></c-card-header>
+                            <c-card-body style="overflow-y: auto; overflow-x: hidden;">  
+
+                              <c-row class="mb-2" *ngFor="let media of items.videos">
+                                <div class="d-flex justify-content-between">          
+                                  <c-col [md]="5">
+                                    <c-card  style="width: 120px; height: 80px;" class="position-relative h-100 d-flex flex-column justify-content-center">
+                                      <video *ngIf="media.url.endsWith('.mp4') || media.url.endsWith('.mkv') || media.url.endsWith('.avi')" width="100%" height="80" controls class="me-2" muted style="border-radius: 5px;">
+                                        <source [src]="media.url" type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                      </video>
+                                    </c-card>                                    
+                                  </c-col>
+
+                                  <c-col [md]="7">
+                                    <div class="pt-2 ms-3">
+                                      <a [href]="media.url" download class="text-decoration-none">
+                                        {{ getVideoName(media.url) }}
+                                      </a>                                      
+                                    </div>
+                                  </c-col>            
+                                </div>
+                              </c-row>
+          
+                              <!-- <c-col [md]="4" class="mb-2" *ngFor="let media of items.videos">
+                                <c-card>
+                                  <c-card-body class="p-0 mt-0">
+                                    <video *ngIf="media.url.endsWith('.mp4') || media.url.endsWith('.mkv') || media.url.endsWith('.avi')"
+                                           width="100%" height="140" controls class="me-2" muted>
+                                      <source [src]="media.url" type="video/mp4" />
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  </c-card-body>
+                                </c-card>
+                              </c-col>  -->
+                            </c-card-body>
+                          </c-card>
+                          
+                        </c-col>
+                      </c-row>
+                  </c-modal-body>
+                  <c-modal-footer>
+                    <button (click)="toggleLiveDemoEdit(items._id)" cButton color="secondary" size="sm">Close</button>
+                  </c-modal-footer>
+                </c-modal>
+                <!-- End Edit Model -->
+                
+                <button (click)="getItemById(items._id)" (click)="toggleLiveDemo()" (click)="clickAddMember()" class="mx-2">
+                  <svg cIcon name="cil-pencil" size="sm"></svg>
+                </button>
+
+                <button (click)="deleteItemById(items._id)">
+                  <svg cIcon name="cil-trash" size="sm"></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
+
+
+<!-- <div class="carousel-container">
+  <h3>Pictures / Gallery</h3>
+  
+  <div class="carousel">
+    <button (click)="prevImage()" class="arrow left-arrow">&lt;</button>
+    
+    <div class="image-grid">
+      <div *ngFor="let image of visibleImages" class="image-box">
+        <img [src]="image" alt="Gallery Image">
+      </div>
+    </div>
+    
+    <button (click)="nextImage()" class="arrow right-arrow">&gt;</button>
+  </div>
+</div> -->

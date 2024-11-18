@@ -1,0 +1,205 @@
+<c-row>
+    <c-col xs>
+        <c-card class="mb-4">
+            <c-card-header>Create Template</c-card-header>
+
+            <c-modal-body class="py-3 px-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <c-card>
+                                <c-card-body class="text-center">
+                                    <c-row>
+                                        <c-col [sm]="12">
+                                            <c-card class="my-3">
+                                                <c-card-body>
+                                                    <div
+                                                        style="display: flex !important; justify-content: center; flex-direction: column;">
+                                                        <button class="px-2" cButton color="dark" variant="outline"
+                                                            size="sm" shape="rounded-pill">Customer Alert</button>
+                                                        <button class="my-2 px-2" cButton color="dark" variant="outline"
+                                                            size="sm" shape="rounded-pill">Customer Reminder</button>
+                                                        <button class="px-2" cButton color="dark" variant="outline"
+                                                            size="sm" shape="rounded-pill">Customer Education</button>
+                                                        <button class="my-2 px-2" cButton color="dark" variant="outline"
+                                                            size="sm" shape="rounded-pill">Customer Specials</button>
+                                                    </div>
+                                                </c-card-body>
+                                            </c-card>
+                                        </c-col>
+                                    </c-row>
+
+                                    <c-row>
+                                        <c-col [sm]="12">
+                                            <c-card-body>
+                                                <div
+                                                    style="display: flex !important; justify-content: center; flex-direction: column;">
+                                                    <button class="px-2" cButton color="dark" variant="outline"
+                                                        size="sm" shape="rounded-pill">Pick a Theme
+                                                    </button>
+                                                    <button class="my-2 px-2" cButton color="dark" variant="outline"
+                                                        size="sm" shape="rounded-pill">Save new layout
+                                                    </button>
+                                                    <button class="px-2" cButton color="dark" variant="outline"
+                                                        size="sm" shape="rounded-pill">Apply
+                                                    </button>
+                                                    <button class="my-2 px-2" cButton color="dark" variant="outline"
+                                                        size="sm" shape="rounded-pill">Update
+                                                    </button>
+                                                    <button class="my-2 px-2" cButton color="dark" variant="outline"
+                                                        size="sm" shape="rounded-pill">Cancel
+                                                    </button>
+                                                </div>
+                                            </c-card-body>
+                                        </c-col>
+                                    </c-row>
+                                </c-card-body>
+                            </c-card>
+                        </div>
+
+                        <div class="col-md-9">
+                            <c-row>
+                                <c-col [sm]="12">
+                                    <c-card>
+                                        <c-card-body>
+                                            <form cForm class="d-flex" role="search">
+                                                <input aria-label="Search" cFormControl class="me-2"
+                                                    style="width: 610px;" placeholder="Layout Name: " type="search">
+                                                <button cButton color="success" variant="outline">Add Item</button>                                       
+                                            </form>
+
+                                            <c-row>
+                                                <c-col [sm]="5">
+                                                    <div class="text-center mt-3 mb-2">Mobile Vs </div>
+                                                    <c-card>
+                                                        <c-card-body>
+                                                            <c-row class="text-center">
+                                                                <c-col [sm]="3"></c-col>
+                                                                <c-col [sm]="6">
+                                                                    <c-card>
+                                                                        <c-card-body style="height: 100px;">
+                                                                            <h6 cCardTitle></h6>
+                                                                            <h6 cCardTitle></h6>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                                <c-col [sm]="3"></c-col>
+                                                            </c-row>
+                                                            <c-row class="text-center py-1">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+
+                                                            <c-row class="text-center">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+
+                                                            <c-row class="text-center py-1">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body style="height: 80px;">
+                                                                            <h6 cCardTitle></h6>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+
+                                                            <c-row class="text-center pb-2">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body style="height: 120px;">
+                                                                            <h6 cCardTitle></h6>                                                                           
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+
+                                                            <c-row class="text-center py-1">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+
+                                                <c-col [sm]="7">
+                                                    <div class="text-center mt-3 mb-2">Email Vs </div>
+                                                    <c-card>
+                                                        <c-card-body>
+                                                            <c-row class="text-center pb-2">
+                                                                <c-col [sm]="6">
+                                                                    <c-col [sm]="12">
+                                                                        <c-card>
+                                                                            <c-card-body>
+                                                                            </c-card-body>
+                                                                        </c-card>
+                                                                    </c-col>
+                                                                    <c-col [sm]="12" class="my-1">
+                                                                        <c-card>
+                                                                            <c-card-body>
+                                                                            </c-card-body>
+                                                                        </c-card>
+                                                                    </c-col>
+                                                                    <c-col [sm]="12">
+                                                                        <c-card>
+                                                                            <c-card-body style="height: 50px;">
+                                                                            </c-card-body>
+                                                                        </c-card>
+                                                                    </c-col>
+                                                                </c-col>
+                                                                <c-col [sm]="6">
+                                                                    <c-card>
+                                                                        <c-card-body style="height: 124px;">
+                                                                            <h6 class="pb-2" cCardTitle></h6>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+
+                                                            <c-row class="text-center pb-2">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body style="height: 253px;">
+                                                                            <h6 cCardTitle></h6>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+                                                            <c-row class="text-center py-1">
+                                                                <c-col [sm]="12">
+                                                                    <c-card>
+                                                                        <c-card-body>
+                                                                        </c-card-body>
+                                                                    </c-card>
+                                                                </c-col>
+                                                            </c-row>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+                                            </c-row>
+                                        </c-card-body>
+                                    </c-card>
+                                </c-col>
+
+
+                            </c-row>
+                        </div>
+                    </div>
+                </div>
+            </c-modal-body>
+        </c-card>
+    </c-col>
+</c-row>

@@ -1,0 +1,21 @@
+/* Adjust the widths of the select elements */
+.form-select-sm {
+  width: auto;
+  min-width: 80px;
+  max-width: 100px;
+}
+
+/* Ensure buttons and selects are properly aligned */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.form-select {
+  width: 100%;
+}

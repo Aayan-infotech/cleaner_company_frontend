@@ -1,0 +1,168 @@
+<c-row>
+    <c-col xs>
+        <c-card class="mb-4">
+            <c-card-header>Design Theme</c-card-header>
+
+            <c-modal-body class="py-3 px-2">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <c-row>
+                                <c-col [sm]="8">
+                                    <c-card>
+                                        <c-card-body>
+                                            <form cForm class="d-flex" role="search">
+                                                <input aria-label="Search" cFormControl class="me-2"
+                                                    placeholder="Search" type="search">
+                                                <button cButton color="success" variant="outline">Search</button>
+                                            </form>
+                                            <table [striped]="true" cTable>
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Name</th>
+                                                        <th scope="col">Address</th>
+                                                        <th scope="col">Number</th>
+                                                        <th scope="col">Email</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Mark</td>
+                                                        <td>Otto</td>
+                                                        <td>8788</td>
+                                                        <td>&#64;mdo</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </c-card-body>
+                                    </c-card>
+                                </c-col>
+                                <c-col [sm]="4">
+                                    <c-card>
+                                        <c-card-body style="height: 350px;">
+                                            <h6 cCardTitle>Currect selected Cliects</h6>
+                                        </c-card-body>
+                                    </c-card>
+                                </c-col>
+                            </c-row>
+                            <c-row class="my-5">
+                                <c-col [sm]="12">
+                                    <c-card>
+                                        <c-card-body style="height: 315px;">
+                                            <c-nav variant="tabs">
+                                                <a [active]="true" [cTabContent]="tabContent" [routerLink]
+                                                    [tabPaneIdx]="0" cNavLink>Job History</a>
+                                                <a [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="1"
+                                                    cNavLink>Contracts</a>
+                                                <a [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="2"
+                                                    cNavLink>Estimates</a>
+                                            </c-nav>
+                                            <c-tab-content #tabContent="cTabContent">
+                                                <c-tab-pane class="p-3">
+                                                    Notes on currect clients
+                                                </c-tab-pane>
+                                                <c-tab-pane class="p-3">
+                                                    Notes on currect clients
+                                                </c-tab-pane>
+                                                <c-tab-pane class="p-3">
+                                                    Notes on currect clients
+                                                </c-tab-pane>
+                                            </c-tab-content>
+                                        </c-card-body>
+                                    </c-card>
+                                </c-col>
+                            </c-row>
+                        </div>
+
+                        <div class="col-md-4">
+                            <c-card>
+                                <c-card-body class="text-center">
+                                    <h6>Current Template</h6>
+                                    <c-card class="mb-3">
+                                        <c-card-body>
+                                            <c-row>
+                                                <c-col [sm]="6">
+                                                    <c-card>
+                                                        <c-card-body>
+                                                            <h6 cCardTitle>Conpany Logo</h6>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+                                                <c-col [sm]="6">
+                                                    <c-card>
+                                                        <c-card-body>
+                                                            <h6 cCardTitle>Epmloyee Photo</h6>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+                                            </c-row>
+                                            <c-row class="my-1">
+                                                <c-col [sm]="12">
+                                                    <c-card>
+                                                        <c-card-body style="height: 80px;">
+                                                            <h6 cCardTitle>
+                                                                We are 15 minutes away!!
+                                                            </h6>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+                                            </c-row>
+                                            <c-row class="mb-3">
+                                                <c-col [sm]="12">
+                                                    <c-card>
+                                                        <c-card-body class="text-start">
+                                                            <h6 cCardTitle>Client Name</h6>
+                                                            <p cCardText>
+                                                                We are just 15 minutes away from making your home
+                                                                carpets dazzle your guests.
+                                                            </p>
+                                                        </c-card-body>
+                                                    </c-card>
+                                                </c-col>
+                                            </c-row>
+                                            <button size="sm" shape="rounded-pill" class="me-2 px-3" cButton>
+                                                OK!
+                                            </button>
+                                            <button size="sm" shape="rounded-pill" class="px-3" cButton>
+                                                CALL
+                                            </button>
+                                        </c-card-body>
+                                    </c-card>
+                                    <div class="d-flex justify-content-around">
+                                        <button cButton color="dark" variant="outline" size="sm" shape="rounded-pill"
+                                            class="me-2 px-4" cButton>Send SMS
+                                        </button>
+                                        <button cButton color="dark" variant="outline" size="sm" shape="rounded-pill"
+                                            class="px-4" cButton>Send Email
+                                        </button>
+                                    </div>
+                                    <c-row>
+                                        <c-col [sm]="12">
+                                            <c-card class="my-3">
+                                                <c-card-body>
+                                                    <div style="display: flex !important; justify-content: center; flex-direction: column;">
+                                                        <button cButton color="dark" variant="outline" size="sm" shape="rounded-pill">Customer Alert</button>
+                                                        <button class="my-2" cButton color="dark" variant="outline" size="sm"
+                                                            shape="rounded-pill">Customer Reminder
+                                                        </button>
+                                                        <button cButton color="dark" variant="outline" size="sm"
+                                                            shape="rounded-pill">Customer Education
+                                                        </button>
+                                                        <button class="my-2" cButton color="dark" variant="outline" size="sm"
+                                                            shape="rounded-pill">Customer Special
+                                                        </button>
+                                                    </div>
+                                                </c-card-body>
+                                            </c-card>
+                                        </c-col>
+                                    </c-row>
+                                </c-card-body>
+                            </c-card>
+                        </div>
+                    </div>
+                </div>
+            </c-modal-body>
+        </c-card>
+    </c-col>
+</c-row>

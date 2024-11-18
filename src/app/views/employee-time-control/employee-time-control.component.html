@@ -1,0 +1,21 @@
+<!-- product-upload.component.html -->
+<form [formGroup]="productForm" (ngSubmit)="onUpload()">
+    <div>
+      <input type="text" formControlName="productName" placeholder="Product Name">
+    </div>
+    <div>
+      <input type="file" (change)="onFileChanged($event)" multiple>
+    </div>
+    <div>
+      <button type="submit" [disabled]="productForm.invalid">Upload Product</button>
+    </div>
+  </form>
+  
+  <!-- product-view.component.html -->
+  <div *ngFor="let product of products">
+    <h2>{{ product.productName }}</h2>
+    <div *ngFor="let image of product.images">
+      <img [src]="image.url" alt="Product Image" width="200" height="150">
+    </div>
+  </div>
+  

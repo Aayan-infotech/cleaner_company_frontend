@@ -1,0 +1,566 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header class="mb-4 d-flex justify-content-between">
+        <div>
+          Manage Inventory
+        </div>
+        <div>
+          <button (click)="toggleLiveDemoVan()" cButton color="primary" class="me-2" size="sm" shape="rounded-pill">Manage Van</button>      
+          <button (click)="toggleLiveDemoItem()" cButton color="primary" size="sm" shape="rounded-pill">Add Item</button>
+
+
+          <!-- <c-dropdown variant="btn-group">
+            <button cButton cDropdownToggle color="primary" size="sm" shape="rounded-pill">Add</button>
+            <ul cDropdownMenu dark>
+              <li><button (click)="toggleLiveDemoCategory()" cDropdownItem>Add Category</button></li>
+              <li><button (click)="toggleLiveDemoVan()" cDropdownItem>Add Van</button></li>
+              <li><button (click)="toggleLiveDemoItem()" cDropdownItem>Add Item</button></li>              
+            </ul>
+          </c-dropdown> -->
+        </div>
+      </c-card-header>
+
+      <!-- category start model -->
+      <c-modal id="liveDemoModal" [visible]="visiblecategory" (visibleChange)="handleLiveDemoChangeCategory($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Add New Inventory Category</h5>
+          <button (click)="toggleLiveDemoCategory()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+          <form cForm [formGroup]="categoryForm">
+
+            <c-col>
+              <label cLabel for="categoryName">Enter Name</label>
+              <input formControlName="categoryName" cFormControl type="text" id="categoryName" placeholder="Enter Inventory Category Name" />
+            </c-col>
+
+          </form>
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemoCategory()" cButton color="secondary" size="sm">Close</button>
+          <button (click)="submitCategory()" (click)="toggleLiveDemoCategory()" cButton color="success" size="sm">Add</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- category end model -->
+
+      <!-- item start model -->
+      <c-modal size="lg" id="liveDemoModal" [visible]="visibleItem" (visibleChange)="handleLiveDemoChangeItem($event)">
+        <c-modal-header>
+          <h5 cModalTitle>
+            {{ isEditMode ? 'Edit Inventory Item Details' : (isViewClicked ? 'View Inventory Item Details' : 'Add New Inventory Item') }}
+          </h5>
+          <button (click)="toggleLiveDemoItem()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+          <form cForm [formGroup]="itemForm">
+            <c-row>
+              <c-col [md]="7">
+
+                <c-row>
+                  <c-col [md]="8">
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Enter Item Name</label>                                              
+                    </div>   
+                  </c-col>
+
+                  <c-col [md]="4">                    
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Part Number</label>                                              
+                    </div> 
+                  </c-col>
+                </c-row>
+
+                <c-row class="my-3">
+
+                  <c-col [md]="5">
+                    <div cFormFloating>
+                      <select cSelect formControlName="categoryId" (change)="onCategoryChange($event)">
+                        <option value="" disabled>Open this select category</option>
+                        <option *ngFor="let category of categoriesArray" [value]="category._id" [selected]="category._id === itemForm.get('categoryId')?.value">
+                          {{ category.categoryName }}
+                        </option>
+                      </select>
+                      <label cLabel>Select Category</label>
+                    </div>                    
+                  </c-col>
+
+                  <c-col [md]="4">                    
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Max Qty</label>                                              
+                    </div> 
+                  </c-col>
+
+                  <c-col [md]="3">                    
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Min Qty</label>                                              
+                    </div> 
+                  </c-col>
+                </c-row>
+
+                <c-row>
+
+                  <c-col [md]="5">
+                    <div cFormFloating>
+                      <select cSelect formControlName="vanId" (change)="onVanChange($event)">
+                        <option value="" disabled>Open this select van</option>
+                        <option *ngFor="let van of vanArray" [value]="van._id">{{ van.vanName }}</option>
+                      </select>
+                      <label cLabel>Select Van</label>
+                    </div>                       
+                  </c-col>
+
+                  <c-col [md]="3">                    
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">In Stock</label>                                              
+                    </div> 
+                  </c-col>
+
+                  <c-col [md]="4">                    
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Amt to Order</label>                                              
+                    </div> 
+                  </c-col>
+
+                </c-row>
+
+                <c-row class="my-3">
+
+                  <c-col [md]="6">
+                    <c-form-check>
+                      <input cFormCheckInput formControlName="forWarehouse" id="forWarehouse" type="checkbox" />
+                      <label cFormCheckLabel for="forWarehouse">For Warehouse</label>
+                    </c-form-check>
+                  </c-col>
+
+                  <c-col [md]="6">
+                    <c-form-check>
+                      <input cFormCheckInput formControlName="forWarehouse" id="forWarehouse" type="checkbox" />
+                      <label cFormCheckLabel for="forWarehouse">Add to Ord</label>
+                    </c-form-check>
+                  </c-col>
+                </c-row>
+
+                <c-row>                   
+                  <c-col>
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Enter Cost</label>                                              
+                    </div>
+                  </c-col>
+                </c-row>
+
+                <c-row class="my-3">
+                  <c-col>
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Enter Price</label>                                              
+                    </div>    
+                  </c-col>
+                </c-row>
+
+                <c-row> 
+                  <c-col>
+                    <div cFormFloating>
+                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemID">Enter Comment...</label>                                              
+                    </div>    
+                  </c-col>
+                </c-row>
+
+              </c-col>
+
+              <c-col [md]="5">
+
+                <c-row>
+                  <c-col>
+                    <div cFormFloating>
+                      <textarea cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." style="height: 100px;"></textarea>
+                      <label cLabel for="itemID">Enter Short Description</label>                                              
+                    </div>
+                  </c-col>
+                </c-row>
+                
+                <c-row class="my-3">
+                  <c-col>
+                    <div cFormFloating>
+                      <textarea cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." style="height: 130px;"></textarea>
+                      <label cLabel for="itemID">Enter Part Description</label>                                              
+                    </div>
+                  </c-col>
+                </c-row>
+                
+                <c-row>
+                  <c-col [md]="4">
+                    <div class="mt-3"><strong>Add Img:</strong></div>
+                  </c-col>
+
+                  <c-col [md]="8">
+                    <div cFormFloating>
+                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
+                      <label cLabel for="images">(max 9 Image)</label>
+                    </div>
+                  </c-col>
+                </c-row>
+
+                <c-row class="my-3">
+                  <c-col [md]="4">
+                    <div class="mt-3"><strong>Add PDF:</strong></div>
+                  </c-col>
+
+                  <c-col [md]="8">
+                    <div cFormFloating>
+                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
+                      <label cLabel for="images">(max 9 PDF)</label>
+                    </div>
+                  </c-col>
+                </c-row>
+
+                <c-row>
+                  <c-col [md]="4">
+                    <div class="mt-3"><strong>Add Video:</strong></div>
+                  </c-col>
+
+                  <c-col [md]="8">
+                    <div cFormFloating>
+                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
+                      <label cLabel for="images">(max 9 Video)</label>
+                    </div>
+                  </c-col>
+                </c-row>
+
+              </c-col>
+            </c-row>
+          </form>
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemoItem()" cButton color="secondary" size="sm">Close</button>
+          <button (click)="submitItem()" (click)="toggleLiveDemoItem()" *ngIf="showSaveChanges" cButton color="success" size="sm">Save Item</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- item end model -->
+
+      <!-- van start model -->
+      <c-modal id="liveDemoModal" [visible]="visibleVan" (visibleChange)="handleLiveDemoChangeVan($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Add New Van</h5>
+          <button (click)="toggleLiveDemoVan()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>          
+          <form cForm [formGroup]="vanForm">
+
+            <c-col>
+              <label cLabel for="vanName">Enter Van Name</label>
+              <input cFormControl formControlName="vanName" id="vanName" type="text" placeholder="Enter van name, e.g., Van1"/>
+            </c-col>
+
+          </form>
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemoVan()" cButton color="secondary" size="sm">Close</button>
+          <button (click)="submitVan()" (click)="toggleLiveDemoVan()" cButton color="success" size="sm">Add Van</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- van end model -->
+
+      <!-- notification start model -->
+      <c-modal #withPopoverModal alignment="center" id="withPopoverModal">
+        <c-modal-header>
+          <h5 cModalTitle>Notifications</h5>
+          <button [cModalToggle]="withPopoverModal.id" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+          <c-card class="mb-1">
+            <c-card-body>In et eros vitae lectus tempor volutpat.</c-card-body>
+          </c-card>
+        </c-modal-body>
+        <c-modal-footer>
+          <button [cModalToggle]="withPopoverModal.id" cButton color="secondary">
+            Close
+          </button>
+          <button cButton color="primary">Understood</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- notification end model -->
+
+      
+
+
+
+      <!-- Toggle Tabs -->
+      <c-nav variant="tabs">
+        <a [active]="true" [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="0" cNavLink>Warehouse</a>
+        <a [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="1" cNavLink>Vans</a>
+      </c-nav>
+
+      <c-navbar colorScheme="light">
+        <c-container class="mt-2">
+          <div class="d-flex align-items-center ">
+
+            <input aria-label="Search" cFormControl class="me-2" placeholder="Search" type="search" [(ngModel)]="searchText">
+
+            <c-dropdown class="ms-3">
+              <select id="categorySelect" aria-label="Default select example" cSelect (change)="onCategorySelect($event)" class="rounded-pill mx-2">
+                <option value="">Category</option>
+                <option *ngIf="categoriesArray.length === 0" style="color: #ff6666;">No Categories</option>
+                <option *ngFor="let category of categoriesArray" [value]="category.categoryName">
+                  {{ category.categoryName }}
+                  <span>
+                    
+                  </span>
+                </option>
+              </select>
+            </c-dropdown>
+
+          </div>
+
+          <div class="d-flex align-items-center">
+            <!-- Notifications -->
+            <button [cModalToggle]="withPopoverModal.id" shape="rounded-pill" size="sm" cButton color="primary" class="position-relative mx-2">
+              Notifications
+              <c-badge color="danger" position="top-end" shape="rounded-pill">99+</c-badge>
+              <span class="visually-hidden">unread messages</span>
+            </button>
+
+            <!-- Export -->
+            <c-dropdown class="ms-3">
+              <button size="sm" shape="rounded-pill" cButton cDropdownToggle color="primary" class="py-1 px-3">Export</button>
+              <ul cDropdownMenu dark>
+                <li><button cDropdownItem>PDF</button></li>
+                <li><button cDropdownItem>Excel</button></li>
+                <li><button cDropdownItem>Something else here</button></li>
+              </ul>
+            </c-dropdown>
+          </div>
+
+        </c-container>
+      </c-navbar>
+
+
+      <c-tab-content #tabContent="cTabContent">
+        <!-- for warehouse -->
+        <c-tab-pane class="p-3">
+          <c-card-body>            
+            <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+              <thead cTableColor="light">
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Category name</th>
+                  <th>Min Qty</th>
+                  <th>Total WH Qty</th>               
+                  <th>Quantity To Order</th>
+                  <th>Transfer To</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let warehouse of warehouseItemsArray | filter:searchText">
+                  <td>
+                    <div>
+                      <input cFormCheckInput id="nolabelCheck" (click)="getItemById(warehouse._id)" name="nolabelCheck"
+                        type="checkbox" />
+                    </div>
+                  </td>
+                  <td>
+                    <div>{{warehouse.itemName}}</div>
+                  </td>
+                  <td>
+                    <div>{{ warehouse.categoryName}}</div>
+                  </td>                 
+                  <td>
+                    <div>{{ warehouse.minimumQuantity }}</div>
+                  </td> 
+                  <td>              
+                    <div>{{warehouse.totalQuantity }}</div>
+                  </td>                 
+                  <td>
+                    <form [formGroup]="orderForm">
+                      <c-input-group sizing="sm" style="width: 50% !important;">
+                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl
+                          placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
+                        <button cButton color="danger" id="button-addon2" type="button" variant="outline"
+                          (click)="addToOrder()">Order</button>
+                      </c-input-group>
+                    </form>
+                  </td>
+                  <td>
+                    <button (click)="getItemById(warehouse._id); toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
+
+                    <!-- transfer start model -->
+                    <c-modal id="liveDemoModal{{warehouse._id}}" [visible]="visible2[warehouse._id]" (visibleChange)="handleLiveDemoChange2($event, warehouse._id)">
+                      <c-modal-header>
+                        <h5 cModalTitle>Item From Warehouse</h5>
+                        <button (click)="toggleLiveDemo2(warehouse._id)" cButtonClose size="sm"></button>
+                      </c-modal-header>
+                      <c-modal-body>
+                        <c-row>
+
+                          <c-col [md]="4">
+                            <input cFormControl id="" type="text" [value]="warehouse.itemName" disabled />
+                          </c-col>
+
+                          <c-col [md]="4">
+                            <input cFormControl id="transferQuantity" type="number" [(ngModel)]="transferQuantity" placeholder="Qty" />
+                          </c-col>
+
+                          <c-col [md]="4">
+                            <div>
+                              <select cSelect id="vanSelect" [(ngModel)]="selectedVanId">
+                                <option disabled selected>Select a van</option>
+                                <option *ngFor="let van of vanArray" [value]="van._id">{{ van.vanName }}</option>
+                              </select>
+                            </div>
+                          </c-col>
+
+                        </c-row>
+                      </c-modal-body>
+                      <c-modal-footer class="py-1">
+                        <button (click)="toggleLiveDemo2(warehouse._id)" cButton color="secondary" size="sm">Cancel</button>
+                        <button (click)="transferItem(warehouse._id, warehouse.totalQuantity, warehouse.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
+
+                      </c-modal-footer>
+                    </c-modal>
+                    <!-- transfer end model -->
+
+                  </td>
+                  <td>
+                    <button (click)="getItemById(warehouse._id)" (click)="toggleLiveDemoItem()" class="me-1">
+                      <svg cIcon name="cil-pencil" size="sm"></svg>
+                    </button>
+                    <button (click)="deleteItem(warehouse._id)">
+                      <svg cIcon name="cil-trash" size="sm"></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!warehouseItemsArray || warehouseItemsArray.length === 0">
+                  <td colspan="10" class="text-center" style="color: red;">-- No Data Available For Warehouse --</td>
+                </tr>
+              </tbody>
+            </table>
+          </c-card-body>
+        </c-tab-pane>
+
+        <!-- for van -->
+        <c-tab-pane class="p-3">
+          <c-card-body>
+            <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+              <thead cTableColor="light">
+                <tr>
+                  <th></th>
+                  <th>Item name</th>
+                  <th>Van name</th>
+                  <th>Category name</th>
+                  <!-- <th>Min Qty</th>   -->
+                  <th>Total Qty On Hand</th>                                
+                  <th>Quantity To Order</th>
+                  <th>Transfer</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let van of vanNameItemArray | filter:searchText">
+                  <td>
+                    <div>
+                      <input cFormCheckInput id="nolabelCheck" (click)="getItemById(van._id)" name="nolabelCheck" type="checkbox" />
+                    </div>
+                  </td>
+                  <td>{{ van.itemName }}</td>
+                  <td>{{ van.vanName }}</td>
+                  <td>{{ van.categoryName }}</td>
+                  <!-- <td>{{ van.minimumQuantity }}</td> -->
+                  <td>{{ van.totalQuantity }}
+                  </td>                  
+                  <td>
+                    <form [formGroup]="orderForm">
+                      <c-input-group sizing="sm" style="width: 50% !important;">
+                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl
+                          placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
+                        <button cButton color="danger" id="button-addon2" type="button" variant="outline"
+                          (click)="addToOrder()">
+                          Order
+                        </button>
+                      </c-input-group>
+                    </form>                    
+                  </td>
+
+                  <td>
+                    <button (click)="getItemById(van._id); toggleLiveDemoVan2(van._id)" cButton color="warning" size="sm" shape="rounded-pill">Transfer</button>
+                    
+                    <!-- Transfer Modal -->
+                    <c-modal id="liveDemoModal{{van._id}}" [visible]="visibleVan2[van._id]" (visibleChange)="handleLiveDemoChange2Van2($event, van._id)">
+                      <c-modal-header>
+                        <h5 cModalTitle>Item From Van</h5>
+                        <button (click)="toggleLiveDemoVan2(van._id)" cButtonClose size="sm"></button>
+                      </c-modal-header>
+                      <c-modal-body>
+                        <c-row>
+                          <c-col [md]="4">
+                            <input cFormControl id="itemName" type="text" [value]="van.itemName" disabled />
+                          </c-col>
+                  
+                          <c-col [md]="4">
+                            <input cFormControl id="transferQuantity" type="number" [(ngModel)]="transferQuantity" placeholder="Qty" min="1" />
+                          </c-col>
+                  
+                          <c-col [md]="4">
+                            <div>
+                              <select cSelect id="vanSelect" [(ngModel)]="selectedVanId">
+                                <option disabled selected value="">Select a van</option>
+                                <option *ngFor="let v of vanArray" [value]="v._id">{{ v.vanName }}</option>
+                              </select>
+                            </div>
+                          </c-col>
+                        </c-row>
+                      </c-modal-body>
+                      <c-modal-footer class="py-1">
+                        <button (click)="toggleLiveDemoVan2(van._id)" cButton color="secondary" size="sm">Cancel</button>
+                        <button (click)="transferItemToVan(van._id, van.totalQuantity, van.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
+                      </c-modal-footer>
+                    </c-modal>
+                    <!-- End Transfer Modal -->
+                  </td>
+                  <td>
+                    <button (click)="getItemById(van._id)" (click)="toggleLiveDemoItem()" (click)="clickAddMember()" class="me-1">
+                      <svg cIcon name="cil-pencil" size="sm"></svg>
+                    </button>
+                    <button (click)="deleteItem(van._id)">
+                      <svg cIcon name="cil-trash" size="sm"></svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="!vanNameItemArray || vanNameItemArray.length === 0">
+                  <td colspan="10" class="text-center" style="color: red;">-- No Data Available For Van --</td>
+                </tr>
+              </tbody>
+            </table>
+          </c-card-body>
+
+        </c-tab-pane>
+
+      </c-tab-content>
+
+    </c-card>
+  </c-col>
+</c-row>
