@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 })
 export class EventService {
 
-  private apiUrl = 'http://localhost:3000/events';
+  private apiUrl = 'http://44.196.192.232:5966/events';
 
   constructor(private http: HttpClient) {}
 
