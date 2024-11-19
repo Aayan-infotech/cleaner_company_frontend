@@ -8,8 +8,6 @@ export class ContentService {
 
   http = inject(HttpClient);
 
-  //Version
-
   createVersionService(verObj:any){
     return this.http.post<any>(`${apiUrls.contentVersion}addVersion`,verObj);
   }
