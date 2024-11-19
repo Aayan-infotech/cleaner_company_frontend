@@ -6,7 +6,6 @@ import { ItemInventoryService } from 'src/app/services/item-inventory.service';
 import { OrderService } from 'src/app/services/order.service';
 import { VanService } from 'src/app/services/van.service';
 
-
 export interface Item {
   categoryName: string;
   itemName: string;
@@ -18,7 +17,7 @@ export interface Item {
   comment?: string;
 }
 
-interface Van {
+export interface Van {
   _id: string;
   vanName: string;
 }
@@ -31,14 +30,11 @@ interface Van {
 })
 
 export class ManageInventoryComponent implements OnInit {
+  
 
   transferQuantity: number = 0;
   selectedVanId: string | null = null;
-
-
   destinationVanId: string | null = null;
-
-
   @Input() itemId: string | null = null;
 
   categoryfb = inject(FormBuilder);
@@ -66,6 +62,10 @@ export class ManageInventoryComponent implements OnInit {
   vanForm!: any;
   vanData!: any;
   vanArray!: any;
+
+  selectedImages: File[] = [];
+  selectedPdfs: File[] = [];
+  selectedVideos: File[] = [];
 
 
   itemfb = inject(FormBuilder);
@@ -165,15 +165,24 @@ export class ManageInventoryComponent implements OnInit {
 
     this.itemForm = this.fb.group({
       itemName: ['', Validators.required],
-      itemID: ['', Validators.required],
+      partNumber: ['', Validators.required],
       categoryId: ['', Validators.required],
-      categoryName: ['', Validators.required],
-      totalQuantity: ['', Validators.required],
-      minimumQuantity: ['', Validators.required],
+      maxQty: ['', Validators.required],
+      minQty: ['', Validators.required],
       vanId: ['', Validators.required],
-      vanName: ['', Validators.required],
-      forWarehouse: [false],
-      comment: ['', Validators.required]
+      inStock: ['', Validators.required],
+      amtOrder: ['', Validators.required],
+      forWarehouse: ['', Validators.required],
+      addOrder: ['', Validators.required],
+      cost: ['', Validators.required],
+      price: ['', Validators.required],
+      comment: ['', Validators.required],
+      shortDes: ['', Validators.required],
+      partDes: ['', Validators.required],
+      Images: [''],
+      pdfs: [''],
+      videos: ['']
+
     });
 
     this.vanForm = this.vanFb.group({
@@ -197,7 +206,7 @@ export class ManageInventoryComponent implements OnInit {
     this.getAllItemsWithVanNames();
   }
 
-  // category data submit
+  // submit inventory category 
   submitCategory() {
     console.log(this.categoryForm.value);
     const categoryObj = {
@@ -216,6 +225,164 @@ export class ManageInventoryComponent implements OnInit {
     });
   }
 
+  onFileChanged(event: any, type: string): void {
+    const files = Array.from(event.target.files);
+
+    if (type === 'Images') {
+      if (files.length > 9) {
+        alert('You can only select up to 9 images.');
+        return;
+      }
+      this.selectedImages = files as File[];
+    } else if (type === 'pdfs') {
+      this.selectedPdfs = files as File[];
+    } else if (type === 'videos') {
+      this.selectedVideos = files as File[];
+    }
+    this.itemForm.patchValue({
+      images: this.selectedImages.length > 0 ? this.selectedImages : null
+    });
+  }
+
+  // submit inventory Item
+  // submitItem() {
+  //   if (!this.itemForm.valid) {
+  //     alert('Please fill in all required fields and add at least one image.');
+  //     return;
+  //   }
+  //   const formData = new FormData();
+  //   formData.append('itemName', this.itemForm.get('itemName')?.value);
+  //   formData.append('partNumber', this.itemForm.get('partNumber')?.value);
+  //   formData.append('categoryId', this.itemForm.get('categoryId')?.value);
+  //   formData.append('maxQty', this.itemForm.get('maxQty')?.value);
+  //   formData.append('minQty', this.itemForm.get('minQty')?.value);
+  //   formData.append('vanId', this.itemForm.get('vanId')?.value);
+  //   formData.append('inStock', this.itemForm.get('inStock')?.value);
+  //   formData.append('amtOrder', this.itemForm.get('amtOrder')?.value);
+  //   formData.append('forWarehouse', this.itemForm.get('forWarehouse')?.value);
+  //   formData.append('addOrder', this.itemForm.get('addOrder')?.value);
+  //   formData.append('cost', this.itemForm.get('cost')?.value);
+  //   formData.append('price', this.itemForm.get('price')?.value);
+  //   formData.append('comment', this.itemForm.get('comment')?.value);
+  //   formData.append('shortDes', this.itemForm.get('shortDes')?.value);
+  //   formData.append('partDes', this.itemForm.get('partDes')?.value);
+
+  //    // Append images
+  //    this.selectedImages.forEach(file => {
+  //     formData.append('Images', file, file.name);
+  //   });
+
+  //   // Append pdfs
+  //   this.selectedPdfs.forEach(file => {
+  //     formData.append('pdfs', file, file.name);
+  //   });
+
+  //   // Append videos
+  //   this.selectedVideos.forEach(file => {
+  //     formData.append('videos', file, file.name);
+  //   });
+
+  //   if(this.isEditMode && this.itemId ) {
+  //     this.itemInventoryService.updateItemService(formData, this.itemId)
+  //     .subscribe({
+  //       next: () => {
+  //         alert('Item update Successfully');
+  //         this.resetForm();
+  //         this.getAllItems();
+  //       },
+  //       error(err) {
+  //         console.error('error updateing item:', err);
+  //         alert('Failed to update item. Please try again');
+  //       }
+  //     });
+  //   } else if (this.itemId) {
+  //     this.itemInventoryService.createItemService(formData)
+  //     .subscribe({
+  //       next: () => {
+  //         alert('Item added Successfully');
+  //         this.resetForm();
+  //         this.getAllItems();
+  //       },
+  //       error: (err) => {
+  //         console.error('Error Adding item:', err);
+  //         alert('Failed to adding item. Please try again.');
+  //       }
+  //     });
+  //   }
+
+  // }
+
+  submitItem() {
+    if (!this.selectedImages.length) {
+      alert('Please add at least one image.');
+      console.log('No images selected:', this.selectedImages);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('itemName', this.itemForm.get('itemName')?.value);
+    formData.append('partNumber', this.itemForm.get('partNumber')?.value);
+    formData.append('categoryId', this.itemForm.get('categoryId')?.value);
+    formData.append('maxQty', this.itemForm.get('maxQty')?.value);
+    formData.append('minQty', this.itemForm.get('minQty')?.value);
+    formData.append('vanId', this.itemForm.get('vanId')?.value);
+    formData.append('inStock', this.itemForm.get('inStock')?.value);
+    formData.append('amtOrder', this.itemForm.get('amtOrder')?.value);
+    formData.append('forWarehouse', this.itemForm.get('forWarehouse')?.value);
+    formData.append('addOrder', this.itemForm.get('addOrder')?.value);
+    formData.append('cost', this.itemForm.get('cost')?.value);
+    formData.append('price', this.itemForm.get('price')?.value);
+    formData.append('comment', this.itemForm.get('comment')?.value);
+    formData.append('shortDes', this.itemForm.get('shortDes')?.value);
+    formData.append('partDes', this.itemForm.get('partDes')?.value);
+
+    // Append images
+    this.selectedImages.forEach(file => {
+      formData.append('Images', file, file.name);
+    });
+
+    // Append PDFs and videos (optional)
+    this.selectedPdfs.forEach(file => {
+      formData.append('pdfs', file, file.name);
+    });
+    this.selectedVideos.forEach(file => {
+      formData.append('videos', file, file.name);
+    });
+
+    // Check edit mode or new item creation
+    if (this.isEditMode && this.itemId) {
+      this.itemInventoryService.updateItemService(formData, this.itemId).subscribe({
+        next: () => {
+          alert('Item updated successfully');
+          this.resetForm();
+          this.getAllWarehouseItems();
+          this.getAllVanItems();
+          this.getAllItemsWithVanNames();
+        },
+        error: (err) => {
+          console.error('Error updating item:', err);
+          alert('Failed to update item. Please try again.');
+        }
+      });
+    } else {
+      this.itemInventoryService.createItemService(formData).subscribe({
+        next: () => {
+          alert('Item added successfully');
+          this.resetForm();
+          this.getAllWarehouseItems();
+          this.getAllVanItems();
+          this.getAllItemsWithVanNames();
+        },
+        error: (err) => {
+          console.error('Error adding item:', err);
+          alert('Failed to add item. Please try again.');
+        }
+      });
+    }
+  }
+
+
+  // submit van 
   submitVan() {
     if (this.vanForm.valid) {
       const vanObj = {
@@ -238,52 +405,6 @@ export class ManageInventoryComponent implements OnInit {
     }
   }
 
-  // add item from
-  submitItem() {
-    const formValue = this.itemForm.value;
-    const selectedCategory = this.categoriesArray.find(cat => cat._id === formValue.categoryId);
-    if (selectedCategory) {
-      formValue.categoryName = selectedCategory.categoryName;
-    }
-
-    // Check if itemId is valid for updating
-    if (this.itemId) {
-      console.log("Updating item with ID:", this.itemId);
-      this.itemInventoryService.updateItemService(formValue, this.itemId)
-        .subscribe({
-          next: (res) => {
-            alert('Item details Updated successfully');
-            this.resetForm();
-            this.getAllWarehouseItems();
-            this.getAllVanItems();
-            this.getAllItemsWithVanNames();
-          },
-          error: (err) => {
-            console.error('Error updating item:', err);
-          }
-        });
-    } else {
-      console.log("Adding new item");
-
-      // Add new item
-      this.itemInventoryService.createItemService(formValue)
-        .subscribe({
-          next: (res) => {
-            alert('Item Added successfully');
-            this.resetForm();
-            this.getAllWarehouseItems();
-            this.getAllVanItems();
-            this.getAllItemsWithVanNames();
-          },
-          error: (err) => {
-            console.error('Error adding new item:', err);
-          }
-        });
-    }
-
-    console.log("Item ID after submit attempt:", this.itemId);
-  }
-
   onCategoryChange(event: any) {
     const selectedCategoryId = event.target.value;
     const selectedCategory = this.categoriesArray.find(category => category._id === selectedCategoryId);
@@ -294,9 +415,9 @@ export class ManageInventoryComponent implements OnInit {
     }
   }
 
-  onVanChange(event: Event) {
-    const selectedVanId = (event.target as HTMLSelectElement).value;
-    const selectedVan = this.vanArray.find((van: { _id: string; }) => van._id === selectedVanId);
+  onVanChange(event: any) {
+    const selectedVanId = event.target.value;
+    const selectedVan = this.vanArray.find((van: Van) => van._id === selectedVanId);
     if (selectedVan) {
       this.itemForm.patchValue({
         vanName: selectedVan.vanName
@@ -334,18 +455,28 @@ export class ManageInventoryComponent implements OnInit {
     this.selectedVanId = null;
   };
 
-  // all categories list
+  // all inventory categories
   getAllCategories() {
     this.inventoryCategoryService.getAllInventoryCategoryService()
       .subscribe({
         next: (res) => {
           this.categoryData = res;
           this.categoriesArray = this.categoryData.data || [];
-          console.log("All categories:", this.categoriesArray);
+          console.log("All inventory categories:", this.categoriesArray);
         },
         error: (error) => {
           console.error("Error fetching categories:", error);
         }
+      });
+  }
+
+  // all inventory items
+  getAllItems() {
+    this.itemInventoryService.getAllItemsService()
+      .subscribe((res) => {
+        this.itemData = res;
+        this.itemArray = this.itemData.data;
+        console.log("All Inventorysssss:", this.itemArray);
       });
   }
 
@@ -354,22 +485,13 @@ export class ManageInventoryComponent implements OnInit {
     this.vanService.getAllVans()
       .subscribe({
         next: (res) => {
-          console.log("Response Data:", res);
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-          this.cdr.detectChanges();
           console.log("All Vans:", this.vanArray);
+        },
+        error: (error) => {
+          console.error("Error fetching Vans:", error);
         }
-      });
-  }
-
-  // all inventories list
-  getAllItems() {
-    this.itemInventoryService.getAllItemsService()
-      .subscribe((res) => {
-        this.itemData = res;
-        this.itemArray = this.itemData.data;
-        console.log("All Inventory Items Name:", this.itemArray);
       });
   }
 
@@ -453,14 +575,24 @@ export class ManageInventoryComponent implements OnInit {
         this.itemId = this.editData.data._id;
         this.itemForm.patchValue({
           itemName: this.editData.data.itemName,
-          itemID: this.editData.data.itemID,
+          partNumber: this.editData.data.partNumber,
           categoryId: this.editData.data.categoryId,
-          categoryName: this.editData.data.categoryName,
-          totalQuantity: this.editData.data.totalQuantity,
-          minimumQuantity: this.editData.data.minimumQuantity,
-          forVan: this.editData.data.forVan,
+          maxQty: this.editData.data.maxQty,
+          minQty: this.editData.data.minQty,
+          vanId: this.editData.data.vanId,
+          inStock: this.editData.data.inStock,
+          amtOrder: this.editData.data.amtOrder,
           forWarehouse: this.editData.data.forWarehouse,
-          comment: this.editData.data.comment
+          addOrder: this.editData.data.addOrder,
+          cost: this.editData.data.cost,
+          price: this.editData.data.price,
+          comment: this.editData.data.comment,
+          shortDes: this.editData.data.shortDes,
+          partDes: this.editData.data.partDes,
+          Images: this.editData.data.Images,
+          pdfs: this.editData.data.pdfs,
+          videos: this.editData.data.videos
+
         });
         this.isEditMode = true;
         console.log("Item ID set to:", this.itemId);
@@ -583,23 +715,20 @@ export class ManageInventoryComponent implements OnInit {
     };
 
     this.itemInventoryService.transferItemToVanService(transferItemData)
-    .subscribe({
-      next: () => {
-        alert('Item transferred successfully');
-        this.resetForm();
-        this.getAllWarehouseItems();
-        this.getAllItemsWithVanNames();
-        this.toggleLiveDemoVan2(vanId);
-      },
-      error: (err) => {
-        console.error('Error transferring item:', err);
-        alert('Error transferring item. Please try again.');
-      }
-    });
+      .subscribe({
+        next: () => {
+          alert('Item transferred successfully');
+          this.resetForm();
+          this.getAllWarehouseItems();
+          this.getAllItemsWithVanNames();
+          this.toggleLiveDemoVan2(vanId);
+        },
+        error: (err) => {
+          console.error('Error transferring item:', err);
+          alert('Error transferring item. Please try again.');
+        }
+      });
   }
-  
-  
-  
 
-
+  
 }
