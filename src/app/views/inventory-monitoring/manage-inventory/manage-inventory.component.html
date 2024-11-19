@@ -18,6 +18,7 @@
               <li><button (click)="toggleLiveDemoItem()" cDropdownItem>Add Item</button></li>              
             </ul>
           </c-dropdown> -->
+          
         </div>
       </c-card-header>
 
@@ -60,15 +61,15 @@
                 <c-row>
                   <c-col [md]="8">
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Enter Item Name</label>                                              
+                      <input cFormControl formControlName="itemName" id="itemName" type="text" placeholder="Enter..." />
+                      <label cLabel for="itemName">Enter Item Name</label>                                              
                     </div>   
                   </c-col>
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Part Number</label>                                              
+                      <input cFormControl formControlName="partNumber" id="partNumber" type="text" placeholder="Enter..."  />
+                      <label cLabel for="partNumber">Part Number</label>                                              
                     </div> 
                   </c-col>
                 </c-row>
@@ -89,15 +90,15 @@
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Max Qty</label>                                              
+                      <input cFormControl formControlName="maxQty" id="maxQty" type="text" placeholder="Enter..."  />
+                      <label cLabel for="maxQty">Max Qty</label>                                              
                     </div> 
                   </c-col>
 
                   <c-col [md]="3">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Min Qty</label>                                              
+                      <input cFormControl formControlName="minQty" id="minQty" type="text" placeholder="Enter..."  />
+                      <label cLabel for="minQty">Min Qty</label>                                              
                     </div> 
                   </c-col>
                 </c-row>
@@ -108,7 +109,9 @@
                     <div cFormFloating>
                       <select cSelect formControlName="vanId" (change)="onVanChange($event)">
                         <option value="" disabled>Open this select van</option>
-                        <option *ngFor="let van of vanArray" [value]="van._id">{{ van.vanName }}</option>
+                        <option *ngFor="let van of vanArray" [value]="van._id" [selected]="van._id === itemForm.get('vanId')?.value">
+                          {{ van.vanName }}
+                        </option>
                       </select>
                       <label cLabel>Select Van</label>
                     </div>                       
@@ -116,15 +119,15 @@
 
                   <c-col [md]="3">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">In Stock</label>                                              
+                      <input cFormControl formControlName="inStock" id="inStock" type="text" placeholder="Enter..."  />
+                      <label cLabel for="inStock">In Stock</label>                                              
                     </div> 
                   </c-col>
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Amt to Order</label>                                              
+                      <input cFormControl formControlName="amtOrder" id="amtOrder" type="text" placeholder="Enter..."  />
+                      <label cLabel for="amtOrder">Amt to Order</label>                                              
                     </div> 
                   </c-col>
 
@@ -141,8 +144,8 @@
 
                   <c-col [md]="6">
                     <c-form-check>
-                      <input cFormCheckInput formControlName="forWarehouse" id="forWarehouse" type="checkbox" />
-                      <label cFormCheckLabel for="forWarehouse">Add to Ord</label>
+                      <input cFormCheckInput formControlName="addOrder" id="addOrder" type="checkbox" />
+                      <label cFormCheckLabel for="addOrder">Add to Order</label>
                     </c-form-check>
                   </c-col>
                 </c-row>
@@ -150,17 +153,17 @@
                 <c-row>                   
                   <c-col>
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Enter Cost</label>                                              
+                      <input cFormControl formControlName="cost" id="cost" type="text" placeholder="Enter..."/>
+                      <label cLabel for="cost">Enter Cost</label>                                              
                     </div>
                   </c-col>
                 </c-row>
 
                 <c-row class="my-3">
                   <c-col>
-                    <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Enter Price</label>                                              
+                    <div cFormFloating> 
+                      <input cFormControl formControlName="price" id="price" type="text" placeholder="Enter..." />
+                      <label cLabel for="price">Enter Price</label>                                              
                     </div>    
                   </c-col>
                 </c-row>
@@ -168,8 +171,8 @@
                 <c-row> 
                   <c-col>
                     <div cFormFloating>
-                      <input cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemID">Enter Comment...</label>                                              
+                      <input cFormControl formControlName="comment" id="comment" type="text" placeholder="Enter..." />
+                      <label cLabel for="comment">Enter Comment...</label>                                              
                     </div>    
                   </c-col>
                 </c-row>
@@ -181,8 +184,8 @@
                 <c-row>
                   <c-col>
                     <div cFormFloating>
-                      <textarea cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." style="height: 100px;"></textarea>
-                      <label cLabel for="itemID">Enter Short Description</label>                                              
+                      <textarea cFormControl formControlName="shortDes" id="shortDes" type="text" placeholder="Enter..." style="height: 100px;"></textarea>
+                      <label cLabel for="shortDes">Enter Short Description</label>                                              
                     </div>
                   </c-col>
                 </c-row>
@@ -190,8 +193,8 @@
                 <c-row class="my-3">
                   <c-col>
                     <div cFormFloating>
-                      <textarea cFormControl formControlName="itemID" id="itemID" type="text" placeholder="Enter..." style="height: 130px;"></textarea>
-                      <label cLabel for="itemID">Enter Part Description</label>                                              
+                      <textarea cFormControl formControlName="partDes" id="partDes" type="text" placeholder="Enter..." style="height: 130px;"></textarea>
+                      <label cLabel for="partDes">Enter Part Description</label>                                              
                     </div>
                   </c-col>
                 </c-row>
@@ -203,8 +206,8 @@
 
                   <c-col [md]="8">
                     <div cFormFloating>
-                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
-                      <label cLabel for="images">(max 9 Image)</label>
+                      <input cFormControl (change)="onFileChanged($event, 'Images')" id="Images" type="file" placeholder="Add Image" multiple />
+                      <label cLabel for="Images">Add Image (max 9 Images)</label>
                     </div>
                   </c-col>
                 </c-row>
@@ -216,8 +219,8 @@
 
                   <c-col [md]="8">
                     <div cFormFloating>
-                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
-                      <label cLabel for="images">(max 9 PDF)</label>
+                      <input cFormControl (change)="onFileChanged($event, 'pdfs')" id="pdfs" type="file" placeholder="Add PDF" multiple />
+                      <label cLabel for="pdfs">Add PDF (max 9 PDF)</label>
                     </div>
                   </c-col>
                 </c-row>
@@ -229,8 +232,8 @@
 
                   <c-col [md]="8">
                     <div cFormFloating>
-                      <input cFormControl id="images" type="file" placeholder="Add Image" multiple />
-                      <label cLabel for="images">(max 9 Video)</label>
+                      <input cFormControl (change)="onFileChanged($event, 'videos')" id="videos" type="file" placeholder="Add Videos" multiple />
+                      <label cLabel for="videos">Add Videos (max 9 Videos)</label>
                     </div>
                   </c-col>
                 </c-row>
@@ -322,7 +325,7 @@
 
             <c-dropdown class="ms-3">
               <select id="categorySelect" aria-label="Default select example" cSelect (change)="onCategorySelect($event)" class="rounded-pill mx-2">
-                <option value="">Category</option>
+                <option value="" selected disabled>Category</option>
                 <option *ngIf="categoriesArray.length === 0" style="color: #ff6666;">No Categories</option>
                 <option *ngFor="let category of categoriesArray" [value]="category.categoryName">
                   {{ category.categoryName }}
@@ -376,7 +379,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let warehouse of warehouseItemsArray | filter:searchText">
+                <tr *ngFor="let warehouse of itemArray | filter:searchText">
                   <td>
                     <div>
                       <input cFormCheckInput id="nolabelCheck" (click)="getItemById(warehouse._id)" name="nolabelCheck"
@@ -387,13 +390,13 @@
                     <div>{{warehouse.itemName}}</div>
                   </td>
                   <td>
-                    <div>{{ warehouse.categoryName}}</div>
+                    <div>{{ warehouse.categoryId.categoryName }}</div>
                   </td>                 
                   <td>
-                    <div>{{ warehouse.minimumQuantity }}</div>
+                    <div>{{ warehouse.minQty }}</div>
                   </td> 
                   <td>              
-                    <div>{{warehouse.totalQuantity }}</div>
+                    <div>{{warehouse.maxQty }}</div>
                   </td>                 
                   <td>
                     <form [formGroup]="orderForm">

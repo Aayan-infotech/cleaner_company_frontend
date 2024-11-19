@@ -124,6 +124,7 @@ export class MachinesComponent implements OnInit {
     });
   }
 
+  
   // Submit form data
   submit() {
     if (!this.itemsForm.valid) {
