@@ -1,0 +1,80 @@
+Coming Soon
+<!-- <div class="card">
+  <div class="card-header">
+    <h2>Estimate Calculator</h2>
+    <button class="btn btn-primary" (click)="addRoom()">Add Room</button>
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Room</th>
+          <th scope="col">Service</th>
+          <th scope="col">Item Clean</th>
+          <th scope="col">Dry Cleaning</th>
+          <th scope="col">Hard Surface</th>
+          <th scope="col">Method</th>
+          <th scope="col">Price</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let estimate of estimates; let i = index">
+          <td>
+            <select class="form-select form-select-sm" style="width: 50px;"  [(ngModel)]="estimate.room">
+              <option *ngFor="let room of rooms" [value]="room._id">{{ room.name }}</option>
+            </select>
+            <button  class="btn btn-primary btn-sm mt-2" style="margin-right: 5px;" (click)="addService(i)" >+
+            </button>
+            <button  class="btn btn-danger btn-sm mt-2" (click)="removeRoom(i)">
+              <svg cIcon name="cil-trash" size="sm"></svg>
+            </button>
+          </td>
+          <td colspan="8">
+            <table class="table table-borderless mb-0">
+              <tbody>
+                <tr *ngFor="let selectedService of estimate.selectedServices; let j = index">
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedService.service">
+                      <option *ngFor="let service of services" [value]="service._id">{{ service.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedService.itemClean">
+                      <option *ngFor="let itemClean of itemCleans" [value]="itemClean._id">{{ itemClean.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedService.dryCleaning">
+                      <option *ngFor="let dryCleaning of dryCleanings" [value]="dryCleaning._id">{{ dryCleaning.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedService.hardSurface">
+                      <option *ngFor="let hardSurface of hardSurfaces" [value]="hardSurface._id">{{ hardSurface.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedService.method">
+                      <option *ngFor="let method of methods" [value]="method._id">{{ method.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    {{ calculateServicePrice(selectedService) | currency }}
+                  </td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="removeService(i, j)">         
+                        <svg cIcon name="cil-trash" size="sm"></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="calculateEstimate() > 0" class="alert alert-info">Estimated Cost: {{ calculateEstimate() | currency }}</p>
+    <button class="btn btn-primary"  (click)="submitEstimate()">Submit Estimate</button>
+  </div>
+</div> -->

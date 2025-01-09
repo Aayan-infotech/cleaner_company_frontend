@@ -1,0 +1,97 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>Template Library
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <form>
+            <c-input-group class="mb-3">
+              <input aria-describedby="button-addon2" aria-label="Add Category" cFormControl placeholder="Add More"
+                 />
+              <button cButton color="secondary" id="button-addon2" type="button" variant="outline" size="sm">
+                Add
+              </button>
+            </c-input-group>
+          </form>
+          <!-- <button  cButton size="sm" color="primary"  class="me-md-2">Add Category</button> -->
+        </div>
+      </c-card-header>
+      <c-card-body>
+        <c-row class="d-flex justify-content-evenly">
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/cleaningtip.jpg">
+              <c-card-body>
+                <h5 cCardTitle>Cleaning Tips & Tricks</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. 
+                </p>
+                
+              </c-card-body>
+            </c-card>
+          </c-col>
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/DIY.jpg">
+              <c-card-body>
+                <h5 cCardTitle>DIY Cleaning Solutions</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. 
+
+                </p>
+                
+              </c-card-body>
+            </c-card>
+          </c-col>
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/room.jpg">
+              <c-card-body>
+                <h5 cCardTitle>Room-Specific Cleaning Guides</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's standard 1500s. 
+                </p>
+              </c-card-body>
+            </c-card>
+          </c-col>
+        </c-row>
+        <c-row  class="d-flex justify-content-evenly">
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/guide.jpg">
+              <c-card-body>
+                <h5 cCardTitle>Equipment Guides</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's  since the 1500s. 
+                </p>
+             
+              </c-card-body>
+            </c-card>
+          </c-col>
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/time.jpg">
+              <c-card-body>
+                <h5 cCardTitle>Time-Saving Hacks</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. 
+                </p>
+              
+              </c-card-body>
+            </c-card>
+          </c-col>
+          <c-col [sm]="3">
+            <c-card class="mb-3">
+              <img cCardImg="top" src="../../../assets/images/organize.jpg">
+              <c-card-body>
+                <h5 cCardTitle>Organizational Tips</h5>
+                <p cCardText>
+                  Lorem Ipsum has been the industry's standard dummy text ever since the 1500s. 
+                </p>
+              </c-card-body>
+            </c-card>
+          </c-col>
+        </c-row>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>

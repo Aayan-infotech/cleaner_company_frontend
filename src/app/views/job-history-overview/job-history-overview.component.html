@@ -1,0 +1,40 @@
+<c-row>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header>
+        Job History
+      </c-card-header>
+      <c-card-body>
+        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+          <thead cTableColor="light">
+            <tr class="fsize1">
+              <th>S.No.</th>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Assign</th>
+              <th>Status</th>
+              <th>Job</th>
+              <th>Price</th>
+              <th>Invoice No.</th>
+            </tr>
+          </thead>
+          <tbody class="fs-6">
+            <tr *ngFor="let event of eventArray; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ event.title }}</td>
+              <td>{{ event.date }}</td>
+              <td>{{ event.time }}</td>
+              <td>{{ event.userName }}</td>
+              <td>{{ event.status }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
