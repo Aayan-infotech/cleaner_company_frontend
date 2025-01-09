@@ -11,6 +11,7 @@ export class VanService {
 
   http = inject(HttpClient);
 
+  // create van serice
   createVanService(van: any): Observable<any> {
     return this.http.post<any>(`${apiUrls.inventoryVanApi}addNewVan`, van);
   }
