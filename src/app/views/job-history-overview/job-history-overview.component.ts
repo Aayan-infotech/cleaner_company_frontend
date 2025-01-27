@@ -2,9 +2,9 @@
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CalendarEventService } from 'src/app/services/calendar-event.service';
-import { UsersService } from 'src/app/services/users.service';
-import { EstimateService } from 'src/app/services/estimate.service';
+import { CalendarEventService } from '../../services/calendar-event.service';
+import { UsersService } from '../../services/users.service';
+import { EstimateService } from '../../services/estimate.service';
 import { DatePipe } from '@angular/common';
 
 

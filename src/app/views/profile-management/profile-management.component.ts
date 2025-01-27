@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ProfilesService } from 'src/app/services/profiles.service';
+import { ProfilesService } from '../../services/profiles.service';
 
 
 @Component({

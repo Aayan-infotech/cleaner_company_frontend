@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ItemInventoryService } from 'src/app/services/item-inventory.service'
-import { InventoryCategoryService } from 'src/app/services/inventory-category.service';
+import { ItemInventoryService } from '../../../services/item-inventory.service'
+import { InventoryCategoryService } from '../../../services/inventory-category.service';
 
 @Component({
   selector: 'app-add-inventory',

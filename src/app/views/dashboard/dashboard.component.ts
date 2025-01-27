@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-import { CalendarEventService } from 'src/app/services/calendar-event.service';
-import { UsersService } from 'src/app/services/users.service';
-import { EstimateService } from 'src/app/services/estimate.service';
+import { CalendarEventService } from '../../services/calendar-event.service';
+import { UsersService } from '../../services/users.service';
+import { EstimateService } from '../../services/estimate.service';
 import { DatePipe } from '@angular/common';
 
 @Component({

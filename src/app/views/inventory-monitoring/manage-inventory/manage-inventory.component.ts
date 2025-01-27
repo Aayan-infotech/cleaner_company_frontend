@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, Input, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { InventoryCategoryService } from 'src/app/services/inventory-category.service';
-import { ItemInventoryService } from 'src/app/services/item-inventory.service';
-import { OrderService } from 'src/app/services/order.service';
-import { VanService } from 'src/app/services/van.service';
+import { InventoryCategoryService } from '../../../services/inventory-category.service';
+import { ItemInventoryService } from '../../../services/item-inventory.service';
+import { OrderService } from '../../../services/order.service';
+import { VanService } from '../../../services/van.service';
 
 export interface Item {
   categoryName: string;
