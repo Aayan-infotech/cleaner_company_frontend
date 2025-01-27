@@ -3,7 +3,7 @@ import { cilChartPie, cilArrowRight } from '@coreui/icons';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TroubleCategoryService } from 'src/app/services/trouble-category.service'
+import { TroubleCategoryService } from '../../services/trouble-category.service'
 
 @Component({
   selector: 'app-troubleshooting-dashboard',

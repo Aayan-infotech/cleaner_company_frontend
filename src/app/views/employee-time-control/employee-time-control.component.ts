@@ -3,7 +3,7 @@ import { Component,OnInit  } from '@angular/core';
 import { an } from '@fullcalendar/core/internal-common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import {ImageuploadService} from 'src/app/services/imageupload.service'
+import {ImageuploadService} from '../../services/imageupload.service'
 @Component({
   selector: 'app-employee-time-control',
   standalone: false,

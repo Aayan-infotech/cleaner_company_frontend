@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TroubleCategoryService } from 'src/app/services/trouble-category.service'
-import { CategoryItemService } from 'src/app/services/category-item.service';
+import { TroubleCategoryService } from '../../../services/trouble-category.service'
+import { CategoryItemService } from '../../../services/category-item.service';
 
 @Component({
   selector: 'app-machines',
