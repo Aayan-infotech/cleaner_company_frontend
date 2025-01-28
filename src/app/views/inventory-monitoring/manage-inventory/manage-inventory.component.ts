@@ -208,7 +208,6 @@ export class ManageInventoryComponent implements OnInit {
 
   // submit inventory category 
   submitCategory() {
-    console.log(this.categoryForm.value);
     const categoryObj = {
       categoryName: this.categoryForm.get('categoryName')?.value
     };
@@ -315,7 +314,6 @@ export class ManageInventoryComponent implements OnInit {
   submitItem() {
     if (!this.selectedImages.length) {
       alert('Please add at least one image.');
-      console.log('No images selected:', this.selectedImages);
       return;
     }
 
@@ -427,7 +425,6 @@ export class ManageInventoryComponent implements OnInit {
 
   // add order item
   addToOrder() {
-    console.log(this.orderForm.value);
     this.orderService.createItemOrderService(this.orderForm.value)
       .subscribe({
         next: (res) => {
@@ -461,8 +458,9 @@ export class ManageInventoryComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.categoryData = res;
+     
           this.categoriesArray = this.categoryData.data || [];
-          console.log("All inventory categories:", this.categoriesArray);
+        
         },
         error: (error) => {
           console.error("Error fetching categories:", error);
@@ -476,7 +474,7 @@ export class ManageInventoryComponent implements OnInit {
       .subscribe((res) => {
         this.itemData = res;
         this.itemArray = this.itemData.data;
-        console.log("All Inventorysssss:", this.itemArray);
+ 
       });
   }
 
@@ -487,7 +485,7 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-          console.log("All Vans:", this.vanArray);
+         
         },
         error: (error) => {
           console.error("Error fetching Vans:", error);
@@ -529,7 +527,6 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.warehouseItemsData = res;
           this.filterItems();
-          console.log("All Warehouse Items:", this.warehouseItemsData);
         },
         error: (err) => {
           console.error("Error fetching warehouse items:", err);
@@ -544,7 +541,6 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanItemsData = res;
           this.filterItems();
-          console.log("All Van Items:", this.vanItemsData);
         },
         error: (err) => {
           console.error("Error fetching van items:", err);
@@ -561,7 +557,6 @@ export class ManageInventoryComponent implements OnInit {
           // Only keep items where vanName is not null or empty
           this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
           this.filterItems();
-          console.log("All items with non-empty vanName:", this.vanNameItemArray);
         }
       });
   }
@@ -571,7 +566,6 @@ export class ManageInventoryComponent implements OnInit {
     this.itemInventoryService.getItemByIdService(id)
       .subscribe(data => {
         this.editData = data;
-        console.log("Fetched item data:", this.editData.data);
         this.itemId = this.editData.data._id;
         this.itemForm.patchValue({
           itemName: this.editData.data.itemName,
@@ -595,13 +589,12 @@ export class ManageInventoryComponent implements OnInit {
 
         });
         this.isEditMode = true;
-        console.log("Item ID set to:", this.itemId);
       });
   }
 
   // update item's details by ID 
   updateItem(itemId: string, updatedData: any): void {
-    console.log('Updating item with ID:', itemId); // Log the itemId being used
+ 
 
     if (!itemId) {
       console.error('Invalid itemId:', itemId);
@@ -609,12 +602,12 @@ export class ManageInventoryComponent implements OnInit {
       return; // Exit early if the ID is invalid
     }
 
-    console.log('Updated Data:', updatedData);
+
 
     this.itemInventoryService.updateItemService(updatedData, itemId)
       .subscribe({
         next: (updatedItem) => {
-          console.log('Item updated:', updatedItem);
+        
           alert('Item updated successfully');
           this.getAllItems();
           this.resetForm();

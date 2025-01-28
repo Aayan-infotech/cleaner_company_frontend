@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { ClassToggleService, HeaderComponent } from '@coreui/angular';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UsersService } from 'src/app/services/users.service';
+import { UsersService } from '../../../services/users.service';
 
 @Component({
   selector: 'app-default-header',
@@ -44,14 +44,14 @@ export class DefaultHeaderComponent extends HeaderComponent {
         images: ['', Validators.required]
       })
       const userId = localStorage.getItem('user_id');
-      console.log(userId)
+  
       if (userId) {
         this.usersService.getUserByIdService(userId)
         .subscribe(data => {
           this.userData1 = data
           this.userData2 = this.userData1.data
           this.proImage = this.userData2.images[0].url
-          console.log(this.proImage);
+
         })
       }
       this.getUserById(userId)
@@ -62,7 +62,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
         .subscribe(data => {
           this.editData = data
           this.userId = this.editData.data._id;
-          console.log(this.editData.data);
+      
           this.profileForm.patchValue({
             firstName: this.editData.data.firstName,
             lastName: this.editData.data.lastName,
@@ -79,7 +79,7 @@ export class DefaultHeaderComponent extends HeaderComponent {
       this.usersService.getAllUsersService()
       .subscribe((res)=>{
        this.userData = res
-       console.log(this.userData)
+  
       })
     }
 
