@@ -83,6 +83,39 @@
           <!-- <button (click)="updateUser()" cButton color="primary"    (click)="toggleLiveDemo()">update</button> -->
         </c-modal-footer>
       </c-modal>
+      <c-modal size="lg" id="liveDemoModal2" [visible]="visible2" (visibleChange)="handleLiveDemoChange2($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Notification</h5>
+          <button (click)="toggleLiveDemo2()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+          <form cForm [formGroup]="notificationForm">
+            <c-row [gutter]="{g: 2}" style="margin-bottom: 10px;">
+              <c-col [md]>
+                <div cFormFloating>
+                  <input cFormControl formControlName="title" id="Title" type="text" placeholder="Enter Title" formControlName="title" />
+                  <label cLabel for="Title">Title</label>
+                </div>
+              </c-col>
+              <c-col [md]>
+                <div cFormFloating>
+                  <textarea cFormControl formControlName="body" id="Message" placeholder="Enter Message"  rows="5" style="height: auto;"></textarea>
+                  <label cLabel for="Message">Message</label>
+                </div>
+              </c-col>
+            </c-row>
+          </form>
+          
+        </c-modal-body>
+        <c-modal-footer>
+          <button (click)="toggleLiveDemo2()" cButton color="secondary">
+            Close
+          </button>
+          <button cButton color="primary" (click)="sendNotification()">Send Notification</button>
+        </c-modal-footer>
+        
+      </c-modal>
+
       <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
           <thead cTableColor="light">
@@ -149,9 +182,13 @@
                   (click)="getUserById(user._id)">
                   <svg cIcon name="cil-pencil" size="sm"></svg>
                 </button>
-                <button (click)="deleteMember(user._id)">
+                <button (click)="deleteMember(user._id)" style="margin-right: 10px;">
                   <svg cIcon name="cil-trash" size="sm"></svg>
                 </button>
+                <button (click)="handleNotificationClick(user._id)">
+                  <svg cIcon name="cil-speech" size="sm"></svg>
+                </button>
+                
               </td>
             </tr>
           </tbody>

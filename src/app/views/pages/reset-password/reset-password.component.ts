@@ -2,8 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { confirmPasswordValidator } from 'src/app/validators/confirm-password';
-import { AuthService } from 'src/app/services/auth.service';
+import { confirmPasswordValidator } from '../../../validators/confirm-password';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-reset-password',
