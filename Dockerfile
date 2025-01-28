@@ -1,5 +1,5 @@
-# Use a Node.js base image
-FROM node:20
+# Step 1: Build the Angular app
+FROM node:20 AS build
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -14,13 +14,20 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build the Angular app for production
-RUN npm run build
+RUN npm run build --prod
 
-# Install a lightweight HTTP server
-RUN npm install -g http-server
+# Step 2: Serve the app with Nginx
+FROM nginx:stable-alpine
 
-# Expose the desired port
+# Copy the built Angular app from the build stage
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+
+# Copy a custom Nginx configuration file (if needed)
+# Uncomment this if you have a custom nginx.conf
+ COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80
 EXPOSE 5967
 
-# Serve the application from the built production files
-CMD ["http-server", "dist", "-p", "5967"]
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
