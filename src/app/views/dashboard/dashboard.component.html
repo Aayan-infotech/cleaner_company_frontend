@@ -51,10 +51,10 @@
       <c-row>
         <c-col md>
           <div class="form-group">
-            <label for="userName" class="pb-2">Assign To User</label>
-            <select formControlName="userName" id="userName" class="form-control">
-              <option value="" disabled>--select user--</option>
-              <option *ngFor="let user of userArray" [value]="user.username">{{ user.username }}
+            <label for="employeeName" class="pb-2">Assign to employee</label>
+            <select formControlName="employeeName" id="employeeName" class="form-control">
+              <option value="" disabled>--Select Employee--</option>
+              <option *ngFor="let emp of empArray" [value]="emp.employee_name">{{ emp.employee_name }}
               </option>
             </select>
           </div>
@@ -137,7 +137,7 @@
               }}</td>
             <td>{{ event.date }}</td>
             <td>{{ event.time }}</td>
-            <td>{{ event.userName }}</td>
+            <td>{{ event.employeeName }}</td>
             <td>
               <!-- edit -->
               <button (click)="editEvent(event)" class="border-0">

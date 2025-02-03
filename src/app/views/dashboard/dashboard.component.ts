@@ -7,8 +7,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import { CalendarEventService } from '../../services/calendar-event.service';
 import { UsersService } from '../../services/users.service';
-import { EstimateService } from '../../services/estimate.service';
 import { DatePipe } from '@angular/common';
+import { EmpMgmtService } from '../../services/emp-mgmt.service';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -20,7 +20,6 @@ export class DashboardComponent {
 
   eventFb = inject(FormBuilder);
   EventsService = inject(CalendarEventService);
-  estimateService = inject(EstimateService);
   eventForm!: FormGroup;
   router = inject(Router);
   eventData!: any;
@@ -30,9 +29,10 @@ export class DashboardComponent {
   datePipe = inject(DatePipe);
 
   usersService = inject(UsersService);
+  empMgmtService = inject(EmpMgmtService)
   userForm!: FormGroup;
-  userData!: any;
-  userArray: any[] = [];
+  empData!: any;
+  empArray: any[] = [];
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
@@ -55,7 +55,7 @@ export class DashboardComponent {
       startTime: ['', Validators.required],
       endTime: ['', Validators.required],
       description: ['', Validators.required],
-      userName: ['', Validators.required],
+      employeeName: ['', Validators.required],
       clientName: ['', Validators.required],
       clientEmail: ['', Validators.required],
       address: ['', Validators.required],
@@ -63,15 +63,15 @@ export class DashboardComponent {
     });
     this.getAllCals();
     this.getAllUsers();
-    this.getAllEstimatesData()
   };
 
   getAllUsers() {
-    this.usersService.getAllUsersService().subscribe({
+    this.empMgmtService.getAllEmpMgmtsService().subscribe({
       next: (res) => {
-        this.userData = res;
-        this.userArray = this.userData.data;
-        console.log('User Array:', this.userArray);
+        console.log(res)
+        this.empData = res;
+        this.empArray = this.empData.data;
+        console.log('User Array:', this.empArray);
       },
       error: (err) => {
         console.error('Error fetching users:', err);
@@ -79,14 +79,7 @@ export class DashboardComponent {
     });
   };
 
-  getAllEstimatesData() {
-    this.estimateService.getAllEstimates()
-      .subscribe((res) => {
-        this.estData = res;
-        this.estArray = this.estData.data;
-        console.log(this.estArray);
-      });
-  }
+
 
   handleDateClick(arg: DateClickArg) {
     this.visible = true;
@@ -111,7 +104,7 @@ export class DashboardComponent {
         startTime: this.eventForm.get('startTime')?.value,
         endTime: this.eventForm.get('endTime')?.value,
         description: this.eventForm.get('description')?.value,
-        userName: this.eventForm.get('userName')?.value,
+        employeeName: this.eventForm.get('employeeName')?.value,
         clientName: this.eventForm.get('clientName')?.value,
         clientEmail: this.eventForm.get('clientEmail')?.value,
         address: this.eventForm.get('address')?.value,
@@ -159,7 +152,7 @@ export class DashboardComponent {
       date: event.start,
       startTime: event.startTime,
       endTime: event.endTime,
-      userName: event.userName,
+      employeeName: event.employeeName,
       description: event.description,
       clientName:  event.clientName,
       clientEmail:  event.clientEmail,
@@ -202,7 +195,7 @@ export class DashboardComponent {
                 date: formattedDate,
                 time: `${startTime} - ${endTime}`,
                 description: event.description,
-                userName: event.userName,
+                employeeName: event.employeeName,
                 clientName: event.clientName,
                 clientEmail: event.clientEmail,
                 address: event.address,
@@ -217,29 +210,7 @@ export class DashboardComponent {
     });
 }
 
-  // getAllCals() {
-  //   this.EventsService.getAllEventsService().subscribe((res) => {
-  //     this.eventData = res;
-  //     this.eventArray = this.eventData?.data?.map((event: any) => {
-  //       const formattedEvent = {
-  //         _id: event._id,
-  //         title: event.title,
-  //         start: event.date,
-  //         time: event.startTime + ' - ' + event.endTime,
-  //         description: event.description,
-  //         userName: event.userName,
-  //         clientName:  event.clientName,
-  //         clientEmail:  event.clientEmail,
-  //         address:  event.address,
-  //         clientContact:  event.clientContact,
-  //         jobId: event.jobId,
-  //       };
-  //       return formattedEvent;
-  //     }) || [];
-  //     console.log('Event Array:', this.eventArray);
-  //     this.updateCalendarOptions();
-  //   });
-  // };
+
 
   updateCalendarOptions() {
     this.calendarOptions = { ...this.calendarOptions, events: [...this.eventArray] };

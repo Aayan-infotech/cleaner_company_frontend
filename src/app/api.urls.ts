@@ -13,4 +13,6 @@ export const apiUrls = {
     categoryItemApi:'http://44.196.64.110:5966/api/categoryItem/',
     inventoryCategoryApi:'http://44.196.64.110:5966/api/inventoryCategory/',
     inventoryVanApi:'http://44.196.64.110:5966/api/vans/',
+    empCertificatesApi: 'http://44.196.64.110:5966/api/certificate/',
+    empMgmtApi: 'http://44.196.64.110:5966/api/employee/',
 }
