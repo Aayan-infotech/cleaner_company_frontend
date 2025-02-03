@@ -1,0 +1,25 @@
+.chat-bubble .text-muted {
+    font-size: 0.75rem;  /* Slightly larger font size for better readability */
+    color: #6c757d;  /* Adjust color to make it stand out more */
+  }
+  
+  .chat-bubble.bg-light .text-muted {
+    color: #495057;  /* Darker color for timestamps on employee side for better contrast */
+  }
+  
+  .chat-bubble.bg-primary .text-muted {
+    color: #ffffff;  /* Lighter color for timestamps on admin side */
+  }
+  
+  .chat-bubble {
+    position: relative;
+  }
+  
+  .chat-bubble .text-muted {
+    position: absolute;
+    bottom: -20px;
+    right: 5px;  /* Adjust this if the timestamp is overlapping or too far */
+    font-size: 0.8rem;
+  }
+  
+  

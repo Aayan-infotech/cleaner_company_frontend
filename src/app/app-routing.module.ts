@@ -36,11 +36,6 @@ const routes: Routes = [
           import('./views/dashboard/dashboard.module').then((m) => m.DashboardModule)
       },
       {
-        path: 'employeeManagement',
-        loadChildren: () =>
-          import('./views/employee-management/employee-management.module').then((m) => m.EmployeeManagementModule)
-      },
-      {
         path: 'inventoryMonitoring',
         loadChildren: () =>
           import('./views/inventory-monitoring/inventory-monitoring.module').then((m) => m.InventoryMonitoringModule)
@@ -58,7 +53,11 @@ const routes: Routes = [
           import('./views/inventory-monitoring/manage-inventory/manage-inventory.module').then((m) => m.ManageInventoryModule),
       },
 
-
+      {
+        path: 'employeeManagement',
+        loadChildren: () =>
+          import('./views/emp-mgmt/emp-mgmt.module').then((m) => m.EmpMgmtModule)
+      },
 
 
 
