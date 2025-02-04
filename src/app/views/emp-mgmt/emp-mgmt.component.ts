@@ -6,6 +6,7 @@ import { VanService } from '../../services/van.service';
 import { EmpCertificateService } from '../../services/emp-certificate.service';
 import { TimetrackService } from '../../services/timetrack.service';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export interface Van {
   _id: string;
@@ -21,10 +22,16 @@ export interface Van {
 
 export class EmpMgmtComponent implements OnInit {
 
+
+
   @Input() empId: string | null = null;
 
   @Input() empCertId: string | null = null;
   @Input() employeeId: string | null = null;
+  responseMessage: string | null = null;
+  responseClass: string = '';
+  employeeNotifications: any[] = [];
+
   employeeTimeLogs: any[] = [];
   currentPage = 1; // Default to the first page
   totalPages = 1;
@@ -35,7 +42,7 @@ export class EmpMgmtComponent implements OnInit {
   EmpMgmtService: EmpMgmtService = inject(EmpMgmtService);
   VanMgmtService: VanService = inject(VanService);
   EmpCertificate: EmpCertificateService = inject(EmpCertificateService);
-  TimetrackService : TimetrackService = inject(TimetrackService);
+  TimetrackService: TimetrackService = inject(TimetrackService);
   pushNotificationService = inject(PushNotificationService);
   router: Router = inject(Router);
 
@@ -65,15 +72,16 @@ export class EmpMgmtComponent implements OnInit {
 
   selectedImagesCertificate: File[] = [];
   employeeCertificates: any;
- 
+
 
   public isEditMode = false;
   isViewClicked: boolean = false;
   showSaveChanges: boolean = true;
   public visible2 = false;
-
+  public visible3 = false;
   currentNote = '';
-  notificationForm! : FormGroup
+  notificationForm!: FormGroup
+  leaveForm!: FormGroup
   deviceToken: string | null = null;
   errorMessage: string | null = null;
   // Add employee Model
@@ -109,7 +117,7 @@ export class EmpMgmtComponent implements OnInit {
   }
 
   employee_role: string[] = ['Company', 'Technicians'];
- chatMessages: any[] = []; // Replace this with actual chat data if available
+  chatMessages: any[] = []; // Replace this with actual chat data if available
 
   dummyChatMessages = [
     {
@@ -140,23 +148,31 @@ export class EmpMgmtComponent implements OnInit {
     this.visible2 = event;
   }
 
+  toggleLiveDemo3() {
+    this.visible3 = !this.visible3;
+  }
+
+  handleLiveDemoChange3(event: any) {
+    this.visible3 = event;
+  }
+
 
   ngOnInit(): void {
     this.empMgmtForm = this.fb.group({
       employee_name: ['', Validators.required],
       employee_email: ['', Validators.compose([Validators.required, Validators.email])],
-      employee_password:  ['', Validators.required],
+      employee_password: ['', Validators.required],
       employee_address: ['', Validators.required],
       employee_contact: ['', Validators.required],
       employee_photo: [''],
       employee_role: ['', Validators.required],
       employee_vanAssigned: ['', Validators.required],
       employee_SocialSecurityNumber: ['', Validators.required],
-      employee_EmContactName:  ['', Validators.required],
-      employee_EmContactNumber:  ['', Validators.required],
-      employee_EmContactEmail:  ['', Validators.required],
-      employee_EmContactAddress:  ['', Validators.required],
-      employee_addNote:  ['', Validators.required],
+      employee_EmContactName: ['', Validators.required],
+      employee_EmContactNumber: ['', Validators.required],
+      employee_EmContactEmail: ['', Validators.required],
+      employee_EmContactAddress: ['', Validators.required],
+      employee_addNote: ['', Validators.required],
 
     });
 
@@ -174,6 +190,11 @@ export class EmpMgmtComponent implements OnInit {
       body: ['', Validators.required],
     })
 
+    this.leaveForm = this.fb.group({
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required]
+    })
+
     if (this.empId) {
       this.getAllVanMgmts();
       this.getEmpMgmtById(this.empId);
@@ -185,7 +206,7 @@ export class EmpMgmtComponent implements OnInit {
   toggleEmergencyContact() {
     this.showEmergencyContact = !this.showEmergencyContact;
   }
-  
+
   // upload Certificates code Start
 
   onFileSelected(event: any): void {
@@ -222,8 +243,8 @@ export class EmpMgmtComponent implements OnInit {
       },
     });
   }
-  
-// upload Certificates code End
+
+  // upload Certificates code End
 
   onFileChanged(event: any): void {
     this.selectedImages = Array.from(event.target.files);
@@ -231,6 +252,19 @@ export class EmpMgmtComponent implements OnInit {
       employee_photo: this.selectedImages.length > 0 ? this.selectedImages : '',
     });
   }
+
+  resetForm(): void {
+    this.empMgmtForm.reset();
+    this.empCertificateForm.reset();
+    this.notificationForm.reset();
+    this.empId = null;
+    this.isEditMode = false;
+    this.selectedImages = [];
+    this.isViewClicked = false;
+    this.showSaveChanges = true;
+    this.employeeId = null;
+    this.leaveForm.reset();
+  };
 
   // Manage Employee Code Start
 
@@ -267,8 +301,9 @@ export class EmpMgmtComponent implements OnInit {
           next: () => {
             alert('Employee details Updated successfully');
             this.selectedImages = [];
-            this.resetForm();
+         
             this.getAllEmpMgmts();
+            this.resetForm();
           },
           error: (err: any) => {
             console.log(err);
@@ -292,7 +327,7 @@ export class EmpMgmtComponent implements OnInit {
     }
   };
 
- 
+
   onVanChange(event: Event): void {
     const selectedVanId = (event.target as HTMLSelectElement).value;
 
@@ -306,20 +341,13 @@ export class EmpMgmtComponent implements OnInit {
   }
 
 
-  resetForm(): void {
-    this.empMgmtForm.reset();
-    this.empCertificateForm.reset();
-    this.notificationForm.reset();
-    this.empId = null;
-    this.isEditMode = false;
-    this.selectedImages = [];
-    this.isViewClicked = false;
-    this.showSaveChanges = true;
-    this.employeeId = null;
-  };
+
 
   clickAddMember() {
     this.empMgmtForm.reset();
+    this.empCertificateForm.reset();
+    this.notificationForm.reset();
+    this.leaveForm.reset();
     this.isEditMode = false;
     this.isViewClicked = false;
     this.showSaveChanges = true;
@@ -396,7 +424,7 @@ export class EmpMgmtComponent implements OnInit {
         this.editData = data;
         this.visibleViewEmpDetails = true;
         this.empId = this.editData.data._id;
-  
+
         this.empMgmtForm.patchValue({
           employee_name: this.editData.data.employee_name,
           employee_email: this.editData.data.employee_email,
@@ -414,14 +442,24 @@ export class EmpMgmtComponent implements OnInit {
           employee_EmContactAddress: this.editData.data.employee_EmContactAddress,
           employee_addNote: this.editData.data.employee_addNote,
         });
-  
+
         // Fetch certificates
         if (this.empId) {
           this.EmpCertificate.getAllEmpCertificatesByEmpIdService(this.empId)
             .subscribe((certificates: any) => {
               this.employeeCertificates = certificates;
-              this.employeeCertificates =  this.employeeCertificates.data
+              this.employeeCertificates = this.employeeCertificates.data
             });
+
+          this.pushNotificationService.getNotifications(this.empId).subscribe((notifications: any) => {
+            if (notifications.success) {
+              this.employeeNotifications = notifications.data; // Store notifications
+              console.log(this.employeeNotifications)
+            } else {
+              console.warn('No notifications found for this employee:', notifications.message);
+              this.employeeNotifications = [];
+            }
+          });
         } else {
           console.error('Employee ID is null or undefined');
         }
@@ -429,14 +467,14 @@ export class EmpMgmtComponent implements OnInit {
 
         this.fetchTimeLogs();
 
-        
-  
+
+
         this.isEditMode = false;
         this.isViewClicked = true;
         this.showSaveChanges = false;
       });
   }
-  
+
 
   deleteEmpMgmtById(id: any) {
     if (confirm("Are you sure you want to delete this Employee ?")) {
@@ -479,9 +517,9 @@ export class EmpMgmtComponent implements OnInit {
 
   fetchTimeLogs() {
     if (this.empId) {
-      this.empId = "6666b3f012c54faf68498908"
       this.TimetrackService.getTimeLogsByEmployeeId(this.empId, this.currentPage, this.recordsPerPage)
         .subscribe((timeLogs: any) => {
+          console.log("time", timeLogs)
           this.employeeTimeLogs = timeLogs?.data?.records || [];
           this.currentPage = timeLogs?.data?.currentPage || 1;
           this.totalPages = timeLogs?.data?.totalPages || 1;
@@ -514,7 +552,7 @@ export class EmpMgmtComponent implements OnInit {
   handleNotificationClick(employeeId: any) {
     this.getUserToken(employeeId); // Fetch the token
   }
-  
+
   getUserToken(id: any) {
     const observer = {
       next: (response: any) => {
@@ -533,7 +571,7 @@ export class EmpMgmtComponent implements OnInit {
         alert('He needs to Login first through Mobile APP');
       },
     };
-  
+
     this.pushNotificationService.getTokenByUserId(id).subscribe(observer);
   }
 
@@ -542,14 +580,14 @@ export class EmpMgmtComponent implements OnInit {
       alert('Please fill in all required fields.');
       return;
     }
-  
+
     const notificationData = {
       employeeId: this.employeeId || '', // Fallback to an empty string if null
       token: this.deviceToken || '', // Fallback to an empty string if null
       title: this.notificationForm.value.title,
       body: this.notificationForm.value.body,
     };
-  
+
     this.pushNotificationService.sendNotification(notificationData).subscribe({
       next: (response) => {
         console.log('Notification sent successfully:', response.message);
@@ -565,5 +603,45 @@ export class EmpMgmtComponent implements OnInit {
     });
   }
 
+
   //notification end
+
+
+  //leave start
+
+  applyLeave(): void {
+    if (this.leaveForm.valid) {
+      const { startDate, endDate } = this.leaveForm.value;
+      
+      // Check if empId is valid
+      if (this.empId) {
+        const employeeId = this.empId; // Use empId directly
+        this.TimetrackService.applyLeave(employeeId, startDate, endDate).subscribe({
+          next: (response) => {
+            this.responseMessage = response.message || 'Leave applied successfully!';
+            this.responseClass = 'text-success';
+            this.leaveForm.reset();
+            alert("Leave Applied Successfully");
+            this.toggleLiveDemo3(); // Close the modal after submission
+          },
+          error: (error: HttpErrorResponse) => {
+            this.responseMessage = error.error.message || 'An error occurred!';
+            this.responseClass = 'text-danger';
+          },
+        });
+      } else {
+        // Handle case when empId is invalid
+        alert("Employee ID is missing or invalid.");
+      }
+    }
+  }
+  
+
+  
+
+  // leave end
+
+
 }
+
+
