@@ -18,4 +18,8 @@ export class PushNotificationService {
     return this.http.post<{ message: string }>(url, data);
   }
   
+  getNotifications(employeeId: string): Observable<any> {
+    return this.http.get(`http://44.196.64.110:5966/api/notification/get-notification/${employeeId}`);
+  }
+
 }
