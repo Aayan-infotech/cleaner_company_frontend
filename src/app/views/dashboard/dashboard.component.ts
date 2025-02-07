@@ -42,6 +42,12 @@ export class DashboardComponent {
   };
   estArray: any;
   estData: any;
+  totalEmployees: number = 0;
+  currentPage1: number = 1;
+  totalPages1: number = 0;
+  limit: number = 10;
+  statusFilter: string = '';
+  searchQuery: string = '';
 
 
 
@@ -66,11 +72,14 @@ export class DashboardComponent {
   };
 
   getAllUsers() {
-    this.empMgmtService.getAllEmpMgmtsService().subscribe({
+    this.empMgmtService.getAllEmpMgmtsService( this.currentPage1,
+      this.limit,
+      this.statusFilter || '',
+      this.searchQuery || '').subscribe({
       next: (res) => {
         console.log(res)
         this.empData = res;
-        this.empArray = this.empData.data;
+        this.empArray = this.empData.data.employees;
         console.log('User Array:', this.empArray);
       },
       error: (err) => {
@@ -78,6 +87,8 @@ export class DashboardComponent {
       }
     });
   };
+
+
 
 
 
