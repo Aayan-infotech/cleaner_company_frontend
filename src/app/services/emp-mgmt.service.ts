@@ -16,9 +16,14 @@ export class EmpMgmtService {
   }
 
   // Get all users
-  getAllEmpMgmtsService(): Observable<any[]> {
-    return this.http.get<any[]>(`${apiUrls.empMgmtApi}getAllEmployees`);
+  getAllEmpMgmtsService(page: number, limit: number, status?: string, search?: string): Observable<any> {
+    let params: any = { page, limit };
+    if (status) params.status = status;
+    if (search) params.search = search;
+  
+    return this.http.get<any[]>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
   }
+  
 
   // Get a user by ID
   getEmpMgmtByIdService(id: any): Observable<any> {

@@ -48,7 +48,7 @@ export class EmpMgmtComponent implements OnInit {
 
   empMgmtForm!: FormGroup;
   empCertificateForm!: FormGroup;
-  empMgmtData!: any;
+  empMgmtData: any[] = [];
   vanMgmtData!: any;
   empCertificateData!: any;
   empMgmtArray!: any;
@@ -138,7 +138,6 @@ export class EmpMgmtComponent implements OnInit {
 
   ];
 
-  showEmergencyContact = false;
 
   toggleLiveDemo2() {
     this.visible2 = !this.visible2;
@@ -156,6 +155,16 @@ export class EmpMgmtComponent implements OnInit {
     this.visible3 = event;
   }
 
+  totalEmployees: number = 0;
+  currentPage1: number = 1;
+  totalPages1: number = 0;
+  limit: number = 5;
+  statusFilter: string = '';
+  searchQuery: string = '';
+  isExpanded = false;
+  toggleViewMore() {
+    this.isExpanded = !this.isExpanded;
+  }
 
   ngOnInit(): void {
     this.empMgmtForm = this.fb.group({
@@ -203,9 +212,7 @@ export class EmpMgmtComponent implements OnInit {
     this.getAllVanMgmts();
   };
 
-  toggleEmergencyContact() {
-    this.showEmergencyContact = !this.showEmergencyContact;
-  }
+
 
   // upload Certificates code Start
 
@@ -353,14 +360,33 @@ export class EmpMgmtComponent implements OnInit {
     this.showSaveChanges = true;
   };
 
-  getAllEmpMgmts() {
-    this.EmpMgmtService.getAllEmpMgmtsService()
-      .subscribe((res: any) => {
-        this.empMgmtData = res
-        this.empMgmtData = this.empMgmtData.data
+  getAllEmpMgmts(): void {
+    this.EmpMgmtService.getAllEmpMgmtsService(
+      this.currentPage1,
+      this.limit,
+      this.statusFilter,
+      this.searchQuery
+    ).subscribe((res: any) => {
+      this.empMgmtData = res.data.employees;
+      this.totalEmployees = res.data.totalEmployees;
+      this.totalPages1 = res.data.totalPages;
+    });
+  }
+  onSearch(): void {
+    this.currentPage1 = 1; // Reset to the first page on new search
+    this.getAllEmpMgmts();
+  }
 
-      })
-  };
+  onFilterChange(): void {
+    this.currentPage1 = 1; // Reset to the first page on status filter change
+    this.getAllEmpMgmts();
+  }
+
+  onPageChange(newPage: number): void {
+    this.currentPage1 = newPage;
+    this.getAllEmpMgmts();
+  }
+
 
   getAllVanMgmts() {
     this.VanMgmtService.getAllVans()

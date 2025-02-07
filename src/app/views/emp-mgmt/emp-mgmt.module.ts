@@ -23,6 +23,7 @@ import {
 } from '@coreui/angular';
 import { WidgetsModule } from '../widgets/widgets.module';
 import { IconModule } from '@coreui/icons-angular';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { IconModule } from '@coreui/icons-angular';
     ReactiveFormsModule,
     TableModule,
     TabsModule,
-    WidgetsModule
+    WidgetsModule,
+    FormsModule
   ]
 })
 export class EmpMgmtModule { }
