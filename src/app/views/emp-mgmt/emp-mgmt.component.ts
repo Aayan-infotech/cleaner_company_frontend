@@ -4,9 +4,11 @@ import { Router } from '@angular/router';
 import { EmpMgmtService } from '../../services/emp-mgmt.service';
 import { VanService } from '../../services/van.service';
 import { EmpCertificateService } from '../../services/emp-certificate.service';
+import { ChatService } from '../../services/chat.service';
 import { TimetrackService } from '../../services/timetrack.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 export interface Van {
   _id: string;
@@ -41,6 +43,7 @@ export class EmpMgmtComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
   EmpMgmtService: EmpMgmtService = inject(EmpMgmtService);
   VanMgmtService: VanService = inject(VanService);
+  ChatService: ChatService = inject(ChatService);
   EmpCertificate: EmpCertificateService = inject(EmpCertificateService);
   TimetrackService: TimetrackService = inject(TimetrackService);
   pushNotificationService = inject(PushNotificationService);
@@ -117,7 +120,6 @@ export class EmpMgmtComponent implements OnInit {
   }
 
   employee_role: string[] = ['Company', 'Technicians'];
-  chatMessages: any[] = []; // Replace this with actual chat data if available
 
   dummyChatMessages = [
     {
@@ -166,7 +168,14 @@ export class EmpMgmtComponent implements OnInit {
     this.isExpanded = !this.isExpanded;
   }
 
+  chatMessages: any[] = [];
+  newMessage = '';
+  userRole = 'employee'; // Set dynamically based on logged-in user
+  adminId : any
+  private subscription!: Subscription;
+  
   ngOnInit(): void {
+    this.adminId = localStorage.getItem('user_id');
     this.empMgmtForm = this.fb.group({
       employee_name: ['', Validators.required],
       employee_email: ['', Validators.compose([Validators.required, Validators.email])],
@@ -210,6 +219,7 @@ export class EmpMgmtComponent implements OnInit {
     }
     this.getAllEmpMgmts();
     this.getAllVanMgmts();
+ 
   };
 
 
@@ -355,6 +365,7 @@ export class EmpMgmtComponent implements OnInit {
     this.empCertificateForm.reset();
     this.notificationForm.reset();
     this.leaveForm.reset();
+    this.empId = null;
     this.isEditMode = false;
     this.isViewClicked = false;
     this.showSaveChanges = true;
@@ -486,6 +497,12 @@ export class EmpMgmtComponent implements OnInit {
               this.employeeNotifications = [];
             }
           });
+
+         
+            this.subscription = this.ChatService.getMessages(this.empId).subscribe((messages) => {
+              this.chatMessages = messages;
+            });
+          
         } else {
           console.error('Employee ID is null or undefined');
         }
@@ -507,7 +524,6 @@ export class EmpMgmtComponent implements OnInit {
       this.EmpMgmtService.deleteEmpMgmtByIdService(id)
         .subscribe({
           next: (res: any) => {
-            alert('Employee Deleted successfully');
             this.getAllEmpMgmts();
           },
           error: (error: any) => {
@@ -667,7 +683,28 @@ export class EmpMgmtComponent implements OnInit {
 
   // leave end
 
+// chat
 
+sendMessage() {
+  if (!this.newMessage.trim() || !this.empId) {
+    return;
+  }
+  this.ChatService
+    .sendMessage(this.userRole, this.newMessage, this.empId, this.adminId)
+    .then(() => {
+      this.newMessage = '';
+    });
+}
+
+getBubbleClass(sender: string): string {
+  return sender === 'employee' ? 'bg-info text-white' : 'bg-light';
+}
+
+ngOnDestroy(): void {
+  if (this.subscription) {
+    this.subscription.unsubscribe();
+  }
+}
 }
 
 

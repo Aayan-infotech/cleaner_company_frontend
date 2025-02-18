@@ -35,6 +35,12 @@ import {
   UtilitiesModule
 } from '@coreui/angular';
 
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+import { environment } from '../environments/environment';
+
 import { IconModule, IconSetService } from '@coreui/icons-angular';
 
 const APP_CONTAINERS = [
@@ -46,7 +52,6 @@ const APP_CONTAINERS = [
 @NgModule({
   declarations: [EmployeeTimeControlComponent,AppComponent, ...APP_CONTAINERS],
   imports: [
-    
     CommonModule,
     FormsModule,
     HttpClientModule,
@@ -75,7 +80,9 @@ const APP_CONTAINERS = [
     ListGroupModule,
     CardModule,
     NgScrollbarModule,
-  
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()),
+    provideDatabase(() => getDatabase()), // Add this
   ],
   providers: [
     {
