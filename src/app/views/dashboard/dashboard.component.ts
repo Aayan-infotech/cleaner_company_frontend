@@ -48,8 +48,10 @@ export class DashboardComponent {
   limit: number = 10;
   statusFilter: string = '';
   searchQuery: string = '';
-
-
+  eventType = [
+    "Working","Leave"
+  ]
+  selectedEventType = ''; 
 
   constructor() { }
 
@@ -65,7 +67,8 @@ export class DashboardComponent {
       clientName: ['', Validators.required],
       clientEmail: ['', Validators.required],
       address: ['', Validators.required],
-      clientContact: ['', Validators.required]
+      clientContact: ['', Validators.required],
+      eventType: ['', Validators.required],
     });
     this.getAllCals();
     this.getAllUsers();
@@ -93,6 +96,7 @@ export class DashboardComponent {
 
 
   handleDateClick(arg: DateClickArg) {
+    this.resetForm(); // Reset the form
     this.visible = true;
     this.eventForm.patchValue({
       date: arg.dateStr
@@ -119,7 +123,8 @@ export class DashboardComponent {
         clientName: this.eventForm.get('clientName')?.value,
         clientEmail: this.eventForm.get('clientEmail')?.value,
         address: this.eventForm.get('address')?.value,
-        clientContact: this.eventForm.get('clientContact')?.value
+        clientContact: this.eventForm.get('clientContact')?.value,
+        eventType: this.eventForm.get('eventType')?.value,
       };
 
       if (this.editData) {
@@ -160,7 +165,7 @@ export class DashboardComponent {
     this.editData = event;
     this.eventForm.patchValue({
       title: event.title,
-      date: event.start,
+      date: event.date || event.start,
       startTime: event.startTime,
       endTime: event.endTime,
       employeeName: event.employeeName,
@@ -168,7 +173,8 @@ export class DashboardComponent {
       clientName:  event.clientName,
       clientEmail:  event.clientEmail,
       address:  event.address,
-      clientContact:  event.clientContact
+      clientContact:  event.clientContact,
+      eventType: event.eventType
     });
     this.visible = true; // Show the modal for editing
   }
@@ -179,7 +185,7 @@ export class DashboardComponent {
   }
   resetForm(): void {
     this.eventForm.reset();
-
+    this.editData = null; 
   }
 
   getAllCals() {
@@ -199,7 +205,12 @@ export class DashboardComponent {
 
             const startTime = formatTimeToAMPM(event.startTime);
             const endTime = formatTimeToAMPM(event.endTime);
-
+            
+            const eventTypeColors: { [key: string]: string } = {
+              Working: '#28a745', // Green
+              Leave: '#dc3545',   // Red
+            };
+            const eventColor = eventTypeColors[event.eventType] || '#007bff'; // Default Blue
             const formattedEvent = {
                 _id: event._id,
                 title: event.title,
@@ -212,7 +223,10 @@ export class DashboardComponent {
                 address: event.address,
                 clientContact: event.clientContact,
                 jobId: event.jobId,
-                status: event.status
+                status: event.status,
+                eventType: event.eventType,
+                backgroundColor: eventColor,
+                borderColor: eventColor,
             };
             return formattedEvent;
         }) || [];
@@ -221,11 +235,26 @@ export class DashboardComponent {
     });
 }
 
+filterEvents() {
+  const filteredEvents = this.selectedEventType
+    ? this.eventArray.filter((event) => event.eventType === this.selectedEventType)
+    : this.eventArray; // Show all events if no type is selected
+
+  this.calendarOptions = { ...this.calendarOptions, events: filteredEvents };
+}
 
 
-  updateCalendarOptions() {
-    this.calendarOptions = { ...this.calendarOptions, events: [...this.eventArray] };
+updateCalendarOptions() {
+  this.calendarOptions = {
+    initialView: 'dayGridMonth',
+    events: this.eventArray,
+    eventClick: (info) => {
+      alert(
+        `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
+      );
+    },
   };
+}
 
   deleteEvent(id: any) {
     if (confirm('Are you sure you want to delete this event?')) {

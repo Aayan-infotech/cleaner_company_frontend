@@ -83,11 +83,11 @@ $ npm update
 ### Basic usage
 
 ``` bash
-# dev server with hot reload at http://44.196.64.110:5967
+# dev server with hot reload at http://54.236.98.193:5967
 $ npm start
 ```
 
-Navigate to [http://44.196.64.110:5967](http://44.196.64.110:5967). The app will automatically reload if you change any of the source files.
+Navigate to [http://54.236.98.193:5967](http://54.236.98.193:5967). The app will automatically reload if you change any of the source files.
 
 #### Build
 
@@ -136,7 +136,7 @@ See [the Releases section of our project](https://github.com/coreui/coreui-free-
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://44.196.64.110:5967/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` for a dev server. Navigate to `http://54.236.98.193:5967/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 

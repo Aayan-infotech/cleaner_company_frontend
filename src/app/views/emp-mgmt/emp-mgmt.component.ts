@@ -499,9 +499,9 @@ export class EmpMgmtComponent implements OnInit {
           });
 
          
-            this.subscription = this.ChatService.getMessages(this.empId).subscribe((messages) => {
-              this.chatMessages = messages;
-            });
+          this.subscription = this.ChatService.getMessages(this.empId, this.adminId).subscribe((messages) => {
+            this.chatMessages = messages;
+          });
           
         } else {
           console.error('Employee ID is null or undefined');

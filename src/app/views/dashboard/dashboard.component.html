@@ -1,8 +1,27 @@
+<c-row class="mb-4 align-items-center">
+  <c-col xs="auto">
+    <div class="d-flex align-items-center">
+      <label for="eventTypeFilter" class="me-2 fw-bold text-primary">
+        Filter by Event Type:
+      </label>
+      <select
+        id="eventTypeFilter"
+        class="form-select rounded-pill shadow-sm w-auto"
+        [(ngModel)]="selectedEventType"
+        (change)="filterEvents()"
+      >
+        <option value="">All</option>
+        <option *ngFor="let type of eventType" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+  </c-col>
+</c-row>
+
 <c-row>
   <c-col xs>
-    <c-card class="mb-4">
-      <c-card-header>
-        Calendar New
+    <c-card class="mb-4 rounded-3 shadow-lg">
+      <c-card-header class="bg-primary text-white fw-bold">
+        Calendar
       </c-card-header>
       <c-card-body>
         <full-calendar [options]="calendarOptions"></full-calendar>
@@ -10,6 +29,7 @@
     </c-card>
   </c-col>
 </c-row>
+
 
 <!-- Modal for adding events -->
 <c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange($event)">
@@ -29,12 +49,33 @@
         </c-col>
         <c-col md>
           <div>
-            <label cLabel for="date">Add Date</label>
-            <input formControlName="date" id="date" type="text" cFormControl placeholder="Add Date" />
+            <label cLabel for="eventType">Add Event Type</label>
+            <select formControlName="eventType" id="eventType" cFormControl aria-label="Default select example" cSelect>
+              <option disabled>Open this select menu</option>
+              <option *ngFor="let type of eventType" [value]="type">{{ type }}</option>
+            </select>
+
+          </div>
+          
+        </c-col>
+        <c-col md>
+          <div class="form-group">
+            <label for="employeeName" class="pb-2">Assign to employee</label>
+            <select formControlName="employeeName" id="employeeName" class="form-control">
+              <option value="" disabled>--Select Employee--</option>
+              <option *ngFor="let emp of empArray" [value]="emp.employee_name">{{ emp.employee_name }}
+              </option>
+            </select>
           </div>
         </c-col>
       </c-row>
       <c-row>
+        <c-col md>
+          <div>
+            <label cLabel for="date">Add Date</label>
+            <input formControlName="date" id="date" type="text" cFormControl placeholder="Add Date" />
+          </div>
+        </c-col>
         <c-col md>
           <div>
             <label cLabel for="startTime">Add Start Time</label>
@@ -49,16 +90,7 @@
         </c-col>
       </c-row>
       <c-row>
-        <c-col md>
-          <div class="form-group">
-            <label for="employeeName" class="pb-2">Assign to employee</label>
-            <select formControlName="employeeName" id="employeeName" class="form-control">
-              <option value="" disabled>--Select Employee--</option>
-              <option *ngFor="let emp of empArray" [value]="emp.employee_name">{{ emp.employee_name }}
-              </option>
-            </select>
-          </div>
-        </c-col>
+    
         <c-col md>
           <div>
             <label cLabel for="clientName">Add client Name</label>
@@ -66,9 +98,6 @@
               placeholder="Add client Name" />
           </div>
         </c-col>
-      </c-row>
-      <c-row>
-
         <c-col md>
           <div>
             <label cLabel for="clientEmail">Add client Email</label>
@@ -84,8 +113,8 @@
           </div>
         </c-col>
       </c-row>
+   
       <c-row>
-
         <c-col md>
           <div>
             <label cLabel for="address">Client Address</label>
@@ -95,11 +124,18 @@
         <c-col md>
           <div>
             <label cLabel for="description">Add Description</label>
-            <input formControlName="description" id="description" type="text" cFormControl
-              placeholder="Add Description" />
+            <textarea
+              formControlName="description"
+              id="description"
+              cFormControl
+              rows="5"
+              class="form-control shadow-sm"
+              placeholder="Add Description"
+            ></textarea>
           </div>
         </c-col>
       </c-row>
+      
     </form>
   </c-modal-body>
   <c-modal-footer>
@@ -121,6 +157,7 @@
             <th></th>
             <th>S.No.</th>
             <th>Title</th>
+            <th>Event Type</th>
             <th>JobId</th>
             <th>Date</th>
             <th>Time</th>
@@ -133,6 +170,7 @@
             <td></td>
             <td>{{ i + 1 }}</td>
             <td>{{ event.title }}</td>
+            <td>{{ event.eventType }}</td>
             <td>{{ event.jobId
               }}</td>
             <td>{{ event.date }}</td>

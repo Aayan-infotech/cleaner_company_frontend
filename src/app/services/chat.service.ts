@@ -13,22 +13,23 @@ export class ChatService {
   }
 
   sendMessage(sender: string, message: string, empId: string, adminId: string) {
-    const newMessageRef = push(this.chatRef);
+    const chatId = `${empId}_${adminId}`; // Generate a unique chatId
+    const chatRef = ref(this.db, `chats/${chatId}`); // Use chatId for messages
+    const newMessageRef = push(chatRef);
     return set(newMessageRef, {
       sender,
       message,
-      empId,
-      adminId,
       timestamp: Date.now(),
     }).catch((error) => {
       console.error('Error sending message:', error);
     });
   }
-
-  getMessages(empId: string): Observable<any[]> {
+  
+  getMessages(empId: string, adminId: string): Observable<any[]> {
+    const chatId = `${empId}_${adminId}`; // Use the same chatId
     return new Observable((observer) => {
-      const q = query(this.chatRef, orderByChild('empId'), equalTo(empId));
-      onValue(q, (snapshot) => {
+      const chatRef = ref(this.db, `chats/${chatId}`);
+      onValue(chatRef, (snapshot) => {
         const messages: any[] = [];
         snapshot.forEach((childSnapshot) => {
           messages.push({ key: childSnapshot.key, ...childSnapshot.val() });
@@ -37,4 +38,5 @@ export class ChatService {
       });
     });
   }
+  
 }
