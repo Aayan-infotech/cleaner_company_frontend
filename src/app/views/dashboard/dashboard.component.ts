@@ -9,6 +9,8 @@ import { CalendarEventService } from '../../services/calendar-event.service';
 import { UsersService } from '../../services/users.service';
 import { DatePipe } from '@angular/common';
 import { EmpMgmtService } from '../../services/emp-mgmt.service';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -36,10 +38,22 @@ export class DashboardComponent {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
-    plugins: [dayGridPlugin, interactionPlugin],
+    weekends: false ,
+    plugins: [dayGridPlugin, interactionPlugin, interactionPlugin,
+      dayGridPlugin,
+      timeGridPlugin,
+      listPlugin,],
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
     dateClick: (arg) => this.handleDateClick(arg),
     events: this.eventArray
   };
+  toggleWeekends() {
+    this.calendarOptions.weekends = !this.calendarOptions.weekends // toggle the boolean!
+  }
   estArray: any;
   estData: any;
   totalEmployees: number = 0;
@@ -49,8 +63,14 @@ export class DashboardComponent {
   statusFilter: string = '';
   searchQuery: string = '';
   eventType = [
-    "Working","Leave"
+    "Job","Employee","Holiday","Office"
   ]
+eventTypeColors: { [key: string]: string } = {
+  Job: "#ffb879",
+  Employee: "#ffe3b2",
+  Holiday: "#a8faf3",
+  Office: "#2996f7",
+};
   selectedEventType = ''; 
 
   constructor() { }
@@ -207,8 +227,10 @@ export class DashboardComponent {
             const endTime = formatTimeToAMPM(event.endTime);
             
             const eventTypeColors: { [key: string]: string } = {
-              Working: '#28a745', // Green
-              Leave: '#dc3545',   // Red
+              Job:'#ffb879',
+              Employee:'#ffe3b2',
+              Holiday:'#a8faf3',
+              Office: '#2996f7'
             };
             const eventColor = eventTypeColors[event.eventType] || '#007bff'; // Default Blue
             const formattedEvent = {
@@ -252,6 +274,11 @@ updateCalendarOptions() {
       alert(
         `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
       );
+    },
+    eventContent: function (arg) {
+      return {
+        html: `<div style="color: black; font-weight: bold;">${arg.event.title}</div>`
+      };
     },
   };
 }

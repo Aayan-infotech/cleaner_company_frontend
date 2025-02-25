@@ -126,13 +126,18 @@
                                 </c-col>
                                 <c-col>
                                     <div cFormFloating>
-                                        <input cFormControl (change)="onFileChanged($event)" type="file" id="file"
-                                            placeholder="Upload Profile Picture" required />
-                                        <label cLabel for="file">
-                                            Upload Profile Picture<span class="text-danger">*</span>
+                                        <select cSelect id="role_assigned" formControlName="role_assigned">
+                                            <option value="" disabled>Select Role</option>
+                                            <option *ngFor="let ass of role_assigned" [value]="ass">{{ ass }}
+                                            </option>
+                                        </select>
+                                        <label cLabel for="role_assigned">
+                                            Role Assigned<span class="text-danger">*</span>
                                         </label>
                                     </div>
                                 </c-col>
+
+                         
                             </c-row>
 
 
@@ -175,7 +180,7 @@
 
                             <c-row class="mb-2">
 
-                                <c-col md="4">
+                                <c-col>
                                     <div cFormFloating>
                                         <input cFormControl formControlName="employee_EmContactAddress" type="text"
                                             id="employee_EmContactAddress" placeholder="Enter Em Contact Address"
@@ -183,6 +188,15 @@
                                         <label cLabel for="employee_EmContactAddress">
                                             Enter Emergency Contact Address
                                             <span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                </c-col>
+                                <c-col>
+                                    <div cFormFloating>
+                                        <input cFormControl (change)="onFileChanged($event)" type="file" id="file"
+                                            placeholder="Upload Profile Picture" required />
+                                        <label cLabel for="file">
+                                            Upload Profile Picture<span class="text-danger">*</span>
                                         </label>
                                     </div>
                                 </c-col>
@@ -244,6 +258,10 @@
                                     <div class="col-md-6 mb-2">
                                         <strong>Job Title:</strong> {{ editData?.data?.employee_role }}
                                     </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Role:</strong> {{ editData?.data?.role_assigned }}
+                                    </div>
+                                    
                                     <div class="col-md-6 mb-2">
                                         <strong>Job Status:</strong> Pending
                                     </div>
