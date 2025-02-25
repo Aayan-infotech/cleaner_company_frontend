@@ -1,4 +1,4 @@
-<c-row class="mb-4 align-items-center">
+<c-row class="mb-4 align-items-center justify-content-between">
   <c-col xs="auto">
     <div class="d-flex align-items-center">
       <label for="eventTypeFilter" class="me-2 fw-bold text-primary">
@@ -6,16 +6,27 @@
       </label>
       <select
         id="eventTypeFilter"
-        class="form-select rounded-pill shadow-sm w-auto"
+        class="form-select rounded-pill shadow-sm w-auto bg-secondary"
         [(ngModel)]="selectedEventType"
         (change)="filterEvents()"
       >
         <option value="">All</option>
-        <option *ngFor="let type of eventType" [value]="type">{{ type }}</option>
+        <option
+          *ngFor="let type of eventType"
+          [value]="type"
+          [style.color]="eventTypeColors[type]"
+        >
+          &#9679; {{ type }}
+        </option>
       </select>
     </div>
   </c-col>
+
+  <c-col xs="auto" class="ms-auto">
+    <button cButton color="secondary" (click)="toggleWeekends()">Toggle Weekends</button>
+  </c-col>
 </c-row>
+
 
 <c-row>
   <c-col xs>

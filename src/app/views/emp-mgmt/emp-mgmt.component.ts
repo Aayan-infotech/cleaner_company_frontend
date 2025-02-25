@@ -120,6 +120,7 @@ export class EmpMgmtComponent implements OnInit {
   }
 
   employee_role: string[] = ['Company', 'Technicians'];
+  role_assigned: string[] = ['PP Admin', 'PP Employee', 'Client Admin', 'Client Supervisor', 'Client Employee'];
 
   dummyChatMessages = [
     {
@@ -191,6 +192,7 @@ export class EmpMgmtComponent implements OnInit {
       employee_EmContactEmail: ['', Validators.required],
       employee_EmContactAddress: ['', Validators.required],
       employee_addNote: ['', Validators.required],
+      role_assigned: ['', Validators.required]
 
     });
 
@@ -303,6 +305,7 @@ export class EmpMgmtComponent implements OnInit {
     formData.append('employee_EmContactEmail', this.empMgmtForm.get('employee_EmContactEmail')?.value,);
     formData.append('employee_EmContactAddress', this.empMgmtForm.get('employee_EmContactAddress')?.value,);
     formData.append('employee_addNote', this.empMgmtForm.get('employee_addNote')?.value,);
+    formData.append('role_assigned', this.empMgmtForm.get('role_assigned')?.value,);
 
 
 
@@ -333,6 +336,7 @@ export class EmpMgmtComponent implements OnInit {
         .subscribe({
           next: (res: any) => {
             alert('Employee Created successfully');
+            console.log(formData)
             this.selectedImages = [];
             this.resetForm();
             this.getAllEmpMgmts();
@@ -424,7 +428,7 @@ export class EmpMgmtComponent implements OnInit {
           employee_password: this.editData.data.employee_password,
           employee_address: this.editData.data.employee_address,
           employee_contact: this.editData.data.employee_contact,
-          // employee_photo: this.editData.data.employee_photo,
+          role_assigned: this.editData.data.role_assigned,
           employee_role: this.editData.data.employee_role,
           employee_vanAssigned: assignedVanId,
           employee_SocialSecurityNumber: this.editData.data.employee_SocialSecurityNumber,
@@ -472,7 +476,7 @@ export class EmpMgmtComponent implements OnInit {
           employee_role: this.editData.data.employee_role,
           employee_vanAssigned: this.editData.data.employee_vanAssigned,
           employee_SocialSecurityNumber: this.editData.data.employee_SocialSecurityNumber,
-
+          role_assigned :this.editData.data.role_assigned,
           employee_EmContactName: this.editData.data.employee_EmContactName,
           employee_EmContactNumber: this.editData.data.employee_EmContactNumber,
           employee_EmContactEmail: this.editData.data.employee_EmContactEmail,
