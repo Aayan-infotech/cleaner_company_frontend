@@ -1,4 +1,3 @@
-
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,13 +12,13 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 
 @Component({
-  templateUrl: 'dashboard.component.html',
-  styleUrls: ['dashboard.component.scss'],
+  selector: 'app-job-event-overview',
+  standalone: false,
+  templateUrl: './job-event-overview.component.html',
+  styleUrl: './job-event-overview.component.scss',
   providers: [DatePipe]
 })
-
-export class DashboardComponent {
-
+export class JobEventOverviewComponent {
   eventFb = inject(FormBuilder);
   EventsService = inject(CalendarEventService);
   eventForm!: FormGroup;

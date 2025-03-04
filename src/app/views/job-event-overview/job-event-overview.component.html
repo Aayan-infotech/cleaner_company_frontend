@@ -1,0 +1,171 @@
+<c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange3($event)">
+    <c-modal-header>
+      <!-- <h5 cModalTitle>Add Event</h5> -->
+      <h5 cModalTitle>{{ editData ? 'Edit Event' : 'Add Event' }}</h5>
+      <button (click)="toggleLiveDemo3()" cButtonClose></button>
+    </c-modal-header>
+    <c-modal-body>
+      <form [formGroup]="eventForm">
+        <c-row>
+          <c-col md>
+            <div>
+              <label cLabel for="title">Add Event Title</label>
+              <input formControlName="title" id="title" type="text" cFormControl placeholder="Add title" />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="eventType">Add Event Type</label>
+              <select formControlName="eventType" id="eventType" cFormControl aria-label="Default select example" cSelect>
+                <option disabled>Open this select menu</option>
+                <option *ngFor="let type of eventType" [value]="type">{{ type }}</option>
+              </select>
+  
+            </div>
+            
+          </c-col>
+          <c-col md>
+            <div class="form-group">
+              <label for="employeeName" class="pb-2">Assign to employee</label>
+              <select formControlName="employeeName" id="employeeName" class="form-control">
+                <option value="" disabled>--Select Employee--</option>
+                <option *ngFor="let emp of empArray" [value]="emp.employee_name">{{ emp.employee_name }}
+                </option>
+              </select>
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+          <c-col md>
+            <div>
+              <label cLabel for="date">Add Date</label>
+              <input formControlName="date" id="date" type="text" cFormControl placeholder="Add Date" />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="startTime">Add Start Time</label>
+              <input formControlName="startTime" id="startTime" type="time" cFormControl placeholder=" " />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="endTime">Add End Time</label>
+              <input formControlName="endTime" id="endTime" type="time" cFormControl placeholder=" " />
+            </div>
+          </c-col>
+        </c-row>
+        <c-row>
+      
+          <c-col md>
+            <div>
+              <label cLabel for="clientName">Add client Name</label>
+              <input formControlName="clientName" id="clientName" type="text" cFormControl
+                placeholder="Add client Name" />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="clientEmail">Add client Email</label>
+              <input formControlName="clientEmail" id="clientEmail" type="text" cFormControl
+                placeholder="Add client Email" />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="clientContact">Client Contact</label>
+              <input formControlName="clientContact" id="clientContact" type="text" cFormControl
+                placeholder="Add client Contact" />
+            </div>
+          </c-col>
+        </c-row>
+     
+        <c-row>
+          <c-col md>
+            <div>
+              <label cLabel for="address">Client Address</label>
+              <input formControlName="address" id="address" type="text" cFormControl placeholder="Add client Address" />
+            </div>
+          </c-col>
+          <c-col md>
+            <div>
+              <label cLabel for="description">Add Description</label>
+              <textarea
+                formControlName="description"
+                id="description"
+                cFormControl
+                rows="5"
+                class="form-control shadow-sm"
+                placeholder="Add Description"
+              ></textarea>
+            </div>
+          </c-col>
+        </c-row>
+        
+      </form>
+    </c-modal-body>
+    <c-modal-footer>
+      <button (click)="toggleLiveDemo3()" cButton color="secondary">Close</button>
+      <!-- <button (click)="submit()" cButton color="primary">Save</button> -->
+      <button (click)="submit()" cButton color="primary">{{ editData ? 'Update' : 'Save' }}</button>
+    </c-modal-footer>
+  </c-modal>
+  
+  <c-col xs>
+    <c-card>
+      <c-card-header>
+        Job Events
+      </c-card-header>
+      <c-card-body style="padding: 5px;">
+        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+          <thead cTableColor="light">
+            <tr class="fsize1">
+              <th></th>
+              <th>S.No.</th>
+              <th>Title</th>
+              <th>Event Type</th>
+              <th>JobId</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Assign</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody class="fs-6">
+            <tr *ngFor="let event of eventArray; let i = index">
+              <td></td>
+              <td>{{ i + 1 }}</td>
+              <td>{{ event.title }}</td>
+              <td>{{ event.eventType }}</td>
+              <td>{{ event.jobId
+                }}</td>
+              <td>{{ event.date }}</td>
+              <td>{{ event.time }}</td>
+              <td>{{ event.employeeName }}</td>
+              <td>
+                <!-- edit -->
+                <button (click)="editEvent(event)" class="border-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                    class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path
+                      d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path fill-rule="evenodd"
+                      d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                  </svg>
+                </button>
+  
+                <!-- delete -->
+                <button (click)="deleteEvent(event._id)" class="border-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>

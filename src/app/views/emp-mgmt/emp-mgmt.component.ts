@@ -171,7 +171,7 @@ export class EmpMgmtComponent implements OnInit {
 
   chatMessages: any[] = [];
   newMessage = '';
-  userRole = 'employee'; // Set dynamically based on logged-in user
+  userRole = 'admin'; // Set dynamically based on logged-in user
   adminId : any
   private subscription!: Subscription;
   
@@ -502,10 +502,13 @@ export class EmpMgmtComponent implements OnInit {
             }
           });
 
-         
-          this.subscription = this.ChatService.getMessages(this.empId, this.adminId).subscribe((messages) => {
-            this.chatMessages = messages;
+          this.ChatService.getMessages(this.empId, this.adminId).subscribe((messages) => {
+            this.chatMessages = messages.map((chat) => ({
+              ...chat,
+              timestamp: chat.timestamp?.toDate ? chat.timestamp.toDate() : chat.timestamp,
+            }));
           });
+          
           
         } else {
           console.error('Employee ID is null or undefined');
@@ -690,18 +693,28 @@ export class EmpMgmtComponent implements OnInit {
 // chat
 
 sendMessage() {
-  if (!this.newMessage.trim() || !this.empId) {
+  if (!this.newMessage.trim()) {
+    console.error('Message cannot be empty');
     return;
   }
+
+  if (!this.empId || !this.adminId) {
+    console.error('Employee ID or Admin ID is missing');
+    return;
+  }
+
   this.ChatService
-    .sendMessage(this.userRole, this.newMessage, this.empId, this.adminId)
+    .sendMessage(this.adminId, this.newMessage, this.empId, this.adminId)
     .then(() => {
-      this.newMessage = '';
+      this.newMessage = ''; // Clear the input field after sending the message
+    })
+    .catch((error) => {
+      console.error('Error sending message:', error);
     });
 }
 
-getBubbleClass(sender: string): string {
-  return sender === 'employee' ? 'bg-info text-white' : 'bg-light';
+getBubbleClass(senderId: string): string {
+  return senderId === this.empId ? 'bg-info text-white' : 'bg-light';
 }
 
 ngOnDestroy(): void {

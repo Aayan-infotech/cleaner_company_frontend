@@ -3,7 +3,7 @@ import { JobSchedulingManagementRoutingModule } from './job-scheduling-managemen
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModalModule } from '@coreui/angular';
-import {FilterPipe} from 'src/app/filter.pipe'
+import { FullCalendarModule } from '@fullcalendar/angular';
 import{JobSchedulingManagementComponent} from './job-scheduling-management.component'
 import {
   AvatarModule,
@@ -52,7 +52,9 @@ import { HttpClientModule,HttpClient  } from '@angular/common/http'
     TableModule,
     WidgetsModule,
     NgMultiSelectDropDownModule,
-    HttpClientModule
+    HttpClientModule,
+    FullCalendarModule,
+
   ]
 })
 export class JobSchedulingManagementModule { }

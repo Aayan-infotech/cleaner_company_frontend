@@ -6,7 +6,7 @@ const routes: Routes = [
     path: '',
     component: JobEstimationContractsComponent,
     data: {
-      title: `JobEstimationContracts`
+      title: `Job Estimates`
     }
   }
 ];

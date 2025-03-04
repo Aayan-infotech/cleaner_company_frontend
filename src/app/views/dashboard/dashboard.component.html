@@ -43,11 +43,11 @@
 
 
 <!-- Modal for adding events -->
-<c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange($event)">
+<c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange3($event)">
   <c-modal-header>
     <!-- <h5 cModalTitle>Add Event</h5> -->
     <h5 cModalTitle>{{ editData ? 'Edit Event' : 'Add Event' }}</h5>
-    <button (click)="toggleLiveDemo()" cButtonClose></button>
+    <button (click)="toggleLiveDemo3()" cButtonClose></button>
   </c-modal-header>
   <c-modal-body>
     <form [formGroup]="eventForm">
@@ -150,7 +150,7 @@
     </form>
   </c-modal-body>
   <c-modal-footer>
-    <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+    <button (click)="toggleLiveDemo3()" cButton color="secondary">Close</button>
     <!-- <button (click)="submit()" cButton color="primary">Save</button> -->
     <button (click)="submit()" cButton color="primary">{{ editData ? 'Update' : 'Save' }}</button>
   </c-modal-footer>
@@ -158,8 +158,10 @@
 
 <c-col xs>
   <c-card>
-    <c-card-header>
-      Added Events
+    <c-card-header class="d-flex justify-content-between align-items-center">
+      <span>Recent Events</span>
+     
+      <button cButton color="info" routerLink="/jobEvent" shape="rounded-pill" size="sm">All Events</button>
     </c-card-header>
     <c-card-body style="padding: 5px;">
       <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
@@ -177,7 +179,7 @@
           </tr>
         </thead>
         <tbody class="fs-6">
-          <tr *ngFor="let event of eventArray; let i = index">
+          <tr *ngFor="let event of eventArray | slice:0:3; let i = index">
             <td></td>
             <td>{{ i + 1 }}</td>
             <td>{{ event.title }}</td>
