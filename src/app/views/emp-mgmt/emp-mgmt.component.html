@@ -448,10 +448,18 @@
                               <div class="chat-container">
                                 <div *ngIf="chatMessages?.length; else noChats">
                                   <div *ngFor="let chat of chatMessages" class="mb-3">
-                                    <div [ngClass]="{ 'text-end': chat.sender === 'employee', 'text-start': chat.sender === 'admin' }">
-                                      <div class="chat-bubble p-2 d-inline-block rounded" [ngClass]="getBubbleClass(chat.sender)">
+                                    <div [ngClass]="{ 'text-end': chat.senderId === adminId, 'text-start': chat.senderId === empId }">
+                                      <div
+                                        class="chat-bubble p-2 d-inline-block rounded"
+                                        [ngClass]="getBubbleClass(chat.senderId)"
+                                      >
                                         <small>{{ chat.message }}</small>
-                                        <div class="timestamp text-muted small">{{ chat.timestamp | date: 'short' }}</div>
+                                        <div class="timestamp text-muted small">
+                                            {{ chat.timestamp ? (chat.timestamp | date: 'short') : 'Invalid date' }}
+                                          </div>
+                                          
+                                          
+                                          
                                       </div>
                                     </div>
                                   </div>

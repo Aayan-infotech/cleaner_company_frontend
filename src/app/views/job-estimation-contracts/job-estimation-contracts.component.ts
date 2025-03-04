@@ -1,6 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import {DropDownService} from '../../services/drop-down.service'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { EstimateService } from '../../services/estimate.service';
+
 @Component({
   selector: 'app-job-estimation-contracts',
   standalone: false,
@@ -8,32 +10,26 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './job-estimation-contracts.component.scss'
 })
 export class JobEstimationContractsComponent implements OnInit {
-  dropDownService = inject(DropDownService)
-  dropData: any;
-  dropArray: any;
-  dataCondition: any;
-  dataColor: any;
-  dataLot: any;
-  fb = inject(FormBuilder);
-  catForm!: FormGroup;
-  roomArray: any;
-  specialServicesArray: any;
+  estimateService = inject(EstimateService);
+  estArray: any
+  estData: any;
   ngOnInit(): void {
-    this.catForm = this.fb.group({
-      specialServices: ['',Validators.required],
-      room: ['',Validators.required],
-    })
-    this.getAllDropdown();
+    this.getAllEstimatesData();
   }
-  getAllDropdown(){
-    this.dropDownService.getAllDropDownService()
-    .subscribe((res)=>{
-     this.dropData = res
-     console.log(this.dropData)
-    this.roomArray = this.dropData.data[0].room
-    this.specialServicesArray = this.dropData.data[0].specialServices
-     console.log(this.roomArray)
-   
-    })
+  getAllEstimatesData() {
+    this.estimateService.getAllEstimates()
+      .subscribe((res) => {
+        this.estData = res;
+        this.estArray = this.estData.data;
+        console.log(this.estArray);
+      });
   }
+  deleteEstimate(id: any) {
+    this.estimateService.deleteEstimateService(id)
+      .subscribe(res => {
+        alert('Estimate Deleted')
+        this.getAllEstimatesData();
+      })
+  }
+
 }

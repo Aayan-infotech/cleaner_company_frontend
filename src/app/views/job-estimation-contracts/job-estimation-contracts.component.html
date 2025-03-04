@@ -1,189 +1,69 @@
 <c-row>
     <c-col xs>
-        <c-card class="mb-4">
-            <c-card-header>Design Theme</c-card-header>
+      <c-card class="mb-4">
+        <c-card-header class="d-flex align-items-center">
+          <span>All Estimate</span>
+        </c-card-header>
 
-            <c-modal-body class="py-3 px-2">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <c-row>
-                                <c-col [sm]="10">
-                                    <c-card>
-                                        <c-card-body>
-                                            <c-row class="text-center">
-                                                <c-col>
-                                                    <div>Room X</div>
-                                                </c-col>
-                                                <c-col>
-                                                    <div>SQ FT + 100000</div>
-                                                </c-col>
-                                                <c-col style="height: 90px;">
-                                                    <c-dropdown>
-                                                        <a class="px-5" cButton cDropdownToggle color="light"
-                                                            [routerLink]="[]">Services</a>
-                                                        <ul cDropdownMenu>
-                                                            <li><a [routerLink]="[]" cDropdownItem>Action</a></li>
-                                                            <li><a [routerLink]="[]" cDropdownItem>Another action</a>
-                                                            </li>
-                                                            <li><a [routerLink]="[]" cDropdownItem>Something else
-                                                                    here</a></li>
-                                                        </ul>
-                                                    </c-dropdown>
-                                                </c-col>
-                                                <c-col>
-                                                    <div>$ Price</div>
-                                                </c-col>
-                                            </c-row>
-                                        </c-card-body>
-                                    </c-card>
-                                </c-col>
-                                <c-col [sm]="2">
-                                    <c-row class="pb-2">
-                                        <button cButton color="primary" class="p-3">Add to Order</button>
-                                    </c-row>
-                                    <c-row>
-                                        <button cButton color="secondary" class="p-3">Cancel</button>
-                                    </c-row>
-                                </c-col>
-                            </c-row>
-                            <c-row class="py-5">
-                                <form [formGroup]="catForm">
-                                    <c-row>
-                                        <c-col [sm]="4">
-                                            <c-card class="mb-4 text-center">
-                                                <c-card-body>
-                                                    <div class="d-flex justify-content-around">
-                                                        Add Room
-                                                        <select formControlName="room" class="form-select"
-                                                            aria-label="Default select example" required>
-                                                            <option selected>--select category--</option>
-                                                            <option *ngFor="let rc of roomArray" [value]="rc">{{rc}}
-                                                            </option>
-                                                        </select>
-                                                     
-                                                    </div>
-                                                </c-card-body>
-                                            </c-card>
-                                        </c-col>
-                                        <c-col [sm]="4">
-                                            <c-card class="mb-4 text-center">
-                                                <c-card-body>
-                                                    <div class="d-flex justify-content-around">
-                                                        <div>
-                                                            Add Sqare Footage
-                                                        </div>
-                                                    </div>
-                                                </c-card-body>
-                                            </c-card>
-                                        </c-col>
-                                        <c-col [sm]="4">
-                                            <c-card class="mb-4 text-center">
-                                                <c-card-body>
-                                                    <div class="d-flex justify-content-around">
-                                                        <div>
-                                                            Add Services
-                                                            <select formControlName="specialServices"
-                                                                class="form-select" aria-label="Default select example"
-                                                                required>
-                                                                <option selected>--select special services--</option>
-                                                                <option *ngFor="let special of specialServicesArray"
-                                                                    [value]="special">{{special}}</option>
-
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </c-card-body>
-                                            </c-card>
-                                        </c-col>
-                                    </c-row>
-                                </form>
-                                <c-row>
-                                    <c-col [sm]="4">
-                                        <c-card class="mb-4" style="height: 200px;">
-                                            <c-card-body>
-                                            </c-card-body>
-                                        </c-card>
-                                    </c-col>
-                                    <c-col [sm]="4">
-                                        <c-card class="mb-4">
-                                            <c-card-body>
-                                                <c-row class="d-flex justify-content-around">
-                                                    <c-col [sm]="4">
-                                                        <div>
-                                                            Length
-                                                        </div>
-                                                    </c-col>
-                                                    <c-col [sm]="6">
-                                                        <c-card>
-                                                            <c-card-body>
-                                                            </c-card-body>
-                                                        </c-card>
-                                                    </c-col>
-                                                </c-row>
-                                                <c-row class="d-flex justify-content-around py-2">
-                                                    <c-col [sm]="4">
-                                                        <div>
-                                                            Width
-                                                        </div>
-                                                    </c-col>
-                                                    <c-col [sm]="6">
-                                                        <c-card>
-                                                            <c-card-body>
-                                                            </c-card-body>
-                                                        </c-card>
-                                                    </c-col>
-                                                </c-row>
-                                                <c-row class="d-flex justify-content-around">
-                                                    <c-col [sm]="4">
-                                                        <div>
-                                                            Additional
-                                                        </div>
-                                                    </c-col>
-                                                    <c-col [sm]="6">
-                                                        <c-card>
-                                                            <c-card-body>
-                                                            </c-card-body>
-                                                        </c-card>
-                                                    </c-col>
-                                                </c-row>
-                                                <c-row class="d-flex justify-content-around pt-4">
-                                                    <c-col [sm]="4">
-                                                        <div>
-                                                            Total Sq Ft
-                                                        </div>
-                                                    </c-col>
-                                                    <c-col [sm]="6">
-                                                        <div>
-                                                            XXXX Ft
-                                                        </div>
-                                                    </c-col>
-                                                </c-row>
-                                            </c-card-body>
-                                        </c-card>
-                                    </c-col>
-                                    <c-col [sm]="4">
-                                        <c-card class="mb-4" style="height: 200px;">
-                                            <c-card-body>
-                                                <div>
-                                                    <div>Add Service Type</div>
-                                                    <div>Service Type</div>
-                                                    <div>Service Type</div>
-                                                    <div>Service Type</div>
-
-                                                    <div>Service Type</div>
-                                                    <div>Service Type</div>
-
-                                                </div>
-                                            </c-card-body>
-                                        </c-card>
-                                    </c-col>
-                                </c-row>
-                            </c-row>
-                        </div>
-                    </div>
-                </div>
-            </c-modal-body>
-        </c-card>
+        <c-card-body>
+          <table class="table table-responsive-sm table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>JobId</th>
+                <th>Room</th>
+                <th>Service</th>
+                <th>Item Clean</th>
+                <th>Dry Cleaning</th>
+                <th>Hard Surface</th>
+                <th>Method</th>
+                <th>Estimated Cost</th>
+                <th>Action</th>
+  
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let estimate of estArray">
+                <td>{{estimate.jobId}} </td>
+                <td>{{ estimate.room.name }}</td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    {{ service.service?.name }} - ${{ service.service?.price }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    {{ service.itemClean?.name }} - ${{ service.itemClean?.price }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    {{ service.dryCleaning?.name }} - ${{ service.dryCleaning?.price }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    {{ service.hardSurface?.name }} - ${{ service.hardSurface?.price }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    {{ service.method?.name }} - ${{ service.method?.price }}
+                  </div>
+                </td>
+                <td>
+                  <div *ngFor="let service of estimate.selectedServices">
+                    ${{ service.estimatedCost }}
+                  </div>
+                </td>
+                <td>
+                  <button (click)="deleteEstimate(estimate._id)">
+                    <svg cIcon name="cil-trash" size="sm"></svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </c-card-body>
+      </c-card>
     </c-col>
-</c-row>
+  </c-row>

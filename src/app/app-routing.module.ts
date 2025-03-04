@@ -82,7 +82,7 @@ const routes: Routes = [
           import('./views/employee-time-control/employee-time-control.module').then((m) => m.EmployeeTimeControlModule)
       },
       {
-        path: 'jobEstimationContracts',
+        path: 'jobEstimate',
         loadChildren: () =>
           import('./views/job-estimation-contracts/job-estimation-contracts.module').then((m) => m.JobEstimationContractsModule)
       },
@@ -110,6 +110,11 @@ const routes: Routes = [
         path: 'template-library',
         loadChildren: () =>
           import('./views/content-library/content-library.module').then((m) => m.ContentLibraryModule)
+      },
+      {
+        path: 'jobEvent',
+        loadChildren: () =>
+          import('./views/job-event-overview/job-event-overview.module').then((m) => m.JobEventOverviewModule)
       },
       {
         path: 'content-version',
