@@ -54,7 +54,7 @@
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span> Recent Job Event</span>
        
-        <button cButton color="info" routerLink="/jobEvent" shape="rounded-pill" size="sm">All Events</button>
+        <button cButton color="primary" routerLink="/jobEvent" shape="rounded-pill" size="sm">All Events</button>
       </c-card-header>
       <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
@@ -72,7 +72,7 @@
             </tr>
           </thead>
           <tbody class="fs-6">
-            <tr *ngFor="let event of calendarArray; let i = index">
+            <tr *ngFor="let event of calendarArray | slice:0:3; let i = index">
               <td></td>
               <td>{{ i + 1 }}</td>
               <td>{{ event.title }}</td>
@@ -233,7 +233,7 @@
     <c-card class="mb-4">
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span>Recent Job History</span>
-        <button cButton color="info" routerLink="/jobHistory" shape="rounded-pill" size="sm">All History</button>
+        <button cButton color="primary" routerLink="/jobHistory" shape="rounded-pill" size="sm">All History</button>
       </c-card-header>
       
       <c-card-body>
@@ -278,12 +278,12 @@
       <c-card-header class="d-flex align-items-center">
         <span>Recent Job Estimate</span>
       
-        <button (click)="toggleLiveDemo2()" cButton color="info" shape="rounded-pill" style="margin-left: 3rem;" size="sm">Create Estimate</button>
+        <button (click)="toggleLiveDemo2()" cButton color="secondary" shape="rounded-pill" style="margin-left: 3rem;" size="sm">Create Estimate</button>
         
-        <button cButton color="info" shape="rounded-pill" style="margin-left: 1rem;" size="sm">Send Estimate</button>
+        <button cButton color="secondary" shape="rounded-pill" style="margin-left: 1rem;" size="sm">Send Estimate</button>
       
         <div class="ms-auto">
-          <button cButton color="info" shape="rounded-pill"  routerLink="/jobEstimate" size="sm">All Estimate</button>
+          <button cButton color="primary" shape="rounded-pill"  routerLink="/jobEstimate" size="sm">All Estimate</button>
         </div>
       </c-card-header>
       
