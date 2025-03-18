@@ -18,6 +18,7 @@
   },
   "private": true,
   "dependencies": {
+    "@agm/core": "^3.0.0-beta.0",
     "@angular/animations": "^17.1.2",
     "@angular/cdk": "^17.1.2",
     "@angular/common": "^17.1.2",
@@ -42,6 +43,7 @@
     "@fullcalendar/interaction": "^6.1.14",
     "@fullcalendar/list": "^6.1.11",
     "@fullcalendar/timegrid": "^6.1.14",
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
     "@ngrx/store": "^17.2.0",
     "@popperjs/core": "^2.11.8",
@@ -67,6 +69,7 @@
     "@angular/cli": "^17.1.2",
     "@angular/compiler-cli": "^17.1.2",
     "@angular/localize": "^17.1.2",
+    "@types/google.maps": "^3.58.1",
     "@types/jasmine": "^5.1.4",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.11.16",

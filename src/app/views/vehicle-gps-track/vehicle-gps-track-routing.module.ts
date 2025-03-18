@@ -6,7 +6,7 @@ const routes: Routes = [
     path: '',
     component: VehicleGpsTrackComponent,
     data: {
-      title: `VehicleGpsTrack`
+      title: `GPS Tracking`
     }
   }
 ];
