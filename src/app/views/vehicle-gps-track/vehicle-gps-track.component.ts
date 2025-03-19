@@ -22,20 +22,21 @@ export class VehicleGpsTrackComponent {
   private markers: any[] = [];
 
   private vehicles = [
-    { lat: 28.7041, lng: 77.1025, type: 'van' }, // Delhi
-    { lat: 19.076, lng: 72.8777, type: 'van' },  // Mumbai
-    { lat: 13.0827, lng: 80.2707, type: 'van' }, // Chennai
-    { lat: 22.5726, lng: 88.3639, type: 'van' }, // Kolkata
-    { lat: 26.9124, lng: 75.7873, type: 'van' }, // Jaipur
+    { lat: 40.7128, lng: -74.0060, type: 'van' }, // New York
+    { lat: 34.0522, lng: -118.2437, type: 'van' }, // Los Angeles
+    { lat: 41.8781, lng: -87.6298, type: 'van' }, // Chicago
+    { lat: 29.7604, lng: -95.3698, type: 'van' }, // Houston
+    { lat: 33.7490, lng: -84.3880, type: 'van' }, // Atlanta
   ];
-
+  
   private jobs = [
-    { lat: 12.9716, lng: 77.5946 }, // Bangalore
-    { lat: 15.2993, lng: 74.124 },  // Goa
-    { lat: 21.1702, lng: 72.8311 }, // Surat
-    { lat: 18.5204, lng: 73.8567 }, // Pune
-    { lat: 25.5941, lng: 85.1376 }, // Patna
+    { lat: 37.7749, lng: -122.4194 }, // San Francisco
+    { lat: 39.7392, lng: -104.9903 }, // Denver
+    { lat: 47.6062, lng: -122.3321 }, // Seattle
+    { lat: 32.7157, lng: -117.1611 }, // San Diego
+    { lat: 36.1627, lng: -86.7816 }, // Nashville
   ];
+  
   showingVehicles = true;
   apiKey = 'AIzaSyA7e-ILDWp8LWUnkwyGCw7e0y0oMSXAIHE';
 
