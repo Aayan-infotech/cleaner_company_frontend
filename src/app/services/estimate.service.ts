@@ -18,7 +18,7 @@ export class EstimateService {
   }
 
   deleteEstimateService(id: any): Observable<any> {
-    return this.http.delete(`http://54.236.98.193:5966/api/estimates/${id}`);
+    return this.http.delete(`http://3.223.253.106:5966/api/estimates/${id}`);
   };
 
 }
