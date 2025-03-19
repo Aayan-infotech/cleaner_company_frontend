@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PushNotificationService {
-  private apiUrl = 'http://54.236.98.193:5966/api';
+  private apiUrl = 'http://3.223.253.106:5966/api';
   constructor(private http: HttpClient) { }
 
   getTokenByUserId(id: string): Observable<any> {
@@ -14,12 +14,12 @@ export class PushNotificationService {
   }
 
   sendNotification(data: { employeeId: string; token: string; title: string; body: string }) {
-    const url = 'http://54.236.98.193:5966/api/notification/send-notification'; 
+    const url = 'http://3.223.253.106:5966/api/notification/send-notification'; 
     return this.http.post<{ message: string }>(url, data);
   }
   
   getNotifications(employeeId: string): Observable<any> {
-    return this.http.get(`http://54.236.98.193:5966/api/notification/get-notification/${employeeId}`);
+    return this.http.get(`http://3.223.253.106:5966/api/notification/get-notification/${employeeId}`);
   }
 
 }
