@@ -9,20 +9,28 @@
                     placeholder="Search for an address" 
                     style="width: 300px; padding: 8px; margin-bottom: 10px;" 
                   /> -->
-                    <div class="toggle-switch">
-                      <button 
-                        class="toggle-button" 
-                        [ngClass]="{ 'active': showingVehicles }" 
-                        (click)="toggleVehicles()">
-                        Vehicles
-                      </button>
-                      <button 
-                        class="toggle-button" 
-                        [ngClass]="{ 'active': !showingVehicles }" 
-                        (click)="toggleJobs()">
-                        Jobs
-                      </button>
-                    </div>
+                  <div class="toggle-switch">
+                    <button 
+                    class="toggle-button" 
+                    [ngClass]="{ 'active': isAll }" 
+                    (click)="toggleAll()">
+                    All
+                  </button>
+                    <button 
+                      class="toggle-button" 
+                      [ngClass]="{ 'active': showingVehicles }" 
+                      (click)="toggleVehicles()">
+                      Vehicles
+                    </button>
+                    <button 
+                      class="toggle-button" 
+                      [ngClass]="{ 'active': !showingVehicles && !isAll }" 
+                      (click)="toggleJobs()">
+                      Jobs
+                    </button>
+             
+                  </div>
+                  
                   </div>
 
             </c-card-header>
