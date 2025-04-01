@@ -1,5 +1,5 @@
 
-import { Component, inject } from '@angular/core';
+import { Component, inject, Renderer2 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -11,6 +11,8 @@ import { DatePipe } from '@angular/common';
 import { EmpMgmtService } from '../../services/emp-mgmt.service';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
+
+declare const google: any;
 
 @Component({
   templateUrl: 'dashboard.component.html',
@@ -24,6 +26,7 @@ export class DashboardComponent {
   EventsService = inject(CalendarEventService);
   eventForm!: FormGroup;
   router = inject(Router);
+  renderer = inject(Renderer2)
   eventData!: any;
   eventArray: any[] = [];
   editData: any;
@@ -88,10 +91,16 @@ eventTypeColors: { [key: string]: string } = {
       address: ['', Validators.required],
       clientContact: ['', Validators.required],
       eventType: ['', Validators.required],
+      lat: [null, Validators.required],  // Added latitude
+      lng: [null, Validators.required]   // Added longitude
     });
+  
     this.getAllCalendar();
     this.getAllUsers();
-  };
+    (window as any).initAutocomplete = this.initAutocomplete.bind(this);
+    this.loadGoogleMaps();
+  }
+  
 
   getAllUsers() {
     this.empMgmtService.getAllEmpMgmtsService( this.currentPage1,
@@ -144,25 +153,24 @@ eventTypeColors: { [key: string]: string } = {
         address: this.eventForm.get('address')?.value,
         clientContact: this.eventForm.get('clientContact')?.value,
         eventType: this.eventForm.get('eventType')?.value,
+        lat: this.eventForm.get('lat')?.value,  // Include latitude
+        lng: this.eventForm.get('lng')?.value   // Include longitude
       };
-
+  
       if (this.editData) {
-        // Editing existing event
-        eventData['_id'] = this.editData._id; // Assuming _id is present in editData
+        eventData['_id'] = this.editData._id; // If editing an event
         this.EventsService.updateEventService(eventData, this.editData._id).subscribe({
           next: (res) => {
             alert("Event Updated");
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
-
           },
           error: (err) => {
             console.error('Error updating event:', err);
           }
         });
       } else {
-        // Creating new event
         eventData['date'] = this.eventForm.get('date')?.value;
         this.EventsService.createEventService(eventData).subscribe({
           next: (res) => {
@@ -170,7 +178,6 @@ eventTypeColors: { [key: string]: string } = {
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
-
           },
           error: (err) => {
             console.error('Error creating event:', err);
@@ -179,6 +186,7 @@ eventTypeColors: { [key: string]: string } = {
       }
     }
   };
+  
 
   editEvent(event: any): void {
     this.editData = event;
@@ -294,4 +302,68 @@ updateCalendarOptions() {
       });
     }
   };
+
+  // google for address
+  loadGoogleMaps(): void {
+    if (!window['google']) {
+      const script = this.renderer.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCVQ5c2gXZPufIBicJqN7WMq5YFjG-VlTY&libraries=places&callback=initAutocomplete`;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    } else {
+      this.initAutocomplete(); // If already loaded, call it directly
+    }
+  }
+  initAutocomplete(): void {
+    console.log("Google Maps Autocomplete initialized!");
+  
+    const input = document.getElementById('pac-input') as HTMLInputElement;
+    if (!input) {
+      console.error('Input element not found!');
+      return;
+    }
+  
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['address'],
+      fields: ['place_id', 'geometry', 'formatted_address', 'name'],
+    });
+  
+    setTimeout(() => {
+      const pacContainers = document.getElementsByClassName('pac-container');
+      Array.from(pacContainers).forEach((container) => {
+        (container as HTMLElement).style.zIndex = '9999';
+        document.body.appendChild(container);
+      });
+    }, 500); // Delay ensures the element is available in the DOM
+  
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+  
+      if (!place.geometry || !place.geometry.location) {
+        window.alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+  
+      const latitude = place.geometry.location.lat();
+      const longitude = place.geometry.location.lng();
+      
+      console.log("Selected Place:", place.name);
+      console.log("Formatted Address:", place.formatted_address);
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
+  
+      // ✅ Assign the selected address, lat, and lng to the form controls
+      this.eventForm.patchValue({
+        address: place.formatted_address,
+        lat: latitude,
+        lng: longitude
+      });
+    });
+  }
+  
+  
+  
+
+
 }

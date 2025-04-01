@@ -25,7 +25,7 @@ export class GpsService {
       }
   
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry,marker,places`;
+      // script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=geometry,marker,places`;
       script.async = true;
       script.defer = true;
   
