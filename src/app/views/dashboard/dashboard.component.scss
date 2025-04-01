@@ -1,0 +1,13 @@
+.pac-container {
+  z-index: 9999 !important; /* Ensures the dropdown appears above everything */
+  position: absolute !important;
+}
+
+
+.modal {
+  overflow: visible !important;
+}
+
+.hidden-row {
+  display: none;
+}
