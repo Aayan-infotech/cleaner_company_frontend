@@ -86,19 +86,27 @@ eventTypeColors: { [key: string]: string } = {
       endTime: ['', Validators.required],
       description: ['', Validators.required],
       employeeName: ['', Validators.required],
+      employeeId: ['', Validators.required], // <-- 💡 Added this
       clientName: ['', Validators.required],
       clientEmail: ['', Validators.required],
       address: ['', Validators.required],
       clientContact: ['', Validators.required],
       eventType: ['', Validators.required],
-      lat: [null, Validators.required],  // Added latitude
-      lng: [null, Validators.required]   // Added longitude
+      lat: [null, Validators.required],
+      lng: [null, Validators.required]
     });
+    
   
     this.getAllCalendar();
     this.getAllUsers();
     (window as any).initAutocomplete = this.initAutocomplete.bind(this);
     this.loadGoogleMaps();
+  }
+  
+  onEmployeeChange(event: Event) {
+    const selectedOption = (event.target as HTMLSelectElement).selectedOptions[0];
+    const selectedId = selectedOption.getAttribute('data-id');
+    this.eventForm.patchValue({ employeeId: selectedId });
   }
   
 
@@ -148,6 +156,7 @@ eventTypeColors: { [key: string]: string } = {
         endTime: this.eventForm.get('endTime')?.value,
         description: this.eventForm.get('description')?.value,
         employeeName: this.eventForm.get('employeeName')?.value,
+        employeeId: this.eventForm.get('employeeId')?.value,
         clientName: this.eventForm.get('clientName')?.value,
         clientEmail: this.eventForm.get('clientEmail')?.value,
         address: this.eventForm.get('address')?.value,
@@ -196,6 +205,7 @@ eventTypeColors: { [key: string]: string } = {
       startTime: event.startTime,
       endTime: event.endTime,
       employeeName: event.employeeName,
+      employeeId: event.employeeId,
       description: event.description,
       clientName:  event.clientName,
       clientEmail:  event.clientEmail,

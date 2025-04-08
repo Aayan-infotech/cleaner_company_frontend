@@ -4,18 +4,10 @@
       <label for="eventTypeFilter" class="me-2 fw-bold text-primary">
         Filter by Event Type:
       </label>
-      <select
-        id="eventTypeFilter"
-        class="form-select rounded-pill shadow-sm w-auto bg-secondary"
-        [(ngModel)]="selectedEventType"
-        (change)="filterEvents()"
-      >
+      <select id="eventTypeFilter" class="form-select rounded-pill shadow-sm w-auto bg-secondary"
+        [(ngModel)]="selectedEventType" (change)="filterEvents()">
         <option value="">All</option>
-        <option
-          *ngFor="let type of eventType"
-          [value]="type"
-          [style.color]="eventTypeColors[type]"
-        >
+        <option *ngFor="let type of eventType" [value]="type" [style.color]="eventTypeColors[type]">
           &#9679; {{ type }}
         </option>
       </select>
@@ -67,16 +59,19 @@
             </select>
 
           </div>
-          
+
         </c-col>
         <c-col md>
           <div class="form-group">
             <label for="employeeName" class="pb-2">Assign to employee</label>
-            <select formControlName="employeeName" id="employeeName" class="form-control">
+            <select formControlName="employeeName" id="employeeName" class="form-control"
+              (change)="onEmployeeChange($event)">
               <option value="" disabled>--Select Employee--</option>
-              <option *ngFor="let emp of empArray" [value]="emp.employee_name">{{ emp.employee_name }}
+              <option *ngFor="let emp of empArray" [value]="emp.employee_name" [attr.data-id]="emp._id">
+                {{ emp.employee_name }}
               </option>
             </select>
+
           </div>
         </c-col>
       </c-row>
@@ -101,7 +96,7 @@
         </c-col>
       </c-row>
       <c-row>
-    
+
         <c-col md>
           <div>
             <label cLabel for="clientName">Add client Name</label>
@@ -124,13 +119,13 @@
           </div>
         </c-col>
       </c-row>
-   
+
       <c-row>
         <c-col md>
           <div>
             <label cLabel for="clientContact">Client Address </label>
             <input formControlName="address" id="pac-input" type="text" cFormControl
-            placeholder="Enter client Address" />
+              placeholder="Enter client Address" />
           </div>
           <!-- <div class="pac-card" id="pac-card">
             <div>
@@ -142,18 +137,12 @@
         <c-col md>
           <div>
             <label cLabel for="description">Add Description</label>
-            <textarea
-              formControlName="description"
-              id="description"
-              cFormControl
-              rows="5"
-              class="form-control shadow-sm"
-              placeholder="Add Description"
-            ></textarea>
+            <textarea formControlName="description" id="description" cFormControl rows="5"
+              class="form-control shadow-sm" placeholder="Add Description"></textarea>
           </div>
         </c-col>
 
-     
+
       </c-row>
       <c-row class="hidden-row">
         <c-col md>
@@ -169,7 +158,7 @@
           </div>
         </c-col>
       </c-row>
-      
+
 
     </form>
   </c-modal-body>
@@ -183,10 +172,10 @@
 <c-col xs>
   <c-card>
     <c-card-header class="d-flex justify-content-between align-items-center">
- 
-      
+
+
       <span>Recent Events</span>
-     
+
       <button cButton color="info" routerLink="/jobEvent" shape="rounded-pill" size="sm">All Events</button>
     </c-card-header>
     <c-card-body style="padding: 5px;">
@@ -217,7 +206,7 @@
             <td>{{ event.employeeName }}</td>
             <td>
               <!-- edit -->
-              <button (click)="editEvent(event)" class="border-0">
+              <!-- <button (click)="editEvent(event)" class="border-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                   class="bi bi-pencil-square" viewBox="0 0 16 16">
                   <path
@@ -225,7 +214,7 @@
                   <path fill-rule="evenodd"
                     d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
                 </svg>
-              </button>
+              </button> -->
 
               <!-- delete -->
               <button (click)="deleteEvent(event._id)" class="border-0">
