@@ -4,6 +4,9 @@ import { VanService } from '../../services/van.service';
 import { Loader } from '@googlemaps/js-api-loader';
 import { GpsService } from '../../services/gps.service';
 import { CalendarEventService } from '../../services/calendar-event.service';
+import { FirebaseApp } from '@angular/fire/app';
+import { Firestore, collection, getDoc, doc } from '@angular/fire/firestore';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-vehicle-gps-track',
@@ -23,32 +26,28 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   private markers: any[] = [];
   private searchBox!: google.maps.places.SearchBox;
   EventsService = inject(CalendarEventService);
+  private vehicleJobMapping: any[] = [];
 
-  private vehicles = [
-    { lat: 40.7178, lng: -74.0400, type: 'van', vehicleName: 'Van-101', assignedTechnician: 'John Doe' }, // New York
-    { lat: 34.0736, lng: -118.4009, type: 'van', vehicleName: 'Van-102', assignedTechnician: 'Alice Smith' }, // Los Angeles
-    { lat: 42.0451, lng: -87.6880, type: 'van', vehicleName: 'Van-103', assignedTechnician: 'Mike Brown' }, // Chicago
-    { lat: 29.6911, lng: -95.2099, type: 'van', vehicleName: 'Van-104', assignedTechnician: 'Emma Wilson' }, // Houston
-    { lat: 37.9050, lng: -122.2799, type: 'van', vehicleName: 'Van-105', assignedTechnician: 'Olivia Johnson' }, // Atlanta
-  ];
+  private vehicles: any[] = [];
+
 
 
   private jobs: any[] = [];
 
-  private vehicleJobMapping = [
-    { vehicleIndex: 0, jobIndex: 0 }, // Vehicle 1 -> Job 1
-    { vehicleIndex: 1, jobIndex: 1 }, // Vehicle 2 -> Job 2
-    { vehicleIndex: 2, jobIndex: 2 }, // Vehicle 3 -> Job 3
-    { vehicleIndex: 3, jobIndex: 3 }, // Vehicle 4 -> Job 4
-    { vehicleIndex: 4, jobIndex: 4 }, // Vehicle 5 -> Job 5
-  ];
+  // private vehicleJobMapping = [
+  //   { vehicleIndex: 0, jobIndex: 0 }, // Vehicle 1 -> Job 1
+  //   { vehicleIndex: 1, jobIndex: 1 }, // Vehicle 2 -> Job 2
+  //   { vehicleIndex: 2, jobIndex: 2 }, // Vehicle 3 -> Job 3
+  //   { vehicleIndex: 3, jobIndex: 3 }, // Vehicle 4 -> Job 4
+  //   { vehicleIndex: 4, jobIndex: 4 }, // Vehicle 5 -> Job 5
+  // ];
 
   private polylines: any[] = []; // Store polylines to manage clearing
 
-  showingVehicles = true;
+  showingVehicles = false;
   apiKey = 'AIzaSyCVQ5c2gXZPufIBicJqN7WMq5YFjG-VlTY';
 
-  constructor(private db: Database) { }
+  constructor(private db: Database,private firestore: Firestore,private http: HttpClient,) { }
   ngOnInit(): void {
     this.updateDateTime();
     this.getAllCalendar();
@@ -105,11 +104,6 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
 
 
   initializeMap(): void {
-    if (typeof google === 'undefined') {
-      console.error('Google Maps API not loaded yet.');
-      return;
-    }
-
     const mapElement = document.getElementById('map') as HTMLElement;
     if (!mapElement) {
       console.error('Map element not found.');
@@ -122,19 +116,9 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       mapId: '3bb539d168c8b698',
     });
 
-    if (!this.map) {
-      console.error('Map initialization failed.');
-      return;
-    }
-
-    // Ensure jobs are loaded before toggling all
-    setTimeout(() => {
-      if (this.jobs.length === 0) {
-        console.warn('Jobs list is empty, waiting for data.');
-        return;
-      }
+    if (this.vehicles.length > 0 || this.jobs.length > 0) {
       this.toggleAll();
-    }, 1000); // Delay execution to allow data loading
+    }
   }
 
 
@@ -144,92 +128,91 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       console.error('Map is not initialized yet.');
       return;
     }
-
-    this.isAll = true;
-    this.showingVehicles = false;
+  
+    // Defer state updates to avoid ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      this.isAll = true;
+      this.showingVehicles = false;
+    }, 0);
+  
     this.clearMarkers();
-
-    // Ensure jobs exist before rendering
-    if (this.jobs.length === 0) {
-      console.warn('No jobs available, skipping job markers.');
-    }
-
-    this.vehicles.forEach((vehicle, index) => {
-      if (!vehicle || typeof vehicle.lat !== 'number' || typeof vehicle.lng !== 'number') {
-        console.warn(`Skipping vehicle ${index} due to invalid location data.`);
-        return;
+    this.clearPolylines();
+  
+    // Add markers for vehicles
+    this.vehicles.forEach((vehicle) => {
+      if (vehicle.lat && vehicle.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: vehicle.lat, lng: vehicle.lng },
+          map: this.map,
+          title: vehicle.vehicleName,
+          zIndex: 2,
+        });
+        this.markers.push(marker);
       }
-
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        position: { lat: vehicle.lat, lng: vehicle.lng },
-        map: this.map,
-      });
-
-      this.markers.push(marker);
     });
-
-    this.jobs.forEach((job, index) => {
-      if (!job || typeof job.lat !== 'number' || typeof job.lng !== 'number') {
-        console.warn(`Skipping job ${index} due to invalid location data.`);
-        return;
+  
+    // Add markers for jobs
+    this.jobs.forEach((job) => {
+      if (job.lat && job.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: job.lat, lng: job.lng },
+          map: this.map,
+          title: job.clientName,
+          zIndex: 2,
+        });
+        this.markers.push(marker);
       }
-
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        position: { lat: job.lat, lng: job.lng },
-        map: this.map,
-      });
-
-      this.markers.push(marker);
     });
-
-    // Draw routes only if jobs are available
-    if (this.jobs.length > 0) {
-      this.drawRoutes();
-    }
+  
+    // Draw polylines
+    this.drawRoutes();
   }
+  
 
+  
+  
 
 
   toggleVehicles(): void {
-    this.showingVehicles = true;
-    this.isAll = false;
+    // Defer state updates
+    setTimeout(() => {
+      this.showingVehicles = true;
+      this.isAll = false;
+    }, 0);
+  
     this.clearMarkers();
-    this.clearPolylines(); // Ensure polylines are cleared
-
+    this.clearPolylines();
+  
     this.vehicles.forEach((vehicle, index) => {
       const contentElement = document.createElement('div');
       contentElement.style.display = 'flex';
       contentElement.style.alignItems = 'center';
-
-      // Add vehicle icon
+  
       const iconElement = document.createElement('img');
-      iconElement.src = 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png'; // Replace with your preferred van icon URL
+      iconElement.src = 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png'; // Replace with your icon URL
       iconElement.alt = 'Van Icon';
       iconElement.style.width = '20px';
       iconElement.style.height = '20px';
       iconElement.style.marginRight = '8px';
-
-      // Add vehicle info
+  
       const infoElement = document.createElement('div');
       infoElement.innerHTML = `<strong>Vehicle No.:</strong> V${index + 1}`;
       infoElement.style.fontSize = '12px';
-      infoElement.style.color = '#000'; // Text color for visibility
+      infoElement.style.color = '#000';
       infoElement.style.padding = '4px';
-      infoElement.style.backgroundColor = '#fff'; // White background for better contrast
-      infoElement.style.border = '1px solid #ccc'; // Optional border
-      infoElement.style.borderRadius = '4px'; // Rounded corners
-
-      // Combine icon and info
+      infoElement.style.backgroundColor = '#fff';
+      infoElement.style.border = '1px solid #ccc';
+      infoElement.style.borderRadius = '4px';
+  
       contentElement.appendChild(iconElement);
       contentElement.appendChild(infoElement);
-
+  
       const marker = new google.maps.marker.AdvancedMarkerElement({
         position: { lat: vehicle.lat, lng: vehicle.lng },
         map: this.map,
         content: contentElement,
       });
-
-      // Add an InfoWindow for displaying vehicle details
+  
       const infoWindow = new google.maps.InfoWindow({
         content: `
           <div>
@@ -238,16 +221,15 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
           </div>
         `,
       });
-
-      // Add click listener to show the InfoWindow
+  
       marker.addListener('click', () => {
         infoWindow.open(this.map, marker);
       });
-
+  
       this.markers.push(marker);
     });
   }
-
+  
 
   toggleJobs(): void {
     this.showingVehicles = false;
@@ -290,20 +272,28 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.gpsService
-      .loadApi(this.apiKey)
-      .then(() => {
-        if (typeof google !== 'undefined') {
-          this.initializeMap();
-          this.initializeSearchBox();
-        } else {
-          console.error('Google Maps API failed to load.');
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to load Google Maps API:', error);
-      });
+    if (typeof google !== 'undefined') {
+      this.initializeMap();
+    } else {
+      console.error('Google Maps API failed to load.');
+    }
   }
+
+
+  loadGoogleMapsApi(): void {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${this.apiKey}&libraries=places`;
+    script.defer = true;
+    script.async = true;
+    script.onload = () => {
+      this.initializeMap();
+    };
+    script.onerror = () => {
+      console.error('Google Maps API failed to load.');
+    };
+    document.head.appendChild(script);
+  }
+
 
 
 
@@ -313,15 +303,15 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
     this.polylines.forEach((polyline) => polyline.setMap(null));
     this.polylines = [];
   }
+  
 
   private drawRoutes(): void {
     this.clearPolylines();
-
+  
     this.vehicleJobMapping.forEach((mapping) => {
       const vehicle = this.vehicles[mapping.vehicleIndex];
       const job = this.jobs[mapping.jobIndex];
-
-      // Check if vehicle and job exist and have valid coordinates
+  
       if (
         !vehicle ||
         typeof vehicle.lat !== 'number' ||
@@ -333,24 +323,25 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
         console.warn(`Skipping route for vehicle ${mapping.vehicleIndex} or job ${mapping.jobIndex} due to missing data.`);
         return;
       }
-
+  
       const path = [
         { lat: vehicle.lat, lng: vehicle.lng },
         { lat: job.lat, lng: job.lng },
       ];
-
+  
       const polyline = new google.maps.Polyline({
         path: path,
         geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 1.0,
-        strokeWeight: 2,
+        strokeColor: "#ff0000", // Blue color
+        strokeOpacity: 0.7,
+        strokeWeight: 3,
       });
-
+  
       polyline.setMap(this.map);
       this.polylines.push(polyline);
     });
   }
+  
 
 
   private initializeSearchBox(): void {
@@ -408,18 +399,71 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
 
   // all events /Jobs
 
-  getAllCalendar() {
-    this.EventsService.getAllEventsService().subscribe((res: any) => {
-      if (res && res.status === 200 && res.data) { // Ensure res is an object
-        this.jobs = res.data.map((event: any) => ({
-          lat: event.lat,
-          lng: event.lng,
-          clientName: event.clientName,
-          address: event.address
-        }));
-        console.log("Updated jobs", this.jobs);
+  async getAllCalendar(): Promise<void> {
+    try {
+      const response: any = await this.http.get('http://3.223.253.106:5966/api/event/').toPromise();
+      if (response.status === 200 && Array.isArray(response.data)) {
+        this.jobs = response.data;
+  
+        const vehicleJobMapping: any[] = [];
+        const vehiclesPromises = response.data.map(async (event: any, index: number) => {
+          const employeeId = event.employeeId?._id;
+          if (employeeId) {
+            const vehicleData = await this.getVehicleLocation(employeeId);
+            if (vehicleData) {
+              vehicleJobMapping.push({
+                vehicleIndex: index, // Index of the vehicle
+                jobIndex: index,    // Index of the job
+              });
+  
+              return {
+                lat: vehicleData.latitude,
+                lng: vehicleData.longitude,
+                vehicleName: event.employeeId.employee_vanAssigned?.vanName || 'Unknown',
+                assignedTechnician: event.employeeName || 'N/A',
+              };
+            }
+          }
+          return null;
+        });
+  
+        const vehicles = await Promise.all(vehiclesPromises);
+        this.vehicles = vehicles.filter((v) => v !== null);
+        this.vehicleJobMapping = vehicleJobMapping;
+  
+        if (this.map) {
+          this.toggleAll();
+        }
+  
+        // Automatically draw routes
+        this.drawRoutes();
       }
-    });
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  }
+  
+
+  private async getVehicleLocation(employeeId: string): Promise<any | null> {
+    try {
+      const docRef = doc(this.firestore, 'live_locations', employeeId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data();
+      } else {
+        console.warn(`No location data found for employeeId: ${employeeId}`);
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle location:', error);
+    }
+    return null;
   }
 
+  toggleRoutesVisibility(): void {
+    if (this.polylines.length > 0) {
+      const isVisible = this.polylines[0].getMap() !== null;
+      this.polylines.forEach((polyline) => polyline.setMap(isVisible ? null : this.map));
+    }
+  }
+  
 }
