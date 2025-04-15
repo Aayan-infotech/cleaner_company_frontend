@@ -387,12 +387,12 @@
                                                 {{ log.status }}
                                             </td>
 
-                                            <td>{{ log.timeRecordDetails.clockIn | date: 'shortTime' }}</td>
-                                            <td>{{ log.timeRecordDetails.clockOut | date: 'shortTime' }}</td>
-                                            <td>{{ log.timeRecordDetails.breakStart | date: 'shortTime' }}</td>
-                                            <td>{{ log.timeRecordDetails.breakEnd | date: 'shortTime' }}</td>
-                                            <td>{{ log.timeRecordDetails.lunchStart | date: 'shortTime' }}</td>
-                                            <td>{{ log.timeRecordDetails.lunchEnd | date: 'shortTime' }}</td>
+                                            <td>{{ log.timeRecordDetails.clockIn | date: 'shortTime':'UTC' }}</td>
+                                            <td>{{ log.timeRecordDetails.clockOut | date: 'shortTime':'UTC' }}</td>
+                                            <td>{{ log.timeRecordDetails.breakStart | date: 'shortTime':'UTC' }}</td>
+                                            <td>{{ log.timeRecordDetails.breakEnd | date: 'shortTime':'UTC' }}</td>
+                                            <td>{{ log.timeRecordDetails.lunchStart | date: 'shortTime':'UTC' }}</td>
+                                            <td>{{ log.timeRecordDetails.lunchEnd | date: 'shortTime':'UTC' }}</td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -34,4 +34,8 @@ export class CalendarEventService {
   getAllUsersService(): Observable<any> {
     return this.http.get<any>(this.apiUrl);
   };
+
+  getAllCurrentJobs(){
+    return this.http.get<any[]>(`${apiUrls.eventsApi}/events/current`);
+  }
 }

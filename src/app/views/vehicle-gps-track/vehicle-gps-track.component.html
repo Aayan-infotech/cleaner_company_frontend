@@ -1,55 +1,142 @@
 <c-row>
     <c-col xs>
         <c-card class="mb-4">
+            <!-- Card Header -->
             <c-card-header class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">GPS Tracking</h5>
-                <div class="d-flex flex-wrap align-items-center gap-3">
-                    <input id="search-box" type="text" class="form-control" placeholder="Search location" style="width: 300px;">
-            
-                    <div class="btn-group">
-                        <button class="btn btn-outline-primary" [ngClass]="{ 'active': isAll }" (click)="toggleAll()">
-                            All
-                        </button>
-                        <button class="btn btn-outline-primary" [ngClass]="{ 'active': showingVehicles }" (click)="toggleVehicles()">
-                            Vehicles
-                        </button>
-                        <button class="btn btn-outline-primary" [ngClass]="{ 'active': !showingVehicles && !isAll }" (click)="toggleJobs()">
-                            Jobs
-                        </button>
-                        
-                    </div>
+                <div class="d-flex flex-wrap align-items-center gap-3 p-3 bg-light border rounded">
+                  <!-- Search Box -->
+                  <div class="input-group" style="width: 300px;">
+                    <span class="input-group-text">
+                      <i class="cil-search"></i>
+                    </span>
+                    <input
+                      id="search-box"
+                      type="text"
+                      class="form-control"
+                      placeholder="Search location"
+                    />
+                  </div>
+                
+                  <!-- Buttons Group -->
+                  <div class="btn-group" role="group" aria-label="Vehicle Options">
+                    <button
+                      class="btn btn-outline-primary"
+                      [ngClass]="{ 'active': isAll }"
+                      (click)="toggleAll()"
+                    >
+                      <i class="cil-layers"></i> All
+                    </button>
+                    <button
+                      class="btn btn-outline-primary"
+                      [ngClass]="{ 'active': !showingVehicles && !isAll }"
+                      (click)="toggleJobs()"
+                    >
+                      <i class="cil-task"></i> Jobs
+                    </button>
+                  </div>
+                
+                  <!-- Dropdown for Vehicles -->
+                  <div class="dropdown">
+                    <select
+                      id="vehicleSelect"
+                      [(ngModel)]="selectedVehicleName"
+                      class="form-select"
+                      style="width: 200px;"
+                      (change)="toggleVehicles()"
+                    >
+                      <option value="All">All Vehicles</option>
+                      <option *ngFor="let vehicle of vehicles" [value]="vehicle.vehicleName">
+                        {{ vehicle.vehicleName }}
+                      </option>
+                    </select>
+                  </div>
                 </div>
+                
             </c-card-header>
-            
-            <c-card-body>
-                <div class="d-flex">
 
+            <!-- Card Body -->
+            <c-card-body>
+                <!-- Map and Date-Time Controls -->
+                <div class="d-flex flex-wrap">
                     <div style="margin-right: 1rem;">
                         <!-- Google Map Container -->
                         <div id="map" style="width: 800px; height: 600px; border: 1px solid #ccc;"></div>
                     </div>
-                    <div>
-                        <c-col xs="12" class="p-3 border" style="text-decoration: none !important;">
+                    <div class="date-time-controls" style="flex: 1;">
+                        <!-- Calendar Button -->
+                        <c-col xs="12" class="p-3 border mb-3" style="text-decoration: none !important;">
                             <button cButton size="sm" color="primary" class="me-md-2" routerLink="/dashboard">
                                 Calendar
                             </button>
                         </c-col>
-                        <c-col xs="12" class="p-3 border"
+
+                        <!-- Date Navigation -->
+                        <c-col xs="12" class="p-3 border mb-3"
                             style="text-decoration: none !important; display: flex; align-items: center; justify-content: center;">
                             <button (click)="changeDate(-1)" class="btn btn-outline-primary btn-sm">←</button>
-                            <span class="date-display">{{ currentDate }}</span>
+                            <span class="date-display mx-2">{{ currentDate }}</span>
                             <button (click)="changeDate(1)" class="btn btn-outline-primary btn-sm">→</button>
                         </c-col>
 
-                        <c-col xs="12" class="p-3 border">
-                            {{ currentDay }}
+                        <!-- Current Day -->
+                        <c-col xs="12" class="p-3 border mb-3 text-center">
+                            <span>{{ currentDay }}</span>
                         </c-col>
-                        <c-col xs="12" class="p-3 border">
-                            {{ currentTime }}
+
+                        <!-- Current Time -->
+                        <c-col xs="12" class="p-3 border mb-3 text-center">
+                            <span>{{ currentTime }}</span>
                         </c-col>
                     </div>
-
                 </div>
+
+                <!-- Table Section -->
+                <div class="mt-3">
+                    <c-card>
+                      <c-card-header class="d-flex justify-content-between align-items-center">
+                        <span>Current Jobs</span>
+                      </c-card-header>
+                  
+                      <div *ngIf="currentJobs && currentJobs.length > 0; else noJobs">
+                        <!-- Table for Current Jobs -->
+                        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                          <thead cTableColor="light">
+                            <tr class="fsize1">
+                              <th></th>
+                              <th>S.No.</th>
+                              <th>Job Title</th>
+                              <th>Job Type</th>
+                              <th>Client Name</th>
+                              <th>Client Address</th>
+                              <th>Technician Assign</th>
+                            </tr>
+                          </thead>
+                          <tbody class="fs-6">
+                            <tr *ngFor="let job of currentJobs | slice: 0:3; let i = index">
+                              <td></td>
+                              <td>{{ i + 1 }}</td>
+                              <td>{{ job.title }}</td>
+                              <td>{{ job.eventType }}</td>
+                              <td>{{ job.clientName }}</td>
+                              <td>{{ job.address }}</td>
+                              <td>{{ job.employeeName }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <!-- Fallback Template -->
+                      <ng-template #noJobs>
+                        <div class="text-center p-4">
+                          <h5 class="text-muted">No Current Jobs</h5>
+                        </div>
+                      </ng-template>
+                      
+                    </c-card>
+                  </div>
+                  
+                  
             </c-card-body>
         </c-card>
     </c-col>

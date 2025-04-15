@@ -18,6 +18,8 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   currentDate!: string;
   currentDay!: string;
   currentTime!: string;
+  jobData!: any;
+  currentJobs: any[] = [];
   selectedDate: Date = new Date();
   isAll: boolean = false;
   vanService = inject(VanService);
@@ -28,19 +30,11 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   EventsService = inject(CalendarEventService);
   private vehicleJobMapping: any[] = [];
 
-  private vehicles: any[] = [];
+  public vehicles: any[] = [];
+  selectedVehicleName: string = 'All';
 
 
-
-  private jobs: any[] = [];
-
-  // private vehicleJobMapping = [
-  //   { vehicleIndex: 0, jobIndex: 0 }, // Vehicle 1 -> Job 1
-  //   { vehicleIndex: 1, jobIndex: 1 }, // Vehicle 2 -> Job 2
-  //   { vehicleIndex: 2, jobIndex: 2 }, // Vehicle 3 -> Job 3
-  //   { vehicleIndex: 3, jobIndex: 3 }, // Vehicle 4 -> Job 4
-  //   { vehicleIndex: 4, jobIndex: 4 }, // Vehicle 5 -> Job 5
-  // ];
+  public jobs: any[] = [];
 
   private polylines: any[] = []; // Store polylines to manage clearing
 
@@ -51,6 +45,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.updateDateTime();
     this.getAllCalendar();
+    this.getAllCurrentJobs()
     setInterval(() => {
       this.updateCurrentTime();
     }, 1000);
@@ -82,6 +77,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   changeDate(days: number) {
     this.selectedDate.setDate(this.selectedDate.getDate() + days);
     this.updateDateTime();
+    this.filterJobsByDate();
   }
 
   formatDate(date: Date): string {
@@ -138,20 +134,39 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
     this.clearMarkers();
     this.clearPolylines();
   
-    // Add markers for vehicles
+    // Add markers for vehicles (blue icon)
+    const vehicleIcon = {
+      url: 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png', // Replace with your desired vehicle icon
+      scaledSize: new google.maps.Size(30, 30), // Size of the icon
+    };
+  
     this.vehicles.forEach((vehicle) => {
       if (vehicle.lat && vehicle.lng) {
         const marker = new google.maps.Marker({
           position: { lat: vehicle.lat, lng: vehicle.lng },
           map: this.map,
           title: vehicle.vehicleName,
+          icon: vehicleIcon, // Use the vehicle icon
           zIndex: 2,
+        });
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div>
+              <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
+              <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
+            </div>
+          `,
+        });
+    
+        marker.addListener('click', () => {
+          infoWindow.open(this.map, marker);
         });
         this.markers.push(marker);
       }
     });
   
-    // Add markers for jobs
+
+  
     this.jobs.forEach((job) => {
       if (job.lat && job.lng) {
         const marker = new google.maps.Marker({
@@ -160,6 +175,20 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
           title: job.clientName,
           zIndex: 2,
         });
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+                  <div>
+                    <p><strong>Client Name:</strong> ${job.clientName}</p>
+                     <p><strong>Client Address:</strong> ${job.address}</p>
+                  </div>
+                `,
+        });
+  
+        // Add click listener to show the InfoWindow
+        marker.addListener('click', () => {
+          infoWindow.open(this.map, marker);
+        });
+  
         this.markers.push(marker);
       }
     });
@@ -167,67 +196,76 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
     // Draw polylines
     this.drawRoutes();
   }
-  
 
   
   
 
 
   toggleVehicles(): void {
-    // Defer state updates
-    setTimeout(() => {
-      this.showingVehicles = true;
-      this.isAll = false;
-    }, 0);
-  
     this.clearMarkers();
     this.clearPolylines();
-  
-    this.vehicles.forEach((vehicle, index) => {
-      const contentElement = document.createElement('div');
-      contentElement.style.display = 'flex';
-      contentElement.style.alignItems = 'center';
-  
-      const iconElement = document.createElement('img');
-      iconElement.src = 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png'; // Replace with your icon URL
-      iconElement.alt = 'Van Icon';
-      iconElement.style.width = '20px';
-      iconElement.style.height = '20px';
-      iconElement.style.marginRight = '8px';
-  
-      const infoElement = document.createElement('div');
-      infoElement.innerHTML = `<strong>Vehicle No.:</strong> V${index + 1}`;
-      infoElement.style.fontSize = '12px';
-      infoElement.style.color = '#000';
-      infoElement.style.padding = '4px';
-      infoElement.style.backgroundColor = '#fff';
-      infoElement.style.border = '1px solid #ccc';
-      infoElement.style.borderRadius = '4px';
-  
-      contentElement.appendChild(iconElement);
-      contentElement.appendChild(infoElement);
-  
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        position: { lat: vehicle.lat, lng: vehicle.lng },
-        map: this.map,
-        content: contentElement,
+
+    // Check if "All" is selected
+    if (this.selectedVehicleName === 'All') {
+      this.showingVehicles = true;
+      this.vehicles.forEach((vehicle, index) => {
+        this.addVehicleMarker(vehicle, index);
       });
-  
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div>
-            <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
-            <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
-          </div>
-        `,
-      });
-  
-      marker.addListener('click', () => {
-        infoWindow.open(this.map, marker);
-      });
-  
-      this.markers.push(marker);
+    } else {
+      this.showingVehicles = false;
+      const selectedVehicle = this.vehicles.find(vehicle => vehicle.vehicleName === this.selectedVehicleName);
+      if (selectedVehicle) {
+        this.addVehicleMarker(selectedVehicle, 0);
+      }
+    }
+  }
+
+  addVehicleMarker(vehicle: any, index: number): void {
+    this.showingVehicles = true;
+    this.isAll = false;
+    const contentElement = document.createElement('div');
+    contentElement.style.display = 'flex';
+    contentElement.style.alignItems = 'center';
+
+    const iconElement = document.createElement('img');
+    iconElement.src = 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png'; // Replace with your icon URL
+    iconElement.alt = 'Van Icon';
+    iconElement.style.width = '20px';
+    iconElement.style.height = '20px';
+    iconElement.style.marginRight = '8px';
+
+    const infoElement = document.createElement('div');
+    infoElement.innerHTML = `<strong>Vehicle No.:</strong> V${index + 1}`;
+    infoElement.style.fontSize = '12px';
+    infoElement.style.color = '#000';
+    infoElement.style.padding = '4px';
+    infoElement.style.backgroundColor = '#fff';
+    infoElement.style.border = '1px solid #ccc';
+    infoElement.style.borderRadius = '4px';
+
+    contentElement.appendChild(iconElement);
+    contentElement.appendChild(infoElement);
+
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      position: { lat: vehicle.lat, lng: vehicle.lng },
+      map: this.map,
+      content: contentElement,
     });
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div>
+          <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
+          <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
+        </div>
+      `,
+    });
+
+    marker.addListener('click', () => {
+      infoWindow.open(this.map, marker);
+    });
+
+    this.markers.push(marker);
   }
   
 
@@ -332,7 +370,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       const polyline = new google.maps.Polyline({
         path: path,
         geodesic: true,
-        strokeColor: "#ff0000", // Blue color
+        strokeColor: "#ff0000", // Red color for the line
         strokeOpacity: 0.7,
         strokeWeight: 3,
       });
@@ -404,7 +442,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       const response: any = await this.http.get('http://3.223.253.106:5966/api/event/').toPromise();
       if (response.status === 200 && Array.isArray(response.data)) {
         this.jobs = response.data;
-  
+        this.filterJobsByDate(); 
         const vehicleJobMapping: any[] = [];
         const vehiclesPromises = response.data.map(async (event: any, index: number) => {
           const employeeId = event.employeeId?._id;
@@ -466,4 +504,72 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
     }
   }
   
+  displayJobsOnMap(filteredJobs: any[]): void {
+    this.clearMarkers(); // Clear existing markers
+    this.clearPolylines(); // Clear existing polylines
+  
+    filteredJobs.forEach((job, index) => {
+      const contentElement = document.createElement('div');
+      contentElement.innerHTML = `<strong>Job ID:</strong> ${index + 1}`;
+      contentElement.style.padding = '5px';
+      contentElement.style.backgroundColor = '#ffb879';
+      contentElement.style.border = '1px solid #ccc';
+      contentElement.style.borderRadius = '4px';
+  
+      const marker = new google.maps.Marker({
+        position: { lat: job.lat, lng: job.lng },
+        map: this.map,
+        title: job.clientName,
+      });
+  
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div>
+            <p><strong>Client Name:</strong> ${job.clientName}</p>
+            <p><strong>Client Address:</strong> ${job.address}</p>
+          </div>
+        `,
+      });
+  
+      marker.addListener('click', () => {
+        infoWindow.open(this.map, marker);
+      });
+  
+      this.markers.push(marker);
+    });
+  }
+
+  filterJobsByDate(): void {
+    if (!this.jobs || this.jobs.length === 0) {
+      return;
+    }
+  
+    const selectedDateString = this.selectedDate.toISOString().split('T')[0]; // Get selected date in 'yyyy-mm-dd' format
+  
+    const filteredJobs = this.jobs.filter((job) => {
+      const jobDate = new Date(job.date).toISOString().split('T')[0];
+      return jobDate === selectedDateString;
+    });
+  
+    this.displayJobsOnMap(filteredJobs);
+  }
+  
+  //current day Job
+  getAllCurrentJobs(): void {
+    this.EventsService.getAllCurrentJobs().subscribe({
+      next: (res) => {
+        this.jobData = res;
+        this.currentJobs = this.jobData?.data || []; // Safeguard for null/undefined
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          console.warn(err.error.message); // API 404 message (e.g., "No current events found")
+        }
+        this.currentJobs = []; // Fallback to empty array
+      },
+      complete: () => {
+        console.log('Job fetching completed.');
+      }
+    });
+  }
 }
