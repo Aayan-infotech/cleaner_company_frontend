@@ -50,3 +50,28 @@
     color: white;
   }
   
+  .status-dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  .status-yellow {
+    background-color: yellow;
+  }
+  
+  .status-red {
+    background-color: red;
+  }
+  
+  .status-green {
+    background-color: green;
+  }
+  
+  .status-default {
+    background-color: gray; /* Fallback color */
+  }
+  

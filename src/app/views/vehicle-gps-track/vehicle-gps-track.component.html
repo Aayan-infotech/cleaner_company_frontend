@@ -110,6 +110,7 @@
                               <th>Client Name</th>
                               <th>Client Address</th>
                               <th>Technician Assign</th>
+                              <th>Technician Status</th>
                             </tr>
                           </thead>
                           <tbody class="fs-6">
@@ -121,6 +122,13 @@
                               <td>{{ job.clientName }}</td>
                               <td>{{ job.address }}</td>
                               <td>{{ job.employeeName }}</td>
+                              <td>
+                                <span
+                                  class="status-dot"
+                                  [ngClass]="getStatusClass(job.employeeId.employee_workingStatus)"
+                                ></span>
+                                {{ job.employeeId.employee_workingStatus }}
+                              </td>
                             </tr>
                           </tbody>
                         </table>
