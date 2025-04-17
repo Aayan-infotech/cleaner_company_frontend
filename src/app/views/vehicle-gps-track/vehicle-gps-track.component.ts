@@ -154,6 +154,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
             <div>
               <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
               <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
+               <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
             </div>
           `,
         });
@@ -257,6 +258,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
         <div>
           <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
           <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
+           <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
         </div>
       `,
     });
@@ -459,6 +461,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
                 lng: vehicleData.longitude,
                 vehicleName: event.employeeId.employee_vanAssigned?.vanName || 'Unknown',
                 assignedTechnician: event.employeeName || 'N/A',
+                technicianStatus: event.employeeId.employee_workingStatus || 'N/A',
               };
             }
           }
@@ -572,4 +575,18 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Maintenance':
+        return 'status-yellow';
+      case 'Offline':
+        return 'status-red';
+      case 'InService':
+        return 'status-green';
+      default:
+        return 'status-default'; // For unknown statuses
+    }
+  }
+  
 }
