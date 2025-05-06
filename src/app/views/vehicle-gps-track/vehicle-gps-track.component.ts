@@ -50,8 +50,8 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.updateDateTime();
     this.getAllCalendar();
-    this.getAllCurrentJobs('pending')
-    this.getAllPastJobs('pending')
+    this.getAllCurrentJobs()
+    this.getAllPastJobs()
     setInterval(() => {
       this.updateCurrentTime();
     }, 1000);
