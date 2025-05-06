@@ -1,151 +1,323 @@
 <c-row>
-    <c-col xs>
-        <c-card class="mb-4">
-            <!-- Card Header -->
+  <c-col xs>
+    <c-card class="mb-4">
+      <!-- Card Header -->
+      <c-card-header class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">GPS Tracking</h5>
+        <div class="d-flex flex-wrap align-items-center gap-3 p-3 bg-light border rounded">
+          <!-- Search Box -->
+          <div class="input-group" style="width: 300px;">
+            <span class="input-group-text">
+              <i class="cil-search"></i>
+            </span>
+            <input id="search-box" type="text" class="form-control" placeholder="Search location" />
+          </div>
+
+          <!-- Buttons Group -->
+          <div class="btn-group" role="group" aria-label="Vehicle Options">
+            <button class="btn btn-outline-primary" [ngClass]="{ 'active': isAll }" (click)="toggleAll()">
+              <i class="cil-layers"></i> All
+            </button>
+            <button class="btn btn-outline-primary" [ngClass]="{ 'active': !showingVehicles && !isAll }"
+              (click)="toggleJobs()">
+              <i class="cil-task"></i> Jobs
+            </button>
+            <button class="btn btn-outline-primary" [ngClass]="{ 'active': showingVehicles }" (click)="toggleAllVehicles()">
+              <i class="cil-car"></i> Vehicles
+            </button>
+          </div>
+
+          <!-- Dropdown for Vehicles -->
+          <div class="dropdown">
+            <select id="vehicleSelect" [(ngModel)]="selectedVehicleName" class="form-select" style="width: 200px;"
+              (change)="toggleVehicles()">
+              <option value="All">All Vehicles</option>
+              <option *ngFor="let vehicle of vehicles" [value]="vehicle.vehicleName">
+                {{ vehicle.vehicleName }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+      </c-card-header>
+
+      <!-- Card Body -->
+      <c-card-body>
+        <!-- Map and Date-Time Controls -->
+        <div class="d-flex flex-wrap">
+          <div style="margin-right: 1rem;">
+            <!-- Google Map Container -->
+            <div id="map" style="width: 800px; height: 600px; border: 1px solid #ccc;"></div>
+          </div>
+          <div class="date-time-controls" style="flex: 1;">
+            <!-- Calendar Button -->
+            <c-col xs="12" class="p-3 border mb-3" style="text-decoration: none !important;">
+              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/dashboard">
+                Calendar
+              </button>
+              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/orderRequest">
+                Add New Client
+              </button>
+              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/jobSchedulingManagement">
+                Start New Estimate
+              </button>
+            </c-col>
+
+            <!-- Date Navigation -->
+            <c-col xs="12" class="p-3 border mb-3"
+              style="text-decoration: none !important; display: flex; align-items: center; justify-content: center;">
+              <button (click)="changeDate(-1)" class="btn btn-outline-primary btn-sm">←</button>
+              <span class="date-display mx-2">{{ currentDate }}</span>
+              <button (click)="changeDate(1)" class="btn btn-outline-primary btn-sm">→</button>
+            </c-col>
+
+            <!-- Current Day -->
+            <c-col xs="12" class="p-3 border mb-3 text-center">
+              <span>{{ currentDay }}</span>
+            </c-col>
+
+            <!-- Current Time -->
+            <c-col xs="12" class="p-3 border mb-3 text-center">
+              <span>{{ currentTime }}</span>
+            </c-col>
+          </div>
+        </div>
+
+
+        <!--Current Table Section -->
+        <div class="mt-3">
+          <c-card>
+            
             <c-card-header class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">GPS Tracking</h5>
-                <div class="d-flex flex-wrap align-items-center gap-3 p-3 bg-light border rounded">
-                  <!-- Search Box -->
-                  <div class="input-group" style="width: 300px;">
-                    <span class="input-group-text">
-                      <i class="cil-search"></i>
-                    </span>
-                    <input
-                      id="search-box"
-                      type="text"
-                      class="form-control"
-                      placeholder="Search location"
-                    />
-                  </div>
-                
-                  <!-- Buttons Group -->
-                  <div class="btn-group" role="group" aria-label="Vehicle Options">
-                    <button
-                      class="btn btn-outline-primary"
-                      [ngClass]="{ 'active': isAll }"
-                      (click)="toggleAll()"
-                    >
-                      <i class="cil-layers"></i> All
-                    </button>
-                    <button
-                      class="btn btn-outline-primary"
-                      [ngClass]="{ 'active': !showingVehicles && !isAll }"
-                      (click)="toggleJobs()"
-                    >
-                      <i class="cil-task"></i> Jobs
-                    </button>
-                  </div>
-                
-                  <!-- Dropdown for Vehicles -->
-                  <div class="dropdown">
-                    <select
-                      id="vehicleSelect"
-                      [(ngModel)]="selectedVehicleName"
-                      class="form-select"
-                      style="width: 200px;"
-                      (change)="toggleVehicles()"
-                    >
-                      <option value="All">All Vehicles</option>
-                      <option *ngFor="let vehicle of vehicles" [value]="vehicle.vehicleName">
-                        {{ vehicle.vehicleName }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
-                
+              <span>Current Jobs</span>
+              <div class="d-flex justify-content-end mb-3 align-items-center">
+                <label for="jobStatusFilter" class="me-2">Job Status:</label>
+                <select  
+                  id="jobStatusFilter" 
+                  #filterSelect 
+                  class="form-select w-auto" 
+                  (change)="applyFilter(filterSelect.value)" 
+                  [value]="currentFilterStatus || ''">
+                  <option value="">All</option>
+                  <option value="complete">Complete</option>
+                  <option value="inprogress">In Progress</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+            </c-card-header>
+            
+
+            <div *ngIf="currentJobs && currentJobs.length > 0; else noJobs">
+              <!-- Table for Current Jobs -->
+              <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                <thead cTableColor="light">
+                  <tr class="fsize1">
+                    <th></th>
+                    <th>S.No.</th>
+                    <th>Job Title</th>              
+                    <th>Client Name</th>
+                    <th>Client Address</th>
+                    <th>Job Status</th>
+                    <th>Technician Assign</th>
+                    <th>Technician Status</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let job of currentJobs | slice: 0:3; let i = index">
+                    <td></td>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ job.title }}</td>
+                    <td>{{ job.clientName }}</td>
+                    <td>{{ job.address }}</td>
+                    <td>
+                      {{ job.status }}
+                    </td>
+                    <td>{{ job.employeeName }}</td>
+                    <td>
+                      <span class="status-dot" [ngClass]="getStatusClass(job.employeeId.employee_workingStatus)"></span>
+                      {{ getStatusLabel(job.employeeId.employee_workingStatus) }}
+                    </td>
+                    <td>
+
+                      <button (click)="viewJobDetails(job._id)" title="View Job Details" class="mx-2" size="sm">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                          class="bi bi-eye" viewBox="0 0 16 16">
+                          <path
+                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                          <path
+                            d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Fallback Template -->
+            <ng-template #noJobs>
+              <div class="text-center p-4">
+                <h5 class="text-muted">No Current Jobs</h5>
+              </div>
+            </ng-template>
+
+          </c-card>
+        </div>
+        <!--Past Table Section -->
+        <div class="mt-3">
+          <c-card>
+            <c-card-header class="d-flex justify-content-between align-items-center">
+              <span>Past Jobs</span>
+              <div class="d-flex align-items-center">
+                <label for="statusFilter" class="me-2">Job Status:</label>
+                <select
+                id="statusFilter"
+                class="form-select w-auto"
+                (change)="applyPastFilter($event)"
+                [value]="pastFilterStatus || ''"
+              >
+                <option value="">All</option>
+                <option value="complete">Complete</option>
+                <option value="inprogress">In Progress</option>
+                <option value="pending">Pending</option>
+              </select>
+              
+              
+              </div>
             </c-card-header>
 
-            <!-- Card Body -->
-            <c-card-body>
-                <!-- Map and Date-Time Controls -->
-                <div class="d-flex flex-wrap">
-                    <div style="margin-right: 1rem;">
-                        <!-- Google Map Container -->
-                        <div id="map" style="width: 800px; height: 600px; border: 1px solid #ccc;"></div>
-                    </div>
-                    <div class="date-time-controls" style="flex: 1;">
-                        <!-- Calendar Button -->
-                        <c-col xs="12" class="p-3 border mb-3" style="text-decoration: none !important;">
-                            <button cButton size="sm" color="primary" class="me-md-2" routerLink="/dashboard">
-                                Calendar
-                            </button>
-                        </c-col>
+            <div *ngIf="pastCurrentJobs && pastCurrentJobs.length > 0; else noJobs">
+              <!-- Table for Current Jobs -->
+              <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                <thead cTableColor="light">
+                  <tr class="fsize1">
+                    <th></th>
+                    <th>S.No.</th>
+                    <th>Job Title</th>
+                    <th>Client Name</th>
+                    <th>Client Address</th>
+                    <th>Job Status</th>
+                    <th>Invoice</th>
+                    <th>Estimate</th>
+                    <th>View</th>
+                  </tr>
+                </thead>
+                <tbody class="fs-6">
+                  <tr *ngFor="let job of pastCurrentJobs | slice: 0:3; let i = index">
+                    <td></td>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ job.title }}</td>
+                    <td>{{ job.clientName }}</td>
+                    <td>{{ job.address }}</td>
+                    <td>
+                      {{ job.status }}
+                    </td>
+                    <td>
+                      <a href="assets/images/companypdf.pdf" download="Invoice.pdf" class="btn btn-sm">
+                        Download
+                      </a>
+                    </td>
+                    <td>
+                      <a href="assets/images/companypdf.pdf" download="Estimate.pdf" class="btn btn-sm">
+                        Download
+                      </a>
+                    </td>
+                    <td> <button (click)="viewJobDetails(job._id)" title="View Job Details" class="mx-2" size="sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                          class="bi bi-eye" viewBox="0 0 16 16">
+                          <path
+                            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                          <path
+                            d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                        </svg>
+                      </button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-                        <!-- Date Navigation -->
-                        <c-col xs="12" class="p-3 border mb-3"
-                            style="text-decoration: none !important; display: flex; align-items: center; justify-content: center;">
-                            <button (click)="changeDate(-1)" class="btn btn-outline-primary btn-sm">←</button>
-                            <span class="date-display mx-2">{{ currentDate }}</span>
-                            <button (click)="changeDate(1)" class="btn btn-outline-primary btn-sm">→</button>
-                        </c-col>
+            <!-- Fallback Template -->
+            <ng-template #noJobs>
+              <div class="text-center p-4">
+                <h5 class="text-muted">No Past Jobs</h5>
+              </div>
+            </ng-template>
 
-                        <!-- Current Day -->
-                        <c-col xs="12" class="p-3 border mb-3 text-center">
-                            <span>{{ currentDay }}</span>
-                        </c-col>
+          </c-card>
+        </div>
 
-                        <!-- Current Time -->
-                        <c-col xs="12" class="p-3 border mb-3 text-center">
-                            <span>{{ currentTime }}</span>
-                        </c-col>
-                    </div>
-                </div>
-
-                <!-- Table Section -->
-                <div class="mt-3">
-                    <c-card>
-                      <c-card-header class="d-flex justify-content-between align-items-center">
-                        <span>Current Jobs</span>
-                      </c-card-header>
-                  
-                      <div *ngIf="currentJobs && currentJobs.length > 0; else noJobs">
-                        <!-- Table for Current Jobs -->
-                        <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
-                          <thead cTableColor="light">
-                            <tr class="fsize1">
-                              <th></th>
-                              <th>S.No.</th>
-                              <th>Job Title</th>
-                              <th>Job Type</th>
-                              <th>Client Name</th>
-                              <th>Client Address</th>
-                              <th>Technician Assign</th>
-                              <th>Technician Status</th>
-                            </tr>
-                          </thead>
-                          <tbody class="fs-6">
-                            <tr *ngFor="let job of currentJobs | slice: 0:3; let i = index">
-                              <td></td>
-                              <td>{{ i + 1 }}</td>
-                              <td>{{ job.title }}</td>
-                              <td>{{ job.eventType }}</td>
-                              <td>{{ job.clientName }}</td>
-                              <td>{{ job.address }}</td>
-                              <td>{{ job.employeeName }}</td>
-                              <td>
-                                <span
-                                  class="status-dot"
-                                  [ngClass]="getStatusClass(job.employeeId.employee_workingStatus)"
-                                ></span>
-                                {{ job.employeeId.employee_workingStatus }}
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      
-                      <!-- Fallback Template -->
-                      <ng-template #noJobs>
-                        <div class="text-center p-4">
-                          <h5 class="text-muted">No Current Jobs</h5>
-                        </div>
-                      </ng-template>
-                      
-                    </c-card>
-                  </div>
-                  
-                  
-            </c-card-body>
-        </c-card>
-    </c-col>
+      </c-card-body>
+    </c-card>
+  </c-col>
 </c-row>
+
+<!-- Modals -->
+
+
+
+<c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)" size="lg">
+  <c-modal-header>
+  
+    <button (click)="toggleLiveDemo()" cButtonClose></button>
+  </c-modal-header>
+  <c-modal-body>
+    <div *ngIf="selectedJob">
+      <c-card class="mb-4">
+        <c-card-header class="text-center">
+          <h5>Job Details</h5>
+        </c-card-header>
+        <c-card-body>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Job Title:</strong> {{ selectedJob.data.title }}</p>
+              <p><strong>Job Date:</strong> {{ selectedJob.data.date }}</p>
+              <p><strong>Job Type:</strong> {{ selectedJob.data.eventType }}</p>
+              <p><strong>Job Status:</strong> {{ selectedJob.data.status }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Job Description:</strong></p>
+              <p class="text-muted">{{ selectedJob.data.description }}</p>
+            </div>
+          </div>
+          <hr>
+          <h6 class="text-primary">Client Details</h6>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Name:</strong> {{ selectedJob.data.clientName }}</p>
+              <p><strong>Email:</strong> {{ selectedJob.data.clientEmail }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Contact No.:</strong> {{ selectedJob.data.clientContact }}</p>
+              <p><strong>Address:</strong> {{ selectedJob.data.address }}</p>
+            </div>
+          </div>
+          <hr>
+          <h6 class="text-primary">Technician Details</h6>
+          <div class="row mb-3 ">
+            <div class="col-md-6 text-center">
+              <img *ngIf="selectedJob" [src]="selectedJob.data.employeeId.employee_photo" alt="Employee Photo"
+                   class="rounded-circle img-thumbnail mb-2" style="width: 120px; height: 120px;">
+              <p class="mb-0"><strong>{{ selectedJob.data.employeeName }}</strong></p>
+              <!-- <small class="text-muted">Working Status: {{ selectedJob.data.employeeId.employee_workingStatus }}</small> -->
+              <span class="status-dot" [ngClass]="getStatusClass(selectedJob.data.employeeId.employee_workingStatus)"></span>
+              {{ getStatusLabel(selectedJob.data.employeeId.employee_workingStatus) }}
+            </div>
+            <div class="col-md-6">
+              <p><strong>Contact No.:</strong> {{ selectedJob.data.employeeId.employee_contact }}</p>
+              <p><strong>Email:</strong> {{ selectedJob.data.employeeId.employee_email }}</p>
+              <p><strong>Van Assigned:</strong> {{ selectedJob.data.employeeId.employee_vanAssigned.vanName }}</p>
+            </div>
+          </div>
+        </c-card-body>
+      </c-card>
+    </div>
+    
+  </c-modal-body>
+  <c-modal-footer>
+    <button (click)="toggleLiveDemo()" cButton color="secondary">
+      Close
+    </button>
+  </c-modal-footer>
+</c-modal>

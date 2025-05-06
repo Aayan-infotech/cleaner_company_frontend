@@ -20,6 +20,9 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   currentTime!: string;
   jobData!: any;
   currentJobs: any[] = [];
+
+  pastJobData!: any;
+  pastCurrentJobs: any[] = [];
   selectedDate: Date = new Date();
   isAll: boolean = false;
   vanService = inject(VanService);
@@ -32,10 +35,12 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
 
   public vehicles: any[] = [];
   selectedVehicleName: string = 'All';
-
-
+  public visible = false;
+  selectedJob: any = null; 
   public jobs: any[] = [];
-
+  currentFilterStatus: string | null = null;
+  pastFilterStatus: string | null = null;
+  
   private polylines: any[] = []; // Store polylines to manage clearing
 
   showingVehicles = false;
@@ -45,7 +50,8 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.updateDateTime();
     this.getAllCalendar();
-    this.getAllCurrentJobs()
+    this.getAllCurrentJobs('pending')
+    this.getAllPastJobs('pending')
     setInterval(() => {
       this.updateCurrentTime();
     }, 1000);
@@ -311,6 +317,59 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // all vehicle button
+  
+  toggleAllVehicles(): void {
+    if (!this.map) {
+      console.error('Map is not initialized yet.');
+      return;
+    }
+  
+    // Defer state updates to avoid ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      this.isAll = false;
+      this.showingVehicles = true;
+    }, 0);
+  
+    this.clearMarkers();
+    this.clearPolylines();
+  
+    // Add markers for vehicles (blue icon)
+    const vehicleIcon = {
+      url: 'https://img.icons8.com/?size=80&id=N2EsIjOuzPRj&format=png', // Replace with your desired vehicle icon
+      scaledSize: new google.maps.Size(30, 30), // Size of the icon
+    };
+  
+    this.vehicles.forEach((vehicle) => {
+      if (vehicle.lat && vehicle.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: vehicle.lat, lng: vehicle.lng },
+          map: this.map,
+          title: vehicle.vehicleName,
+          icon: vehicleIcon, // Use the vehicle icon
+          zIndex: 2,
+        });
+  
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div>
+              <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
+              <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
+              <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
+            </div>
+          `,
+        });
+  
+        marker.addListener('click', () => {
+          infoWindow.open(this.map, marker);
+        });
+  
+        this.markers.push(marker);
+      }
+    });
+  }
+  
+
   ngAfterViewInit(): void {
     if (typeof google !== 'undefined') {
       this.initializeMap();
@@ -441,7 +500,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
 
   async getAllCalendar(): Promise<void> {
     try {
-      const response: any = await this.http.get('http://3.223.253.106:5966/api/event/').toPromise();
+      const response: any = await this.http.get('http://18.209.91.97:5966/api/event/').toPromise();
       if (response.status === 200 && Array.isArray(response.data)) {
         this.jobs = response.data;
         this.filterJobsByDate(); 
@@ -558,8 +617,8 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   }
   
   //current day Job
-  getAllCurrentJobs(): void {
-    this.EventsService.getAllCurrentJobs().subscribe({
+  getAllCurrentJobs(status?: any): void {
+    this.EventsService.getAllCurrentJobs(status).subscribe({
       next: (res) => {
         this.jobData = res;
         this.currentJobs = this.jobData?.data || []; // Safeguard for null/undefined
@@ -575,6 +634,39 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
       }
     });
   }
+  
+  // Update the filter
+  applyFilter(status: string | null): void {
+    this.currentFilterStatus = status;
+    this.getAllCurrentJobs(status);
+  }
+  // past jobs 
+
+  getAllPastJobs(status?: string): void {
+    this.EventsService.getAllPastJobs(status).subscribe({
+      next: (res) => {
+        this.pastJobData = res;
+        this.pastCurrentJobs = this.pastJobData?.data || []; // Safeguard for null/undefined
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          console.warn(err.error.message); // API 404 message (e.g., "No current events found")
+        }
+        this.pastCurrentJobs = []; // Fallback to empty array
+      },
+      complete: () => {
+        console.log('Job fetching completed.');
+      },
+    });
+  }
+
+  applyPastFilter(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    this.pastFilterStatus = selectElement.value; // Update the filter
+    this.getAllPastJobs(this.pastFilterStatus); // Fetch filtered jobs
+  }
+  
+
 
   getStatusClass(status: string): string {
     switch (status) {
@@ -588,5 +680,42 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
         return 'status-default'; // For unknown statuses
     }
   }
+
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'Offline':
+        return 'Inactive';
+      case 'InService':
+        return 'Active';
+      case 'Maintenance':
+        return 'Maintenance';
+      default:
+        return 'Unknown'; // For unknown statuses
+    }
+  }
   
+
+//modal 
+
+toggleLiveDemo() {
+  this.visible = !this.visible;
+}
+
+handleLiveDemoChange(event: any) {
+  this.visible = event;
+}
+
+viewJobDetails(jobId: string) {
+  this.EventsService.getEventService(jobId).subscribe(
+    (response) => {
+      this.selectedJob = response; // Store the job details
+      this.toggleLiveDemo(); // Open the modal
+    },
+    (error) => {
+      console.error('Error fetching job details:', error);
+    }
+  );
+}
+
 }
