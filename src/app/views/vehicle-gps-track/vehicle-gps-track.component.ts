@@ -278,44 +278,46 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
   
 
   toggleJobs(): void {
+    if (!this.map) {
+      console.error('Map is not initialized yet.');
+      return;
+    }
+  
     this.showingVehicles = false;
     this.isAll = false;
     this.clearMarkers();
     this.clearPolylines(); // Ensure polylines are cleared
-
+  
+    console.log('Displaying Jobs:', this.jobs); // Debug log to verify job data
+  
     this.jobs.forEach((job, index) => {
-      const contentElement = document.createElement('div');
-      contentElement.innerHTML = `<strong>Job ID:</strong> ${index + 1}`;
-      contentElement.style.padding = '5px';
-      contentElement.style.backgroundColor = '#ffb879';
-      contentElement.style.border = '1px solid #ccc';
-      contentElement.style.borderRadius = '4px';
-
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        position: { lat: job.lat, lng: job.lng },
-        map: this.map,
-        content: contentElement,
-      });
-
-      // Add an InfoWindow for displaying Job details
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-                <div>
-                  <p><strong>Client Name:</strong> ${job.clientName}</p>
-                   <p><strong>Client Address:</strong> ${job.address}</p>
-                </div>
-              `,
-      });
-
-      // Add click listener to show the InfoWindow
-      marker.addListener('click', () => {
-        infoWindow.open(this.map, marker);
-      });
-
-
-      this.markers.push(marker);
+      if (job.lat && job.lng) {
+        const marker = new google.maps.Marker({
+          position: { lat: job.lat, lng: job.lng },
+          map: this.map,
+          title: `Job ID: ${index + 1}`,
+        });
+  
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div>
+              <p><strong>Client Name:</strong> ${job.clientName}</p>
+              <p><strong>Client Address:</strong> ${job.address}</p>
+            </div>
+          `,
+        });
+  
+        marker.addListener('click', () => {
+          infoWindow.open(this.map, marker);
+        });
+  
+        this.markers.push(marker);
+      } else {
+        console.warn(`Job ${index + 1} is missing lat/lng`, job);
+      }
     });
   }
+  
 
   // all vehicle button
   
