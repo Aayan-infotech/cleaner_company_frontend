@@ -1,5 +1,4 @@
 import { VehicleGpsTrackRoutingModule } from './vehicle-gps-track-routing.module';
-import { NavModule } from '@coreui/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule,FormsModule } from '@angular/forms';
@@ -11,14 +10,21 @@ import {
   CardModule,
   FormModule,
   GridModule,
+  ModalModule,
+  ModalBodyComponent,
+  ModalComponent,
+  ModalFooterComponent,
+  ModalHeaderComponent,
+  ModalTitleDirective,
+  NavModule,
   ProgressModule,
   TableModule,
-  TabsModule
+  TabsModule,
+  NavbarModule
 } from '@coreui/angular';
 import { IconModule } from '@coreui/icons-angular';
 import { ChartjsModule } from '@coreui/angular-chartjs';
 import { WidgetsModule } from '../widgets/widgets.module';
-import { NavbarModule } from '@coreui/angular';
 
 @NgModule({
   declarations: [VehicleGpsTrackComponent],
@@ -33,6 +39,12 @@ import { NavbarModule } from '@coreui/angular';
     TabsModule,
     CommonModule,
     GridModule,
+    ModalModule,
+    ModalBodyComponent,
+    ModalComponent,
+    ModalFooterComponent,
+    ModalHeaderComponent,
+    ModalTitleDirective,
     ProgressModule,
     ReactiveFormsModule,
     ButtonModule,

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { apiUrls } from '../api.urls';
 import { Observable } from 'rxjs';
 @Injectable({
@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CalendarEventService {
 
-  private apiUrl = 'http://3.223.253.106:5966/api/users';
+  private apiUrl = 'http://18.209.91.97:5966/api/users';
   
   constructor(private http: HttpClient) {}
 
@@ -35,7 +35,18 @@ export class CalendarEventService {
     return this.http.get<any>(this.apiUrl);
   };
 
-  getAllCurrentJobs(){
-    return this.http.get<any[]>(`${apiUrls.eventsApi}/events/current`);
+  getAllCurrentJobs(status?: string) {
+    const params = status ? { params: { status } } : {};
+    return this.http.get<any[]>(`${apiUrls.eventsApi}/events/current`, params);
   }
+  
+  getAllPastJobs(status?: string): Observable<any[]> {
+    let params = new HttpParams();
+    if (status) {
+      params = params.set('status', status); // Append status as a query parameter
+    }
+  
+    return this.http.get<any[]>(`${apiUrls.eventsApi}/events/past`, { params });
+  }
+  
 }
