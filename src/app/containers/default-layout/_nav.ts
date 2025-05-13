@@ -27,7 +27,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'CRM',
-    url: '/orderRequest',
+    url: '/crm',
     iconComponent: { name: 'cil-user' }
   },
 

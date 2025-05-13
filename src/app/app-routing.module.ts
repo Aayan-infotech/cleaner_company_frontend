@@ -102,9 +102,9 @@ const routes: Routes = [
           import('./views/job-history-overview/job-history-overview.module').then((m) => m.JobHistoryOverviewModule)
       },
       {
-        path: 'orderRequest',
+        path: 'crm',
         loadChildren: () =>
-          import('./views/order-request-section/order-request-section.module').then((m) => m.OrderRequestSectionModule)
+          import('./views/crm/crm.module').then((m) => m.CrmModule)
       },
       {
         path: 'template-library',
