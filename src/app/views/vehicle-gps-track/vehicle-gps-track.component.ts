@@ -160,7 +160,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
             <div>
               <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
               <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
-               <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
+               <p><strong>Vehicle Status:</strong> ${vehicle.technicianStatus}</p>
             </div>
           `,
         });
@@ -264,7 +264,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
         <div>
           <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
           <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
-           <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
+           <p><strong>Vehicle Status:</strong> ${vehicle.technicianStatus}</p>
         </div>
       `,
     });
@@ -357,7 +357,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
             <div>
               <p><strong>Vehicle Name:</strong> ${vehicle.vehicleName}</p>
               <p><strong>Assigned Technician:</strong> ${vehicle.assignedTechnician}</p>
-              <p><strong>Technician Status:</strong> ${vehicle.technicianStatus}</p>
+              <p><strong>Vehicle Status:</strong> ${vehicle.technicianStatus}</p>
             </div>
           `,
         });
