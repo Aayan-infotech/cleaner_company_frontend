@@ -1,0 +1,110 @@
+<c-row>
+    <c-col xs>
+        <c-card class="mb-4">
+            <c-card-header class="d-flex justify-content-between align-items-center">
+                <span>Manage Group</span>
+                <div class="d-flex align-items-center gap-2">
+                    <input type="text" class="form-control w-auto" placeholder="Search by Group"
+                        style="min-width: 200px;" />
+
+                    <button (click)="toggleLiveDemo()" cButton color="primary" class="btn btn-primary" size="sm">
+                        Add New Group
+                    </button>
+
+                    <button cButton color="primary" class="btn btn-primary" routerLink="/crm" size="sm">
+                        Add Client
+                    </button>
+                </div>
+
+            </c-card-header>
+            <c-card-body>
+                <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
+                    <thead>
+                        <tr>
+
+                            <th>S.No.</th>
+                            <!-- <th class="text-center">
+                <svg cIcon name="cilPeople"></svg>
+              </th> -->
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Group</th>
+                            <th>
+                                <select [(ngModel)]="selectedGroup" class="form-select form-select-sm"
+                                    style="width: 150px;">
+                                    <option value="" disabled selected hidden>Add Group</option>
+                                    <option *ngFor="let group of groupList" [value]="group">{{ group }}</option>
+                                </select>
+
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td>1</td>
+                            <td>John Snow</td>
+                            <!-- <td class="text-center">
+                <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
+                  style="width: 3rem; height: 3rem;"></c-avatar>
+              </td> -->
+                            <td>snowgmail.com</td>
+                            <td>Castle Black</td>
+
+                            <td>
+                                A
+                            </td>
+                            <td><input type="checkbox" /></td>
+                        </tr>
+                        <tr>
+
+                            <td>2</td>
+                            <td>Dragon Singh</td>
+                            <!-- <td class="text-center">
+                <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
+                  style="width: 3rem; height: 3rem;"></c-avatar>
+              </td> -->
+                            <td>dragongmail.com</td>
+                            <td>Forest in Winters</td>
+
+                            <td>
+                                A
+                            </td>
+                            <td><input type="checkbox" /></td>
+                        </tr>
+                        <!-- <tr>
+              <td colspan="7" class="text-center">No Client</td>
+            </tr> -->
+                    </tbody>
+                </table>
+            </c-card-body>
+        </c-card>
+    </c-col>
+
+    <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+        <c-modal-header>
+            <h5 cModalTitle>Add Group</h5>
+            <button (click)="toggleLiveDemo()" cButtonClose></button>
+        </c-modal-header>
+        <c-modal-body>
+
+            <form class="p-3">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label fw-bold">Group Name</label>
+                        <input type="text" id="name" class="form-control" placeholder="Enter name" />
+                    </div>
+                </div>
+            </form>
+
+        </c-modal-body>
+        <c-modal-footer>
+            <button (click)="toggleLiveDemo()" cButton color="secondary">
+                Close
+            </button>
+            <button cButton color="primary">Add</button>
+        </c-modal-footer>
+    </c-modal>
+</c-row>

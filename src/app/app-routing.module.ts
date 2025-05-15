@@ -11,7 +11,7 @@ import { ToolsComponent } from './views/troubleshooting-dashboard/tools/tools.co
 import { CleanTechComponent } from './views/troubleshooting-dashboard/clean-tech/clean-tech.component'
 import { ManualsComponent } from './views/troubleshooting-dashboard/manuals/manuals.component'
 import { MachinesComponent } from './views/troubleshooting-dashboard/machines/machines.component'
-import {ProfileAccountComponent} from './views/pages/profile-account/profile-account.component';
+import { ProfileAccountComponent } from './views/pages/profile-account/profile-account.component';
 import { DesignThemesComponent } from './views/design-themes/design-themes.component';
 import { CreateComponent } from './views/design-templates/create/create.component';
 import { ViewComponent } from './views/design-templates/view/view.component';
@@ -107,6 +107,16 @@ const routes: Routes = [
           import('./views/crm/crm.module').then((m) => m.CrmModule)
       },
       {
+        path: 'group',
+        loadChildren: () =>
+          import('./views/groups/groups.module').then((m) => m.GroupsModule)
+      },
+      {
+        path: 'marketing',
+        loadChildren: () =>
+          import('./views/marketing/marketing.module').then((m) => m.MarketingModule)
+      },
+      {
         path: 'template-library',
         loadChildren: () =>
           import('./views/content-library/content-library.module').then((m) => m.ContentLibraryModule)
@@ -181,7 +191,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/pages/pages.module').then((m) => m.PagesModule)
       },
-      
+
     ]
   },
   {
