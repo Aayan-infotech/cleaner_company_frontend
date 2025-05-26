@@ -4,13 +4,251 @@
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span>Manage CRM</span>
         <div  class="d-flex align-items-center gap-2">
-          <input type="text" class="form-control w-auto" placeholder="Search" style="min-width: 200px;" />
+          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search" style="min-width: 200px;" />
 
           <button (click)="toggleLiveDemo()" cButton color="primary" class="me-2" size="sm">Add Client</button>
           <button cButton color="primary" class="me-2" routerLink="/marketing" size="sm">Marketing</button>
           <button cButton color="primary" routerLink="/group" size="sm">Group</button>
         </div>
       </c-card-header>
+      
+
+      <!-- Start Add client Modal -->
+      <c-modal id="liveDemoModal" size="lg" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+        <c-modal-header class="bg-secondary text-white">
+          <h5 cModalTitle>{{ isEditing ? 'Edit Client' : 'Add Client' }}</h5>
+          <button (click)="toggleLiveDemo()" cButtonClose aria-label="Close"></button>
+        </c-modal-header>
+    
+        <c-modal-body>
+          <form [formGroup]="crmForm" class="p-3">
+        
+            <!-- Primary Details -->
+            <div class="mb-4 p-4 border rounded shadow-sm bg-white">
+              <h5 class="mb-3">Primary Details</h5>
+              <hr />
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="name" class="form-label fw-bold">Name<span class="text-danger">*</span></label>
+                  <input
+                    id="name"
+                    class="form-control"
+                    formControlName="name"
+                    type="text"
+                    placeholder="Enter name"
+                  />
+                  <small *ngIf="crmForm.get('name')?.invalid && crmForm.get('name')?.touched" class="text-danger">
+                    Name is required.
+                  </small>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="email" class="form-label fw-bold">Email<span class="text-danger">*</span></label>
+                  <input
+                    id="email"
+                    class="form-control"
+                    formControlName="email"
+                    type="email"
+                    placeholder="Enter email"
+                  />
+                  <small *ngIf="crmForm.get('email')?.invalid && crmForm.get('email')?.touched" class="text-danger">
+                    Valid email is required.
+                  </small>
+                </div>
+              </div>
+        
+              <div class="mb-3">
+                <label for="address" class="form-label fw-bold">Address<span class="text-danger">*</span></label>
+                <textarea
+                  id="address"
+                  class="form-control"
+                  formControlName="address"
+                  rows="3"
+                  placeholder="Enter address"
+                ></textarea>
+                <small *ngIf="crmForm.get('address')?.invalid && crmForm.get('address')?.touched" class="text-danger">
+                  Address is required.
+                </small>
+              </div>
+        
+              <!-- Primary Phones -->
+              <div class="border p-3 rounded mb-4 bg-light">
+                <h6 class="fw-bold">Phone Numbers</h6>
+                <div formArrayName="phones">
+                  <div
+                    *ngFor="let phone of phones.controls; let i = index"
+                    [formGroupName]="i"
+                    class="mb-3 p-3 rounded border bg-white"
+                  >
+                    <div class="row align-items-center">
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone Type<span class="text-danger">*</span></label>
+                        <select class="form-control" formControlName="type">
+                          <option value="" disabled>Select Phone Type</option>
+                          <option value="cell">Cell</option>
+                          <option value="work">Work</option>
+                          <option value="home">Home</option>
+                          <option value="emergency">Emergency</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone Number<span class="text-danger">*</span></label>
+                        <input
+                          class="form-control"
+                          formControlName="number"
+                          type="text"
+                          placeholder="Enter phone number"
+                        />
+                      </div>
+                    </div>
+                    <div class="text-end mt-2">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        (click)="removePhone(i)"
+                      >
+                        Remove Phone
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <button type="button" class="btn btn-sm btn-primary" (click)="addPhone()">
+                    Add Phone
+                  </button>
+                </div>
+              </div>
+        
+              
+               <div class="row">
+                <!-- Payment Option -->
+                <div class="col-md-12 mb-3">
+                  <label class="form-label fw-bold">Payment Option</label>
+                  <select formControlName="paymentOptions" class="form-select">
+                    <option value="cash">Cash</option>
+                    <option value="prepaid">Prepaid</option>
+                    <option value="postpaid">Postpaid</option>
+                  </select>
+                </div>
+
+                <!-- Upload Profile Picture -->
+                <!-- <div class="col-md-6 mb-3">
+                  <label for="file" class="form-label fw-bold">Upload Pic</label>
+                  <input id="file" class="form-control" type="file" (change)="onFileSelected($event)" multiple />
+                </div> -->
+              </div>
+              
+            </div>
+        
+            <!-- Secondary Details -->
+            <div class="mb-4 p-4 border rounded shadow-sm bg-light">
+              <h5 class="mb-3">Secondary Details</h5>
+              <hr />
+              <div class="border rounded p-3 bg-white">
+                <h6 class="fw-bold mb-3">Secondary Contact Details</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Secondary Name<span class="text-danger">*</span></label>
+                    <input
+                      class="form-control"
+                      formControlName="secondaryName"
+                      type="text"
+                      placeholder="Enter name"
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Secondary Email<span class="text-danger">*</span></label>
+                    <input
+                      class="form-control"
+                      formControlName="secondaryEmail"
+                      type="email"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+        
+                <div class="row">
+                  <div class="col-md-12 mb-3">
+                    <label class="form-label fw-bold">Secondary Address<span class="text-danger">*</span></label>
+                    <textarea
+                      class="form-control"
+                      formControlName="secondaryAddress"
+                      rows="3"
+                      placeholder="Enter address"
+                    ></textarea>
+                  </div>
+                </div>
+        
+                <!-- Secondary Phones -->
+                <div formArrayName="secondaryPhones" class="border rounded p-3 bg-light">
+                  <h6 class="fw-bold">Secondary Phone Numbers</h6>
+                  <div
+                    *ngFor="let phone of secondaryPhones.controls; let i = index"
+                    [formGroupName]="i"
+                    class="mb-3 p-3 rounded border bg-white"
+                  >
+                    <div class="row">
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone Type</label>
+                        <select class="form-control" formControlName="type">
+                          <option value="" disabled>Select Phone Type</option>
+                          <option value="cell">Cell</option>
+                          <option value="work">Work</option>
+                          <option value="home">Home</option>
+                          <option value="emergency">Emergency</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label fw-bold">Phone Number</label>
+                        <input
+                          class="form-control"
+                          formControlName="number"
+                          type="text"
+                          placeholder="Enter phone number"
+                        />
+                      </div>
+                    </div>
+                    <div class="text-end mt-2">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger"
+                        (click)="removeSecondaryPhone(i)"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-primary"
+                      (click)="addSecondaryPhone()"
+                    >
+                      Add Secondary Phone
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </c-modal-body>
+        
+        
+    
+        <c-modal-footer>
+          <button (click)="toggleLiveDemo()" cButton color="secondary">
+            Close
+          </button>
+          <button (click)="onSubmit()" cButton color="primary" [disabled]="crmForm.invalid">
+            Save
+          </button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- End Add client Modal -->
+
+
+      <!-- Populating all Data -->
       <c-card-body>
         <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
           <thead>
@@ -21,12 +259,13 @@
               </th> -->
               <th>Name</th>
               <th>Email</th>
+              <!-- <th>Phones</th> -->
               <th>Address</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let client of crmList; let i = index">
+            <tr *ngFor="let client of filteredCRMList; let i = index">
               <td>{{ i + 1 }}</td>
               <!-- <td class="text-center">
                 <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
@@ -34,6 +273,11 @@
               </td> -->
               <td>{{ client.name }}</td>
               <td>{{ client.email }}</td>
+              <!-- <td>
+                <div *ngFor="let phone of client.phones">
+                  <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                </div>
+              </td> -->
               <td>{{ client.address }}</td>
               <td>
                 <button class="me-1" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil"
@@ -47,95 +291,9 @@
           </tbody>
         </table>
       </c-card-body>
+
+
     </c-card>
   </c-col>
-  <c-modal id="liveDemoModal" size="lg" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
-    <c-modal-header class="bg-secondary text-white">
-      <h5 cModalTitle>{{ isEditing ? 'Edit Client' : 'Add Client' }}</h5>
-      <button (click)="toggleLiveDemo()" cButtonClose aria-label="Close"></button>
-    </c-modal-header>
-
-    <c-modal-body>
-      <form [formGroup]="crmForm" class="p-3">
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="name" class="form-label fw-bold">Name</label>
-            <input id="name" class="form-control" formControlName="name" type="text" placeholder="Enter name" />
-            <small *ngIf="crmForm.get('name')?.invalid && crmForm.get('name')?.touched" class="text-danger">
-              Name is required.
-            </small>
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="email" class="form-label fw-bold">Email</label>
-            <input id="email" class="form-control" formControlName="email" type="email" placeholder="Enter email" />
-            <small *ngIf="crmForm.get('email')?.invalid && crmForm.get('email')?.touched" class="text-danger">
-              Valid email is required.
-            </small>
-          </div>
-        </div>
-
-        <div class="mb-3">
-          <label for="address" class="form-label fw-bold">Address</label>
-          <textarea id="address" class="form-control" formControlName="address" rows="3"
-            placeholder="Enter address"></textarea>
-          <small *ngIf="crmForm.get('address')?.invalid && crmForm.get('address')?.touched" class="text-danger">
-            Address is required.
-          </small>
-        </div>
-
-        <div class="border p-3 rounded">
-          <h6 class="fw-bold">Phone Numbers</h6>
-          <div formArrayName="phones">
-            <div *ngFor="let phone of phones.controls; let i = index" [formGroupName]="i"
-              class="mb-3 p-3 rounded border bg-light">
-              <div class="row align-items-center">
-                <div class="col-md-6">
-                  <label for="phoneType{{ i }}" class="form-label fw-bold">Phone Type</label>
-                  <select id="phoneType{{ i }}" class="form-control" formControlName="type">
-                    <option value="" disabled selected>Select Phone Type</option>
-                    <option value="cell">Cell</option>
-                    <option value="work">Work</option>
-                    <option value="home">Home</option>
-                    <option value="emergency">Emergency</option>
-                    <option value="other">Other</option>
-                  </select>
-                  <small *ngIf="phone.get('type')?.invalid && phone.get('type')?.touched" class="text-danger">
-                    Phone type is required.
-                  </small>
-                </div>
-                <div class="col-md-6">
-                  <label for="phoneNumber{{ i }}" class="form-label fw-bold">Phone Number</label>
-                  <input id="phoneNumber{{ i }}" class="form-control" formControlName="number" type="text"
-                    placeholder="Enter phone number" />
-                  <small *ngIf="phone.get('number')?.invalid && phone.get('number')?.touched" class="text-danger">
-                    Valid phone number is required.
-                  </small>
-                </div>
-              </div>
-              <div class="text-end mt-2">
-                <button type="button" class="btn btn-sm btn-danger" (click)="removePhone(i)">
-                  Remove Phone
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="text-end">
-            <button type="button" class="btn btn-sm btn-primary" (click)="addPhone()">
-              Add Phone
-            </button>
-          </div>
-        </div>
-      </form>
-    </c-modal-body>
-
-    <c-modal-footer>
-      <button (click)="toggleLiveDemo()" cButton color="secondary">
-        Close
-      </button>
-      <button (click)="onSubmit()" cButton color="primary" [disabled]="crmForm.invalid">
-        Save
-      </button>
-    </c-modal-footer>
-  </c-modal>
 
 </c-row>

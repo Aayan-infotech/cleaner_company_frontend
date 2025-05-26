@@ -1,110 +1,127 @@
 <c-row>
     <c-col xs>
         <c-card class="mb-4">
+          <!-- Header -->
             <c-card-header class="d-flex justify-content-between align-items-center">
-                <span>Manage Group</span>
-                <div class="d-flex align-items-center gap-2">
-                    <input type="text" class="form-control w-auto" placeholder="Search by Group"
-                        style="min-width: 200px;" />
-
-                    <button (click)="toggleLiveDemo()" cButton color="primary" class="btn btn-primary" size="sm">
-                        Add New Group
-                    </button>
-
-                    <button cButton color="primary" class="btn btn-primary" routerLink="/crm" size="sm">
-                        Add Client
-                    </button>
+                <span class="me-auto fw-bold">Manage Group</span>
+              
+                <div class="d-flex align-items-center ms-auto">
+                  <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search Groups" style="min-width: 200px;" />
+                  <button cButton color="primary" class="ms-2" (click)="toggleLiveDemo()" size="sm">Add New Group</button>
                 </div>
-
             </c-card-header>
+              
+
+            <!-- Add Group Modal -->
+            <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+                
+                <c-modal-header>
+                <h5 cModalTitle>Add Group</h5>
+                <button (click)="toggleLiveDemo()" cButtonClose></button>
+                </c-modal-header>
+
+
+                <c-modal-body>
+                    <div class="mb-3">
+                        <label class="form-label">Group Name</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          [(ngModel)]="newGroupName"
+                          name="groupName"
+                          placeholder="Enter new group name"
+                        />
+                      </div>
+                </c-modal-body>
+
+
+                <c-modal-footer>
+                <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+                <button cButton color="success">Save changes</button>
+                </c-modal-footer>
+
+
+            </c-modal>
+
+
+            <!-- Manage Clients in Group Modal -->
+            <c-modal size="xl" id="clientGroupModal" [visible]="clientModalVisible" (visibleChange)="handleClientModalChange($event)">
+                <c-modal-header>
+                  <h5 cModalTitle>Manage Clients in Group: {{ selectedGroup }}</h5>
+                  <button (click)="closeClientModal()" cButtonClose></button>
+                </c-modal-header>
+              
+                <c-modal-body>
+                  <!-- Add Existing Clients -->
+                  <div class="row g-3 mb-5">
+                    <div class="col-md-10">
+                        <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
+                            <option [ngValue]="null" disabled>Select a client below to assign to this group</option>
+                            <option *ngFor="let client of getUnassignedClients()" [ngValue]="client">
+                              {{ client.name }} ({{ client.email }})
+                            </option>
+                        </select>                          
+                    </div>
+                    <div class="col-md-2">
+                      <button class="btn btn-primary w-100" (click)="addClientToGroup()">Add</button>
+                    </div>
+                  </div>
+              
+                  <!-- Assigned Clients Table -->
+                  <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
+                    <thead>
+                      <tr style="background-color: #9da5b1;">
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let client of getClientsByGroup(selectedGroup); let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.address }}</td>
+                        <td>
+                          <button class="btn btn-danger btn-sm" (click)="removeClientFromGroup(client)">Remove</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </c-modal-body>
+              
+                <c-modal-footer>
+                  <button (click)="closeClientModal()" cButton color="secondary">Close</button>
+                </c-modal-footer>
+            </c-modal>
+              
+            
+            <!-- Body section -->
             <c-card-body>
                 <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
                     <thead>
                         <tr>
-
-                            <th>S.No.</th>
-                            <!-- <th class="text-center">
-                <svg cIcon name="cilPeople"></svg>
-              </th> -->
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Address</th>
-                            <th>Group</th>
-                            <th>
-                                <select [(ngModel)]="selectedGroup" class="form-select form-select-sm"
-                                    style="width: 150px;">
-                                    <option value="" disabled selected hidden>Add Group</option>
-                                    <option *ngFor="let group of groupList" [value]="group">{{ group }}</option>
-                                </select>
-
-                            </th>
-
+                            <th>#</th>
+                            <th>Group Name</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-
-                            <td>1</td>
-                            <td>John Snow</td>
-                            <!-- <td class="text-center">
-                <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
-                  style="width: 3rem; height: 3rem;"></c-avatar>
-              </td> -->
-                            <td>snowgmail.com</td>
-                            <td>Castle Black</td>
-
+                        <tr *ngFor="let group of groupList; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ group }}</td>
                             <td>
-                                A
+                              <button class="btn btn-info btn-sm me-3" (click)="openClientModal(group)">Manage Clients</button>                            
+                              <button class="me-2" size="sm" (click)="toggleLiveDemo()" title="Remove group"><svg cIcon name="cil-pencil" size="sm"></svg></button>      
+                              <button size="sm" (click)="deleteGroup(group)" title="Remove group"><svg cIcon name="cil-trash" size="sm"></svg></button>                            
                             </td>
-                            <td><input type="checkbox" /></td>
                         </tr>
-                        <tr>
-
-                            <td>2</td>
-                            <td>Dragon Singh</td>
-                            <!-- <td class="text-center">
-                <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
-                  style="width: 3rem; height: 3rem;"></c-avatar>
-              </td> -->
-                            <td>dragongmail.com</td>
-                            <td>Forest in Winters</td>
-
-                            <td>
-                                A
-                            </td>
-                            <td><input type="checkbox" /></td>
-                        </tr>
-                        <!-- <tr>
-              <td colspan="7" class="text-center">No Client</td>
-            </tr> -->
                     </tbody>
                 </table>
             </c-card-body>
+
         </c-card>
     </c-col>
-
-    <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
-        <c-modal-header>
-            <h5 cModalTitle>Add Group</h5>
-            <button (click)="toggleLiveDemo()" cButtonClose></button>
-        </c-modal-header>
-        <c-modal-body>
-
-            <form class="p-3">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label fw-bold">Group Name</label>
-                        <input type="text" id="name" class="form-control" placeholder="Enter name" />
-                    </div>
-                </div>
-            </form>
-
-        </c-modal-body>
-        <c-modal-footer>
-            <button (click)="toggleLiveDemo()" cButton color="secondary">
-                Close
-            </button>
-            <button cButton color="primary">Add</button>
-        </c-modal-footer>
-    </c-modal>
 </c-row>

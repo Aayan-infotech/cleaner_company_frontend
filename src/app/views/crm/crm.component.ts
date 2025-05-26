@@ -10,11 +10,13 @@ import { CrmService } from '../../services/crm.service';
 export class CrmComponent implements OnInit {
   crmForm: FormGroup;
   crmList: any[] = [];
+  searchTerm: string = '';
   public visible = false;
   public isEditing = false;
   public editingCRMId: string | null = null;
   isEditMode = false;
   editClientId: string | null = null;
+  selectedFiles: File[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -26,7 +28,15 @@ export class CrmComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       address: ['', Validators.required],
       phones: this.fb.array([]),
-      images: [null],
+      // images: [null],
+
+       // New fields
+       secondaryName: ['', Validators.required],
+       secondaryEmail: ['', [Validators.required, Validators.email]],
+       secondaryAddress: ['', Validators.required],
+       secondaryPhones: this.fb.array([]),
+       paymentOptions: ['cash'],
+
     });
   }
 
@@ -36,6 +46,10 @@ export class CrmComponent implements OnInit {
 
   get phones(): FormArray {
     return this.crmForm.get('phones') as FormArray;
+  }
+
+  get secondaryPhones(): FormArray {
+    return this.crmForm.get('secondaryPhones') as FormArray;
   }
 
   // Add a phone control
@@ -53,12 +67,28 @@ export class CrmComponent implements OnInit {
     this.phones.removeAt(index);
   }
 
+
+  addSecondaryPhone(): void {
+    this.secondaryPhones.push(
+      this.fb.group({
+        type: ['', Validators.required],
+        number: ['', Validators.required],
+      })
+    );
+  }
+  
+
+  removeSecondaryPhone(index: number): void {
+    this.secondaryPhones.removeAt(index);
+  }
+
   toggleLiveDemo(): void {
     this.visible = !this.visible;
     if (!this.visible) {
       this.isEditMode = false; // Reset edit mode when modal is closed
       this.crmForm.reset();
       this.phones.clear(); // Clear phone fields
+      this.secondaryPhones.clear();
     }
   }
 
@@ -71,10 +101,20 @@ export class CrmComponent implements OnInit {
     this.crmService.getAllCRM().subscribe(
       (response) => {
         this.crmList = response.data.crms || [];
+        console.log("All CRM clients: ", this.crmList);
+        
       },
       (error) => console.error('Error fetching CRM records:', error)
     );
   }
+    // Handle file input change event
+    onFileSelected(event: any): void {
+      if (event.target.files && event.target.files.length > 0) {
+        this.selectedFiles = Array.from(event.target.files);
+      } else {
+        this.selectedFiles = [];
+      }
+    }
 
   deleteCRM(clientId: string): void {
     if (confirm('Are you sure you want to delete this CRM entry?')) {
@@ -124,18 +164,43 @@ export class CrmComponent implements OnInit {
       name: client.name,
       email: client.email,
       address: client.address,
+      secondaryName: client.secondaryName,
+      secondaryEmail: client.secondaryEmail,
+      secondaryAddress: client.secondaryAddress,
+      paymentOptions: client.paymentOptions || 'cash',
     });
 
     // Clear and repopulate phone fields
     this.phones.clear();
-    if (client.phones?.length) {
-      client.phones.forEach((phone: any) =>
-        this.phones.push(this.fb.group({
-          type: [phone.type, Validators.required],
-          number: [phone.number, Validators.required],
-        }))
-      );
-    }
+    client.phones?.forEach((phone: any) =>
+      this.phones.push(this.fb.group({
+        type: [phone.type, Validators.required],
+        number: [phone.number, Validators.required],
+      }))
+    );
+
+    this.secondaryPhones.clear();
+    client.secondaryPhones?.forEach((phone: any) =>
+      this.secondaryPhones.push(this.fb.group({
+        type: [phone.type, Validators.required],
+        number: [phone.number, Validators.required],
+      }))
+    );
+  }
+
+  // search function
+  get filteredCRMList(): any[] {
+    if (!this.searchTerm.trim()) return this.crmList;
+
+    const term = this.searchTerm.toLowerCase();
+    return this.crmList.filter(client =>
+      client.name?.toLowerCase().includes(term) ||
+      client.email?.toLowerCase().includes(term) ||
+      client.address?.toLowerCase().includes(term) ||
+      client.phones?.some((phone: any) =>
+        phone.number.includes(term) || phone.type.toLowerCase().includes(term)
+      )
+    );
   }
 
 }
