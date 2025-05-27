@@ -239,6 +239,7 @@
       </c-modal>
       <!-- End Add client Modal -->
 
+
       <!-- Start View Client Details Modal -->
       <c-modal [visible]="isViewCrmVisible" (visibleChange)="handleViewCrmVisibleChange($event)" size="lg">
         <c-modal-header *ngIf="selectedClient">
@@ -297,6 +298,7 @@
       </c-modal>      
       <!-- End View Client Details Modal -->
 
+
       <!-- Populating all Data -->
       <c-card-body>
         <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
@@ -314,6 +316,22 @@
             </tr>
           </thead>
           <tbody>
+            <!-- Show Spinner While Loading -->
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Show No Clients Message -->
+            <tr *ngIf="!loading && filteredCRMList.length === 0">
+              <td colspan="7" class="text-center py-4 text-muted">
+                No Clients
+              </td>
+            </tr>
+
             <tr *ngFor="let client of filteredCRMList; let i = index">
               <td>{{ i + 1 }}</td>
               <!-- <td class="text-center">
@@ -339,9 +357,6 @@
                 <button class="mx-2" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil" size="sm"></svg></button>
                 <button size="sm" (click)="deleteCRM(client._id)"><svg cIcon name="cil-trash" size="sm"></svg></button>
               </td>
-            </tr>
-            <tr *ngIf="!crmList || crmList.length === 0">
-              <td colspan="7" class="text-center">No Client</td>
             </tr>
           </tbody>
         </table>
