@@ -7,9 +7,8 @@ import { CrmService } from '../../services/crm.service';
   templateUrl: './crm.component.html',
   styleUrls: ['./crm.component.scss'],
 })
-
 export class CrmComponent implements OnInit {
-
+  
   crmForm: FormGroup;
   crmList: any[] = [];
   searchTerm: string = '';
@@ -21,7 +20,8 @@ export class CrmComponent implements OnInit {
   selectedFiles: File[] = [];
   selectedClient: any = null;
   isViewCrmVisible = false;
- 
+  loading: boolean = true;
+
   constructor(
     private fb: FormBuilder,
     private crmService: CrmService,
@@ -86,9 +86,9 @@ export class CrmComponent implements OnInit {
   toggleLiveDemo(): void {
     this.visible = !this.visible;
     if (!this.visible) {
-      this.isEditMode = false; // Reset edit mode when modal is closed
+      this.isEditMode = false; 
       this.crmForm.reset();
-      this.phones.clear(); // Clear phone fields
+      this.phones.clear();
       this.secondaryPhones.clear();
     }
   }
@@ -98,13 +98,20 @@ export class CrmComponent implements OnInit {
   }
 
   fetchAllCRM(): void {
-    this.crmService.getAllCRM().subscribe(
-      (response) => {
+    this.loading = true;
+
+    this.crmService.getAllCRM().subscribe({
+      next: (response) => {
         this.crmList = response.data.crms || [];
+        this.loading = false;
       },
-      (error) => console.error('Error fetching CRM records:', error)
-    );
+      error: (error) => {
+        console.error('Error fetching CRM records:', error);
+        this.loading = false;
+      },
+    });
   }
+
   // Handle file input change event
   onFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
@@ -213,7 +220,7 @@ export class CrmComponent implements OnInit {
       (error) => console.error('Error fetching CRM by ID:', error)
     );
   }
-  
+
   viewCrm(clientId: string): void {
     this.getCrmById(clientId);
   }
