@@ -21,6 +21,8 @@ export class CrmComponent implements OnInit {
   selectedClient: any = null;
   isViewCrmVisible = false;
   loading: boolean = true;
+  images: File[] = [];
+  
 
   constructor(
     private fb: FormBuilder,
@@ -104,6 +106,7 @@ export class CrmComponent implements OnInit {
       next: (response) => {
         this.crmList = response.data.crms || [];
         this.loading = false;
+        console.log("All Clients: ", this.crmList);        
       },
       error: (error) => {
         console.error('Error fetching CRM records:', error);
@@ -112,12 +115,9 @@ export class CrmComponent implements OnInit {
     });
   }
 
-  // Handle file input change event
   onFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFiles = Array.from(event.target.files);
-    } else {
-      this.selectedFiles = [];
     }
   }
 
@@ -132,27 +132,36 @@ export class CrmComponent implements OnInit {
     }
   }
 
+  onFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.images = Array.from(event.target.files);
+    }
+  }
+ 
   onSubmit(): void {
     if (this.crmForm.valid) {
+      const formData = {
+        ...this.crmForm.value,
+        images: this.selectedFiles // ⬅ Add images manually
+      };
+  
       if (this.isEditMode && this.editClientId) {
-        // Update mode
-        this.crmService
-          .updateCRM(this.editClientId, this.crmForm.value)
-          .subscribe(
-            () => {
-              this.toggleLiveDemo();
-              this.fetchAllCRM();
-              this.crmForm.reset();
-            },
-            (error) => console.error('Error updating CRM:', error)
-          );
-      } else {
-        // Create mode
-        this.crmService.createCRM(this.crmForm.value).subscribe(
+        this.crmService.updateCRM(this.editClientId, formData).subscribe(
           () => {
             this.toggleLiveDemo();
             this.fetchAllCRM();
             this.crmForm.reset();
+            this.selectedFiles = [];
+          },
+          (error) => console.error('Error updating CRM:', error)
+        );
+      } else {
+        this.crmService.createCRM(formData).subscribe(
+          () => {
+            this.toggleLiveDemo();
+            this.fetchAllCRM();
+            this.crmForm.reset();
+            this.selectedFiles = [];
           },
           (error) => console.error('Error creating CRM:', error)
         );
