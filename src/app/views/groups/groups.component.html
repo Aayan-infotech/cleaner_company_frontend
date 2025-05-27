@@ -55,12 +55,14 @@
                   <!-- Add Existing Clients -->
                   <div class="row g-3 mb-5">
                     <div class="col-md-10">
-                        <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
-                            <option [ngValue]="null" disabled>Select a client below to assign to this group</option>
-                            <option *ngFor="let client of getUnassignedClients()" [ngValue]="client">
-                              {{ client.name }} ({{ client.email }})
-                            </option>
-                        </select>                          
+                      <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
+                        <option [ngValue]="null" disabled selected>
+                          Select a client below to assign to this group
+                        </option>
+                        <option *ngFor="let client of getUnassignedClients()" [ngValue]="client">
+                          {{ client.name }} ({{ client.email }})
+                        </option>
+                      </select>                         
                     </div>
                     <div class="col-md-2">
                       <button class="btn btn-primary w-100" (click)="addClientToGroup()">Add</button>

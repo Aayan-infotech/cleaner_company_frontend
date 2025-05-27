@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CrmService } from '../../services/crm.service';
 
 @Component({
   selector: 'app-groups',
@@ -6,12 +7,12 @@ import { Component } from '@angular/core';
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
 })
+
 export class GroupsComponent {
   visible = false;
   newGroupName = '';
   searchTerm = '';
   selectedGroup = '';
-  
 
   groupList: string[] = ['Group A', 'Group B', 'Group C'];
 
@@ -41,6 +42,33 @@ export class GroupsComponent {
 
   filteredClients = [...this.clientList];
 
+  clientModalVisible = false;
+  selectedClientToAdd: any = null;
+
+  constructor(private CrmService: CrmService) {}
+
+  ngOnInit(): void {
+    this.loadClients();
+  }
+  
+  loadClients() {
+    this.CrmService.getAllCRM().subscribe({
+      next: (data: any[]) => {
+        this.clientList = data.map(client => ({
+          ...client,
+          group: client.group || ''  
+        }));
+  
+        this.filteredClients = [...this.clientList];
+        console.log("All clients: ", this.clientList);
+      },
+      error: (err) => {
+        console.error('Failed to load clients:', err);
+      }
+    });
+  }
+  
+
   toggleLiveDemo() {
     this.visible = !this.visible;
   }
@@ -52,6 +80,7 @@ export class GroupsComponent {
   handleClientModalChange(event: any) {
     this.clientModalVisible = event;
   }
+
 
   addGroup() {
     const trimmed = this.newGroupName.trim();
@@ -79,9 +108,6 @@ export class GroupsComponent {
     }
   }
 
-  clientModalVisible = false;
-  selectedClientToAdd: any = null;
-
   openClientModal(group: string) {
     this.selectedGroup = group;
     this.clientModalVisible = true;
@@ -105,8 +131,8 @@ export class GroupsComponent {
   }
 
   getUnassignedClients() {
-    return this.clientList.filter((c) => !this.groupList.includes(c.group));
-  }
+    return this.clientList.filter(client => !client.group || client.group === '');
+  }  
 
   addClientToGroup() {
     if (this.selectedClientToAdd) {
@@ -125,4 +151,10 @@ export class GroupsComponent {
       if (c.group === groupToDelete) c.group = '';
     });
   }
+
+
+
+ 
+
+  
 }

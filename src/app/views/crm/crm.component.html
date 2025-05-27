@@ -10,8 +10,7 @@
           <button cButton color="primary" class="me-2" routerLink="/marketing" size="sm">Marketing</button>
           <button cButton color="primary" routerLink="/group" size="sm">Group</button>
         </div>
-      </c-card-header>
-      
+      </c-card-header>      
 
       <!-- Start Add client Modal -->
       <c-modal id="liveDemoModal" size="lg" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
@@ -93,12 +92,10 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Number<span class="text-danger">*</span></label>
-                        <input
-                          class="form-control"
-                          formControlName="number"
-                          type="text"
-                          placeholder="Enter phone number"
-                        />
+                        <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        <!-- <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" /> -->
+
+
                       </div>
                     </div>
                     <div class="text-end mt-2">
@@ -201,12 +198,7 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Number</label>
-                        <input
-                          class="form-control"
-                          formControlName="number"
-                          type="text"
-                          placeholder="Enter phone number"
-                        />
+                        <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                       </div>
                     </div>
                     <div class="text-end mt-2">
@@ -247,6 +239,63 @@
       </c-modal>
       <!-- End Add client Modal -->
 
+      <!-- Start View Client Details Modal -->
+      <c-modal [visible]="isViewCrmVisible" (visibleChange)="handleViewCrmVisibleChange($event)" size="lg">
+        <c-modal-header *ngIf="selectedClient">
+          <h5 cModalTitle class="text-primary fw-bold">
+            Client Details - {{ selectedClient.name }} (ID: {{ selectedClient._id }})
+          </h5>
+          <button (click)="toggleViewCrmModal()" cButtonClose aria-label="Close"></button>
+        </c-modal-header>
+      
+        <c-modal-body *ngIf="selectedClient" class="px-4 py-3">
+          <!-- Primary Details -->
+          <section class="mb-3 pb-3 border-bottom">
+            <h6 class="fw-semibold mb-3 text-primary">Primary Details</h6>
+      
+            <p><strong>Name:</strong> {{ selectedClient.name }}</p>
+            <p><strong>Email:</strong> {{ selectedClient.email }}</p>
+            <p><strong>Address:</strong> {{ selectedClient.address }}</p>
+      
+            <div *ngIf="selectedClient.phones?.length">
+              <h6 class="fw-semibold mt-3 mb-2">Phone Numbers</h6>
+              <ul class="ps-3 mb-0">
+                <li *ngFor="let phone of selectedClient.phones" class="mb-1">
+                  <strong>{{ phone.type | titlecase }}:</strong> {{ phone.number }}
+                </li>
+              </ul>
+            </div>
+      
+            <p class="mt-3"><strong>Payment Option:</strong> {{ selectedClient.paymentOptions | titlecase }}</p>
+          </section>
+      
+          <!-- Secondary Details -->
+          <section>
+            <h6 class="fw-semibold mb-3 text-secondary">Secondary Details</h6>
+      
+            <p><strong>Name:</strong> {{ selectedClient.secondaryName || '-' }}</p>
+            <p><strong>Email:</strong> {{ selectedClient.secondaryEmail || '-' }}</p>
+            <p><strong>Address:</strong> {{ selectedClient.secondaryAddress || '-' }}</p>
+      
+            <div *ngIf="selectedClient.secondaryPhones?.length; else noSecondaryPhones">
+              <h6 class="fw-semibold mt-3 mb-2">Secondary Phone Numbers</h6>
+              <ul class="ps-3 mb-0">
+                <li *ngFor="let phone of selectedClient.secondaryPhones" class="mb-1">
+                  <strong>{{ phone.type | titlecase }}:</strong> {{ phone.number }}
+                </li>
+              </ul>
+            </div>
+            <ng-template #noSecondaryPhones>
+              <p class="fst-italic text-muted small">No secondary phone numbers available.</p>
+            </ng-template>
+          </section>
+        </c-modal-body>
+      
+        <c-modal-footer>
+          <button (click)="toggleViewCrmModal()" cButton color="secondary">Close</button>
+        </c-modal-footer>
+      </c-modal>      
+      <!-- End View Client Details Modal -->
 
       <!-- Populating all Data -->
       <c-card-body>
@@ -280,8 +329,14 @@
               </td> -->
               <td>{{ client.address }}</td>
               <td>
-                <button class="me-1" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil"
-                    size="sm"></svg></button>
+                <button size="sm" (click)="viewCrm(client._id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                  </svg>
+                </button>
+
+                <button class="mx-2" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil" size="sm"></svg></button>
                 <button size="sm" (click)="deleteCRM(client._id)"><svg cIcon name="cil-trash" size="sm"></svg></button>
               </td>
             </tr>
@@ -292,8 +347,6 @@
         </table>
       </c-card-body>
 
-
     </c-card>
   </c-col>
-
 </c-row>

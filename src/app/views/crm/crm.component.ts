@@ -5,9 +5,11 @@ import { CrmService } from '../../services/crm.service';
 @Component({
   selector: 'app-crm',
   templateUrl: './crm.component.html',
-  styleUrls: ['./crm.component.scss']
+  styleUrls: ['./crm.component.scss'],
 })
+
 export class CrmComponent implements OnInit {
+
   crmForm: FormGroup;
   crmList: any[] = [];
   searchTerm: string = '';
@@ -17,7 +19,9 @@ export class CrmComponent implements OnInit {
   isEditMode = false;
   editClientId: string | null = null;
   selectedFiles: File[] = [];
-
+  selectedClient: any = null;
+  isViewCrmVisible = false;
+ 
   constructor(
     private fb: FormBuilder,
     private crmService: CrmService,
@@ -30,13 +34,12 @@ export class CrmComponent implements OnInit {
       phones: this.fb.array([]),
       // images: [null],
 
-       // New fields
-       secondaryName: ['', Validators.required],
-       secondaryEmail: ['', [Validators.required, Validators.email]],
-       secondaryAddress: ['', Validators.required],
-       secondaryPhones: this.fb.array([]),
-       paymentOptions: ['cash'],
-
+      // New fields
+      secondaryName: ['', Validators.required],
+      secondaryEmail: ['', [Validators.required, Validators.email]],
+      secondaryAddress: ['', Validators.required],
+      secondaryPhones: this.fb.array([]),
+      paymentOptions: ['cash'],
     });
   }
 
@@ -67,7 +70,6 @@ export class CrmComponent implements OnInit {
     this.phones.removeAt(index);
   }
 
-
   addSecondaryPhone(): void {
     this.secondaryPhones.push(
       this.fb.group({
@@ -76,7 +78,6 @@ export class CrmComponent implements OnInit {
       })
     );
   }
-  
 
   removeSecondaryPhone(index: number): void {
     this.secondaryPhones.removeAt(index);
@@ -92,7 +93,6 @@ export class CrmComponent implements OnInit {
     }
   }
 
-
   handleLiveDemoChange(event: boolean): void {
     this.visible = event;
   }
@@ -101,20 +101,18 @@ export class CrmComponent implements OnInit {
     this.crmService.getAllCRM().subscribe(
       (response) => {
         this.crmList = response.data.crms || [];
-        console.log("All CRM clients: ", this.crmList);
-        
       },
       (error) => console.error('Error fetching CRM records:', error)
     );
   }
-    // Handle file input change event
-    onFileSelected(event: any): void {
-      if (event.target.files && event.target.files.length > 0) {
-        this.selectedFiles = Array.from(event.target.files);
-      } else {
-        this.selectedFiles = [];
-      }
+  // Handle file input change event
+  onFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFiles = Array.from(event.target.files);
+    } else {
+      this.selectedFiles = [];
     }
+  }
 
   deleteCRM(clientId: string): void {
     if (confirm('Are you sure you want to delete this CRM entry?')) {
@@ -131,14 +129,16 @@ export class CrmComponent implements OnInit {
     if (this.crmForm.valid) {
       if (this.isEditMode && this.editClientId) {
         // Update mode
-        this.crmService.updateCRM(this.editClientId, this.crmForm.value).subscribe(
-          () => {
-            this.toggleLiveDemo();
-            this.fetchAllCRM();
-            this.crmForm.reset();
-          },
-          (error) => console.error('Error updating CRM:', error)
-        );
+        this.crmService
+          .updateCRM(this.editClientId, this.crmForm.value)
+          .subscribe(
+            () => {
+              this.toggleLiveDemo();
+              this.fetchAllCRM();
+              this.crmForm.reset();
+            },
+            (error) => console.error('Error updating CRM:', error)
+          );
       } else {
         // Create mode
         this.crmService.createCRM(this.crmForm.value).subscribe(
@@ -152,7 +152,6 @@ export class CrmComponent implements OnInit {
       }
     }
   }
-
 
   editCRM(client: any): void {
     this.isEditMode = true;
@@ -173,19 +172,50 @@ export class CrmComponent implements OnInit {
     // Clear and repopulate phone fields
     this.phones.clear();
     client.phones?.forEach((phone: any) =>
-      this.phones.push(this.fb.group({
-        type: [phone.type, Validators.required],
-        number: [phone.number, Validators.required],
-      }))
+      this.phones.push(
+        this.fb.group({
+          type: [phone.type, Validators.required],
+          number: [phone.number, Validators.required],
+        })
+      )
     );
 
     this.secondaryPhones.clear();
     client.secondaryPhones?.forEach((phone: any) =>
-      this.secondaryPhones.push(this.fb.group({
-        type: [phone.type, Validators.required],
-        number: [phone.number, Validators.required],
-      }))
+      this.secondaryPhones.push(
+        this.fb.group({
+          type: [phone.type, Validators.required],
+          number: [phone.number, Validators.required],
+        })
+      )
     );
+  }
+
+  toggleViewCrmModal() {
+    this.isViewCrmVisible = !this.isViewCrmVisible;
+    if (!this.isViewCrmVisible) {
+      this.selectedClient = null;
+    }
+  }
+
+  handleViewCrmVisibleChange(event: boolean) {
+    this.isViewCrmVisible = event;
+  }
+
+  getCrmById(clientId: string): void {
+    this.crmService.getCRMById(clientId).subscribe(
+      (response) => {
+        const client = response.data;
+        if (!client) return;
+        this.selectedClient = client;
+        this.toggleViewCrmModal();
+      },
+      (error) => console.error('Error fetching CRM by ID:', error)
+    );
+  }
+  
+  viewCrm(clientId: string): void {
+    this.getCrmById(clientId);
   }
 
   // search function
@@ -193,14 +223,16 @@ export class CrmComponent implements OnInit {
     if (!this.searchTerm.trim()) return this.crmList;
 
     const term = this.searchTerm.toLowerCase();
-    return this.crmList.filter(client =>
-      client.name?.toLowerCase().includes(term) ||
-      client.email?.toLowerCase().includes(term) ||
-      client.address?.toLowerCase().includes(term) ||
-      client.phones?.some((phone: any) =>
-        phone.number.includes(term) || phone.type.toLowerCase().includes(term)
-      )
+    return this.crmList.filter(
+      (client) =>
+        client.name?.toLowerCase().includes(term) ||
+        client.email?.toLowerCase().includes(term) ||
+        client.address?.toLowerCase().includes(term) ||
+        client.phones?.some(
+          (phone: any) =>
+            phone.number.includes(term) ||
+            phone.type.toLowerCase().includes(term)
+        )
     );
   }
-
 }
