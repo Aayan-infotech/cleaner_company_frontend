@@ -1,6 +1,7 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+      
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span>Manage CRM</span>
         <div  class="d-flex align-items-center gap-2">
@@ -93,9 +94,6 @@
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Number<span class="text-danger">*</span></label>
                         <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
-                        <!-- <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" /> -->
-
-
                       </div>
                     </div>
                     <div class="text-end mt-2">
@@ -116,10 +114,9 @@
                 </div>
               </div>
         
-              
-               <div class="row">
+               <div class="row">                
                 <!-- Payment Option -->
-                <div class="col-md-12 mb-3">
+                <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Payment Option</label>
                   <select formControlName="paymentOptions" class="form-select">
                     <option value="cash">Cash</option>
@@ -129,10 +126,10 @@
                 </div>
 
                 <!-- Upload Profile Picture -->
-                <!-- <div class="col-md-6 mb-3">
-                  <label for="file" class="form-label fw-bold">Upload Pic</label>
-                  <input id="file" class="form-control" type="file" (change)="onFileSelected($event)" multiple />
-                </div> -->
+                <div class="col-md-6 mb-3">
+                  <label for="file" class="form-label fw-bold">Upload Profile Picture</label>
+                  <input id="file" class="form-control" type="file" (change)="onFileSelected($event)" />
+                </div>
               </div>
               
             </div>
@@ -225,9 +222,7 @@
             </div>
           </form>
         </c-modal-body>
-        
-        
-    
+
         <c-modal-footer>
           <button (click)="toggleLiveDemo()" cButton color="secondary">
             Close
@@ -250,8 +245,14 @@
         </c-modal-header>
       
         <c-modal-body *ngIf="selectedClient" class="px-4 py-3">
+
           <!-- Primary Details -->
           <section class="mb-3 pb-3 border-bottom">
+
+            <div *ngIf="selectedClient.images?.length" class="text-center mb-2">
+              <img [src]="selectedClient.images[0].url" alt="Profile Picture" title="Profile Picture" class="rounded-circle border border-secondary object-fit-cover" style="width: 130px; height: 100px;" />
+            </div>
+
             <h6 class="fw-semibold mb-3 text-primary">Primary Details</h6>
       
             <p><strong>Name:</strong> {{ selectedClient.name }}</p>
@@ -305,9 +306,9 @@
           <thead>
             <tr>
               <th>S.No.</th>
-              <!-- <th class="text-center">
+              <th class="text-center">
                 <svg cIcon name="cilPeople"></svg>
-              </th> -->
+              </th>
               <th>Name</th>
               <th>Email</th>
               <!-- <th>Phones</th> -->
@@ -334,10 +335,9 @@
 
             <tr *ngFor="let client of filteredCRMList; let i = index">
               <td>{{ i + 1 }}</td>
-              <!-- <td class="text-center">
-                <c-avatar shape="rounded-1" size="md" [src]="client.images[0].url"
-                  style="width: 3rem; height: 3rem;"></c-avatar>
-              </td> -->
+              <td class="text-center">
+                <c-avatar shape="rounded-1" size="md" [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" style="width: 3rem; height: 3rem;"></c-avatar>
+              </td>
               <td>{{ client.name }}</td>
               <td>{{ client.email }}</td>
               <!-- <td>
