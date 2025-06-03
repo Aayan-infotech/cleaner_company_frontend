@@ -23,7 +23,6 @@ export class CrmComponent implements OnInit {
   loading: boolean = true;
   images: File[] = [];
   
-
   constructor(
     private fb: FormBuilder,
     private crmService: CrmService,
@@ -105,8 +104,7 @@ export class CrmComponent implements OnInit {
     this.crmService.getAllCRM().subscribe({
       next: (response) => {
         this.crmList = response.data.crms || [];
-        this.loading = false;
-        console.log("All Clients: ", this.crmList);        
+        this.loading = false;       
       },
       error: (error) => {
         console.error('Error fetching CRM records:', error);
@@ -219,17 +217,20 @@ export class CrmComponent implements OnInit {
   }
 
   getCrmById(clientId: string): void {
-    this.crmService.getCRMById(clientId).subscribe(
-      (response) => {
+    this.crmService.getCRMById(clientId).subscribe({
+      next: (response) => {
         const client = response.data;
         if (!client) return;
         this.selectedClient = client;
+        this.isEditMode = true;
         this.toggleViewCrmModal();
       },
-      (error) => console.error('Error fetching CRM by ID:', error)
-    );
+      error: (error) => {
+        console.error('Error fetching CRM by ID:', error);
+      }
+    });
   }
-
+  
   viewCrm(clientId: string): void {
     this.getCrmById(clientId);
   }

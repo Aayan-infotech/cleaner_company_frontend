@@ -9,6 +9,9 @@ export const apiUrls = {
     profileManage: 'http://18.209.91.97:5966/api/profile/',
     dropdownDataApi: 'http://18.209.91.97:5966/api/dropdown/',
     estimateAPI: 'http://18.209.91.97:5966/api/estimates/',
+    JobsApi: 'http://18.209.91.97:5966/api/event/',
+    servicesApi: 'http://18.209.91.97:5966/api/services/',
+
     eventsApi:'http://18.209.91.97:5966/api/event/',
     categoryItemApi:'http://18.209.91.97:5966/api/categoryItem/',
     inventoryCategoryApi:'http://18.209.91.97:5966/api/inventoryCategory/',
@@ -16,4 +19,5 @@ export const apiUrls = {
     empCertificatesApi: 'http://18.209.91.97:5966/api/certificate/',
     empMgmtApi: 'http://18.209.91.97:5966/api/employee/',
     crmMgmtApi: 'http://18.209.91.97:5966/api/manage-crm',
+
 }
