@@ -9,13 +9,17 @@ import { EstimateService } from '../../services/estimate.service';
   templateUrl: './job-estimation-contracts.component.html',
   styleUrl: './job-estimation-contracts.component.scss'
 })
+
 export class JobEstimationContractsComponent implements OnInit {
+
   estimateService = inject(EstimateService);
   estArray: any
   estData: any;
+
   ngOnInit(): void {
     this.getAllEstimatesData();
   }
+
   getAllEstimatesData() {
     this.estimateService.getAllEstimates()
       .subscribe((res) => {
@@ -24,6 +28,7 @@ export class JobEstimationContractsComponent implements OnInit {
         console.log(this.estArray);
       });
   }
+
   deleteEstimate(id: any) {
     this.estimateService.deleteEstimateService(id)
       .subscribe(res => {

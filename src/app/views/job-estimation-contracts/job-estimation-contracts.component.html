@@ -5,16 +5,17 @@
           <span>All Estimate</span>
         </c-card-header>
 
-        <c-card-body>
+        <c-card-body> 
           <table class="table table-responsive-sm table-bordered table-striped">
             <thead>
+              
               <tr>
                 <th>JobId</th>
                 <th>Room</th>
                 <th>Service</th>
-                <th>Item Clean</th>
+                <!-- <th>Item Clean</th>
                 <th>Dry Cleaning</th>
-                <th>Hard Surface</th>
+                <th>Hard Surface</th> -->
                 <th>Method</th>
                 <th>Estimated Cost</th>
                 <th>Action</th>
@@ -23,14 +24,21 @@
             </thead>
             <tbody>
               <tr *ngFor="let estimate of estArray">
-                <td>{{estimate.jobId}} </td>
+                
+                <!-- Job ID -->
+                <td>{{estimate._id}} </td>
+
+                <!-- Rooms -->
                 <td>{{ estimate.room.name }}</td>
+
+                <!-- Services -->
                 <td>
                   <div *ngFor="let service of estimate.selectedServices">
                     {{ service.service?.name }} - ${{ service.service?.price }}
                   </div>
                 </td>
-                <td>
+
+          <!--  <td>
                   <div *ngFor="let service of estimate.selectedServices">
                     {{ service.itemClean?.name }} - ${{ service.itemClean?.price }}
                   </div>
@@ -44,22 +52,29 @@
                   <div *ngFor="let service of estimate.selectedServices">
                     {{ service.hardSurface?.name }} - ${{ service.hardSurface?.price }}
                   </div>
-                </td>
+                </td> -->
+
+                <!-- Methods -->
                 <td>
                   <div *ngFor="let service of estimate.selectedServices">
                     {{ service.method?.name }} - ${{ service.method?.price }}
                   </div>
                 </td>
+
+                <!-- Estimated Cost -->
                 <td>
                   <div *ngFor="let service of estimate.selectedServices">
                     ${{ service.estimatedCost }}
                   </div>
                 </td>
+
+                <!-- Actions -->
                 <td>
                   <button (click)="deleteEstimate(estimate._id)">
                     <svg cIcon name="cil-trash" size="sm"></svg>
                   </button>
                 </td>
+
               </tr>
             </tbody>
           </table>

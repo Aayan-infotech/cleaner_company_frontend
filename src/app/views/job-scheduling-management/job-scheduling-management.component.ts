@@ -1,10 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DropDownService } from '../../services/drop-down.service'
 import { UsersService } from '../../services/users.service';
 import { ApiService } from '../../services/api.service';
-import { EstimateService } from '../../services/estimate.service';
 import { EmpMgmtService } from '../../services/emp-mgmt.service';
 import { Room } from '../../models/room';
 import { Service } from '../../models/service';
@@ -19,6 +17,8 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { DatePipe } from '@angular/common';
+import { EstimateService } from '../../services/estimate.service';
+
 
 export interface Event {
   _id: string;
@@ -37,9 +37,6 @@ export interface Event {
 
 interface SelectedServices {
   service?: { name: string; price: number };
-  itemClean?: { name: string; price: number };
-  dryCleaning?: { name: string; price: number };
-  hardSurface?: { name: string; price: number };
   method?: { name: string; price: number };
   estimatedCost?: number;
 }
@@ -59,7 +56,20 @@ interface Estimate {
   styleUrl: './job-scheduling-management.component.scss',
   providers: [DatePipe]
 })
+
 export class JobSchedulingManagementComponent {
+
+  allJobs: any[] = [];
+
+  allServices: any[] = [];
+  estimate: any = {
+    selectedServices: [
+      { service: '', method: '', estimatedCost: 0 }
+    ]
+  };
+
+  allMethods: any[] =[];
+
   EventsService = inject(CalendarEventService);
   fb = inject(FormBuilder);
   dropForm!: FormGroup;
@@ -99,7 +109,7 @@ export class JobSchedulingManagementComponent {
   hardSurfaces: HardSurface[] = [];
   methods: Method[] = [];
 
-  estimates: { room: string, length: number, width: number, totalSquareFoot: number, selectedServices: { service: string, itemClean: string,subItem?: string, dryCleaning: string, hardSurface: string, method: string, estimatedCost: number }[] }[] = [];
+  estimates: { room: string, length: number, width: number, totalSquareFoot: number, selectedServices: { service: string, method: string, estimatedCost: number }[] }[] = [];
 
 
   //calendar
@@ -133,6 +143,7 @@ export class JobSchedulingManagementComponent {
     dateClick: (arg) => this.handleDateClick(arg),
     events: this.calendarArray
   };
+
   toggleWeekends() {
     this.calendarOptions.weekends = !this.calendarOptions.weekends // toggle the boolean!
   }
@@ -185,6 +196,8 @@ eventTypeColors: { [key: string]: string } = {
     this.getAllEstimatesData();
     this.getAllHistory()
     this.getAllCalendar();
+    this.getAllJobs();
+    this.getAllServices();
   }
 
   getAllUsers() {
@@ -210,9 +223,90 @@ eventTypeColors: { [key: string]: string } = {
       .subscribe((res) => {
         this.estData = res;
         this.estArray = this.estData.data;
-        console.log(this.estArray);
+        console.log("All estimates: ",this.estArray);
       });
   }
+
+  // Get all Jobs
+  getAllJobs(): void {
+    this.estimateService.getAllJobsService().subscribe({
+      next: (res) => {
+        if (res.status === 200) {
+          this.allJobs = res.data;
+          console.log('All Jobs: ', this.allJobs);
+        } else {
+          console.error('Failed to fetch jobs:', res.message);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching jobs:', err);
+      }
+    })  
+  };
+
+  // Get All Services
+  getAllServices(): void {
+    this.estimateService.getAllServicesService().subscribe({
+      next: (res) => {
+        if (res.success && res.status === 200) {
+          this.allServices = res.data;
+          console.log('All services loadedssssssssssss:', this.allServices);
+        } else {
+          console.error('Failed to fetch services:', res.message);
+        }
+      },
+      error: (err) => {
+        console.error('API error:', err);
+      }
+    });
+  }
+
+  getServiceName(serviceId: string): string {
+    const service = this.allServices.find(s => s._id === serviceId);
+    return service ? service.name : 'Unknown Service';
+  }
+
+  // Returns array of method objects for the given service ID
+  getMethodsForService(serviceId: string): any[] {
+    const service = this.allServices.find(s => s._id === serviceId);
+    if (service && service.methods) {
+      // methods array contains { method: {...} } objects
+      return service.methods.map((m: any) => m.method);
+    }
+    return [];
+  }
+
+  // Optional: clears method when service changes
+  onServiceChange(index: number): void {
+    this.estimates[index].selectedServices.forEach((selectedService, svcIdx) => {
+      selectedService.method = '';
+    });
+  }
+ 
+  
+  onMethodChange(roomIndex: number): void {
+    const room = this.estimates[roomIndex];
+    room.selectedServices.forEach((selectedService) => {
+      selectedService.estimatedCost = this.calculateServicePrice(selectedService);
+    });
+  }
+  
+  
+
+  updateEstimateTotal(): void {
+    this.estimate.totalPrice = this.estimate.selectedServices.reduce(
+      (sum: number, s: any): number => sum + this.calculateServicePrice(s),
+      0
+    );
+  }
+  
+  getTotalEstimatePrice(): number {
+    return this.estimate.selectedServices.reduce((sum: number, selectedService: any) => {
+      return sum + this.calculateServicePrice(selectedService);
+    }, 0);
+  }
+  
+
 
   // Helper function to retrieve subitems based on the selected item ID
   getSubItems(itemCleanId: string) {
@@ -225,7 +319,7 @@ eventTypeColors: { [key: string]: string } = {
   }
 
   addService(index: number) {
-    this.estimates[index].selectedServices.push({ service: '', itemClean: '', subItem: '', dryCleaning: '', hardSurface: '', method: '', estimatedCost: 0 });
+    this.estimates[index].selectedServices.push({ service: '', method: '', estimatedCost: 0 });
   }
 
   removeRoom(index: number) {
@@ -236,15 +330,18 @@ eventTypeColors: { [key: string]: string } = {
     this.estimates[roomIndex].selectedServices.splice(serviceIndex, 1);
   }
 
-  calculateServicePrice(selectedService: { service: string, itemClean: string, dryCleaning: string, hardSurface: string, method: string }): number {
-    const service = this.services.find(s => s._id === selectedService.service);
-    const itemClean = this.itemCleans.find(ic => ic._id === selectedService.itemClean);
-    const subItem = this.itemCleans.find(si => si._id === selectedService.itemClean);
-    const dryCleaning = this.dryCleanings.find(dc => dc._id === selectedService.dryCleaning);
-    const hardSurface = this.hardSurfaces.find(hs => hs._id === selectedService.hardSurface);
-    const method = this.methods.find(m => m._id === selectedService.method);
-    return (service ? service.price : 0) + (itemClean ? itemClean.price : 0) + (dryCleaning ? dryCleaning.price : 0) + (hardSurface ? hardSurface.price : 0) + (method ? method.price : 0);
+ // Assuming selectedService: { service: string, method: string }
+  calculateServicePrice(selectedService: any): number {
+    const service = this.allServices.find(s => s._id === selectedService.service);
+    const method = service?.methods?.find((m: any) => m._id === selectedService.method);
+
+    const servicePrice = service?.price || 0;
+    const methodPrice = method?.price || 0;
+
+    return servicePrice + methodPrice;
   }
+
+
 
   calculateEstimate(): number {
     return this.estimates.reduce((total, estimate) => {
@@ -254,7 +351,8 @@ eventTypeColors: { [key: string]: string } = {
     }, 0);
   }
 
-  submitEstimate() {
+
+  submitEstimate1() {
     // Calculate estimated cost for each service and add it to the estimates
     this.estimates.forEach(estimate => {
       estimate.selectedServices.forEach(selectedService => {
@@ -282,6 +380,38 @@ eventTypeColors: { [key: string]: string } = {
       });
   }
 
+  submitEstimate(): void {
+    const estimatePayload = {
+      jobId: this.selectedJobId,
+      estimates: this.estimates.map(est => ({
+        room: est.room,
+        length: est.length,
+        width: est.width,
+        totalSquareFoot: est.totalSquareFoot,
+        selectedServices: est.selectedServices.map(s => ({
+          serviceId: s.service,  // rename here
+          methodId: s.method,    // rename here
+          estimatedCost: this.calculateServicePrice(s),
+        }))
+      }))
+    };
+  
+    this.estimateService.submitEstimate(estimatePayload).subscribe({
+      next: (res) => {
+        console.log('Estimate submitted:', res);
+        this.toggleLiveDemo2(); // Close modal
+        this.getAllEstimatesData(); // Refresh
+      },
+      error: (err) => {
+        console.error('Error submitting estimate:', err);
+      }
+    });
+  }
+  
+  
+  
+  
+
   resetEstimates() {
     this.estimates = [];
   }
@@ -291,10 +421,14 @@ eventTypeColors: { [key: string]: string } = {
     return room ? room.name : '';
   }
 
-  getServiceName(serviceId: string): string {
-    const service = this.services.find(s => s._id === serviceId);
-    return service ? service.name : '';
-  }
+  // getServiceName(serviceId: string): string {
+  //   const service = this.services.find(s => s._id === serviceId);
+  //   return service ? service.name : '';
+  // }
+
+
+  
+  
 
   // getItemCleanName(itemCleanId: string): string {
   //   const itemClean = this.itemCleans.find(ic => ic._id === itemCleanId);
