@@ -103,7 +103,6 @@
 </c-row>
 
 <!-- calendar modal start -->
-
 <c-modal size="lg" id="liveDemoModal" [(visible)]="visible3" (visibleChange)="handleLiveDemoChange3($event)">
   <c-modal-header>
     <!-- <h5 cModalTitle>Add Event</h5> -->
@@ -268,7 +267,7 @@
       <c-card-header class="d-flex align-items-center">
         <span>Recent Job Estimate</span>
 
-        <button (click)="toggleLiveDemo2()" cButton color="secondary" shape="rounded-pill" style="margin-left: 3rem;"
+        <button routerLink="/jobEstimate" cButton color="secondary" shape="rounded-pill" style="margin-left: 3rem;"
           size="sm">Create
           Estimate</button>
 
@@ -302,12 +301,14 @@
 
             <!-- Select Job -->
             <div class="card-header d-flex align-items-center">
+              
               <div style="width: 250px;">
                 <label for="jobId">Select Job:</label>
                 <select class="form-control" [(ngModel)]="selectedJobId">
                   <option *ngFor="let job of calendarArray" [value]="job.jobId"> {{ job.jobId }} - {{ job.title }}</option>
                 </select>
               </div>
+
               <div class="mt-4 ms-3">
                 <button cButton color="primary" shape="rounded-pill" size="sm" (click)="addRoom()">Add Room</button>
               </div>
@@ -434,7 +435,7 @@
             </div>
           </div>
         </c-modal-body>
-
+        
         <c-modal-footer>
           <button (click)="toggleLiveDemo2()" cButton color="secondary" shape="rounded-pill" size="sm">Close</button>
           <button type="submit" (click)="toggleLiveDemo2()" (click)="submitEstimate()" cButton color="primary"

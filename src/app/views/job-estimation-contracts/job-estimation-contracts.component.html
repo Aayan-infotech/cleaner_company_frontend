@@ -1,84 +1,234 @@
 <c-row>
-    <c-col xs>
-      <c-card class="mb-4">
-        <c-card-header class="d-flex align-items-center">
-          <span>All Estimate</span>
-        </c-card-header>
+  <c-col xs>
+    <c-card class="mb-4">
+      <c-card-header class="d-flex justify-content-between align-items-center">
+        <span class="me-auto fw-bold">All Estimate</span>
 
-        <c-card-body> 
-          <table class="table table-responsive-sm table-bordered table-striped">
-            <thead>
-              
-              <tr>
-                <th>JobId</th>
-                <th>Room</th>
-                <th>Service</th>
-                <!-- <th>Item Clean</th>
-                <th>Dry Cleaning</th>
-                <th>Hard Surface</th> -->
-                <th>Method</th>
-                <th>Estimated Cost</th>
-                <th>Action</th>
-  
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let estimate of estArray">
+        <div class="d-flex align-items-center ms-auto">
+          <button (click)="toggleLiveDemo()" cButton color="primary" class="ms-2" size="sm">Add Estimate</button>
+        </div>
+      </c-card-header>
+
+      <!-- Start Modal -->
+      <c-modal size="xl" id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Add Estimate</h5>
+          <button (click)="toggleLiveDemo()" cButtonClose></button>
+        </c-modal-header>
+
+        <c-modal-body>
+          <form [formGroup]="estimateForm">
+            <div class="card">
+
+              <div class="card-header d-flex align-items-center">
                 
-                <!-- Job ID -->
-                <td>{{estimate._id}} </td>
+                <!-- Select Job -->
+                <div class="w-25">
+                  <label class="form-label fw-bold">Select Job: <span class="text-danger">*</span></label>
+                  <select class="form-control" formControlName="jobId">
+                    <option value="" disabled>Select Job</option>
+                    <option *ngFor="let job of jobsList" [value]="job.jobId">
+                      {{ job.jobId }}
+                    </option>
+                  </select>
+                </div>
 
-                <!-- Rooms -->
-                <td>{{ estimate.room.name }}</td>
+                <!-- Add Rooms -->
+                <div class="mt-4 pt-1 ms-3">
+                  <button cButton color="primary" shape="rounded-pill" size="sm" (click)="showRoomSection = true">Add Room</button>
+                </div>
 
-                <!-- Services -->
-                <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    {{ service.service?.name }} - ${{ service.service?.price }}
-                  </div>
-                </td>
+              </div>
 
-          <!--  <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    {{ service.itemClean?.name }} - ${{ service.itemClean?.price }}
-                  </div>
-                </td>
-                <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    {{ service.dryCleaning?.name }} - ${{ service.dryCleaning?.price }}
-                  </div>
-                </td>
-                <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    {{ service.hardSurface?.name }} - ${{ service.hardSurface?.price }}
-                  </div>
-                </td> -->
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Room</th>
+                      <th scope="col">Length (ft)</th>
+                      <th scope="col">Width (ft)</th>
+                      <th scope="col">Total SF</th>
+                      <th scope="col" class="px-3">Service</th>                           
+                      <th scope="col" class="ps-5">Method</th>
+                      <th scope="col" class="ps-4">Price</th>                
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="showRoomSection">
+                      <!-- Select Room -->
+                      <td class="pt-3" style="width: 13%;">                        
+                        <div class="tooltip-container">
+                          <select class="form-control" formControlName="room">
+                            <option value="" disabled>Select Room</option>
+                            <option *ngFor="let room of roomsList" [value]="room._id">{{ room.name }}</option>
+                          </select>
+                        </div>
+                      </td>
 
-                <!-- Methods -->
-                <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    {{ service.method?.name }} - ${{ service.method?.price }}
-                  </div>
-                </td>
+                      <!-- Length -->
+                      <td class="pt-3" style="width: 13%;">
+                        <input type="number" class="form-control" formControlName="length" min="1" />
+                      </td>
 
-                <!-- Estimated Cost -->
-                <td>
-                  <div *ngFor="let service of estimate.selectedServices">
-                    ${{ service.estimatedCost }}
-                  </div>
-                </td>
+                      <!-- Width -->
+                      <td class="pt-3" style="width: 13%;">
+                        <input type="number" class="form-control" formControlName="width" min="1" />
+                      </td>
 
-                <!-- Actions -->
-                <td>
-                  <button (click)="deleteEstimate(estimate._id)">
+                      <!-- Total Square Feet -->
+                      <td class="pt-3" style="width: 20%;">
+                        <div class="d-flex align-items-center">
+                          <input type="number" class="form-control" [value]="totalSqFt" readonly />
+  
+                          <div class="d-flex align-items-center">
+  
+                            <!-- Add Button -->
+                            <button class="btn btn-primary btn-sm mx-2" style="margin-right: 5px;" (click)="addServiceMethod()">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                              </svg>
+                            </button>
+  
+                            <!-- Remove Button -->
+                            <button class="btn btn-danger btn-sm"(click)="showRoomSection = false">
+                              <svg cIcon name="cil-trash" size="sm"></svg>
+                            </button>
+  
+                          </div>
+  
+                        </div>
+                      </td>
+
+                      <!-- Service -->
+                      <td colspan="12">
+                        <table class="table table-borderless mb-0">
+                          <tbody formArrayName="selectedServices">
+                            <tr *ngFor="let item of selectedServices.controls; let i = index" [formGroupName]="i">
+                              
+                              <!-- Service -->
+                              <td style="width: 30%;">
+                                <select class="form-control" formControlName="serviceId">
+                                  <option value="">Select Service</option>
+                                  <option *ngFor="let service of servicesList" [value]="service._id">
+                                    {{ service.name }}
+                                  </option>
+                                </select>
+                              </td>
+                          
+                              <!-- Method -->
+                              <td style="width: 30%;">
+                                <select class="form-control" formControlName="methodId">
+                                  <option value="">Select Method</option>
+                                  <option *ngFor="let method of getMethodsForService(item.value.serviceId)" [value]="method.method._id">
+                                    {{ method.method.name }} - ₹{{ method.price }}
+                                  </option>
+                                </select>
+                              </td>
+                          
+                              <!-- Price -->
+                              <td style="width: 20%; padding-top: 15px;">
+                                {{ calculateServiceMethodPrice(item.value) | currency }}
+                              </td>
+                          
+                              <!-- Remove -->
+                              <td style="width: 12%;">
+                                <button type="button" class="btn btn-danger btn-sm" (click)="removeServiceMethod(i)">
+                                  <svg cIcon name="cil-trash" size="sm"></svg>
+                                </button>
+                              </td>                          
+                            </tr>
+                          </tbody>
+                          
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>   
+
+            </div>
+          </form>
+
+        </c-modal-body>
+
+        <c-modal-footer>
+          <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+          <button (click)="submitEstimate()" [disabled]="estimateForm.invalid || loading" cButton color="primary">
+            <ng-container *ngIf="!loading; else loadingTpl">Save</ng-container>
+          
+            <ng-template #loadingTpl>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span class="ms-2">Saving...</span>
+            </ng-template>
+          </button>          
+        </c-modal-footer>
+      </c-modal>
+      <!-- End Modal -->
+
+
+
+      <!-- Body Section -->
+      <c-card-body>
+        <table class="table table-responsive-sm table-bordered table-striped">
+          <thead>
+
+            <tr>
+              <th>SNo</th>
+              <th>JobId</th>
+              <th>Room</th>
+              <th>Service</th>
+              <th>Method</th>
+              <th>Estimated Cost</th>
+              <th>Action</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let estimate of estArray; let i = index">
+
+              <td>{{ i + 1}}</td>
+
+              <!-- Job ID -->
+              <td>{{estimate.jobId}} </td>
+
+              <!-- Rooms -->
+              <td>{{ estimate.room.name }}</td>
+
+              <!-- Services -->
+              <td>
+                <div *ngFor="let service of estimate.selectedServices">
+                  {{ service.service?.name }} - ${{ service.service?.price }}
+                </div>
+              </td>
+              
+              <!-- Methods -->
+              <td>
+                <div *ngFor="let service of estimate.selectedServices">
+                  {{ service.method?.name }} - ${{ service.method?.price }}
+                </div>
+              </td>
+
+              <!-- Estimated Cost -->
+              <td>$ {{ estimate.totalEstimate }}</td>
+
+              <!-- Actions -->
+              <td>
+                <button (click)="deleteEstimate(estimate._id)" [disabled]="deletingEstimateId === estimate._id" title="Delete Estimate">
+                  <ng-container *ngIf="deletingEstimateId === estimate._id; else deleteIcon">
+                    <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                  </ng-container>
+                
+                  <ng-template #deleteIcon>
                     <svg cIcon name="cil-trash" size="sm"></svg>
-                  </button>
-                </td>
+                  </ng-template>
+                </button>                
+              </td>
 
-              </tr>
-            </tbody>
-          </table>
-        </c-card-body>
-      </c-card>
-    </c-col>
-  </c-row>
+            </tr>
+          </tbody>
+        </table>
+      </c-card-body>
+    </c-card>
+  </c-col>
+</c-row>
