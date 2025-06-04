@@ -16,13 +16,18 @@ export class EstimateService {
     return this.http.get<any>(`${apiUrls.JobsApi}jobId`)
   }
 
+  // Get All Rooms
+  getAllRoomsService(): Observable <any> {
+    return this.http.get<any>(`${apiUrls.roomsApi}rooms`)
+  }
+
   // Get All Services
   getAllServicesService(): Observable<any> {
     return this.http.get<any>(`${apiUrls.servicesApi}getAll`)
   }
   
-  submitEstimate(estimate: any): Observable<any> {
-    return this.http.post<any>(`${apiUrls.estimateAPI}create`, estimate);
+  submitEstimate(payload: any): Observable<any> {
+    return this.http.post<any>(`${apiUrls.estimateAPI}create`, payload);
   }
 
   getAllEstimates(): Observable<any[]> {
@@ -30,7 +35,7 @@ export class EstimateService {
   }
 
   deleteEstimateService(id: any): Observable<any> {
-    return this.http.delete(`${apiUrls.estimateAPI}${id}`);
+    return this.http.delete(`${apiUrls.estimateAPI}delete/${id}`);
   };
 
 }
