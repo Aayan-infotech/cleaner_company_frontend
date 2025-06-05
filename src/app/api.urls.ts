@@ -10,7 +10,7 @@ export const apiUrls = {
     dropdownDataApi: 'http://18.209.91.97:5966/api/dropdown/',
     estimateAPI: 'http://18.209.91.97:5966/api/estimates/',
     JobsApi: 'http://18.209.91.97:5966/api/event/',
-    roomsApi: 'http://localhost:5966/api/manage-rooms/',
+    roomsApi: 'http://18.209.91.97:5966/api/manage-rooms/',
     servicesApi: 'http://18.209.91.97:5966/api/services/',
 
     eventsApi:'http://18.209.91.97:5966/api/event/',
