@@ -13,6 +13,8 @@ export class GroupsComponent {
   newGroupName = '';
   searchTerm = '';
   selectedGroup = '';
+  public visibleGroupDetails = false;
+
 
   groupList: string[] = ['Group A', 'Group B', 'Group C'];
 
@@ -68,7 +70,6 @@ export class GroupsComponent {
     });
   }
   
-
   toggleLiveDemo() {
     this.visible = !this.visible;
   }
@@ -81,6 +82,14 @@ export class GroupsComponent {
     this.clientModalVisible = event;
   }
 
+
+  toggleGroupDetails() {
+    this.visibleGroupDetails = !this.visibleGroupDetails;
+  }
+
+  handleLiveGroupDetailsChange(event: any) {
+    this.visibleGroupDetails = event;
+  }
 
   addGroup() {
     const trimmed = this.newGroupName.trim();
@@ -151,10 +160,6 @@ export class GroupsComponent {
       if (c.group === groupToDelete) c.group = '';
     });
   }
-
-
-
- 
 
   
 }

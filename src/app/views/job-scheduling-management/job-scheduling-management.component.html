@@ -320,7 +320,7 @@
                     <th scope="col">Length (ft)</th>
                     <th scope="col">Width (ft)</th>
                     <th scope="col">Total SF</th>
-                    <th scope="col" class="px-3">Service</th>                           
+                    <th scope="col" class="px-3">Surface</th>                           
                     <th scope="col">Method</th>
                     <th scope="col" class="ps-3">Price</th>                
                     <th scope="col">Action</th>
@@ -442,6 +442,40 @@
       </c-modal>
       <!-- End Modal -->
 
+
+      <!-- Start View Modal -->
+      <c-modal size="lg" id="liveDemoModal" [visible]="visibleViewEstimates" (visibleChange)="handleViewEstimateChangeDemo($event)">
+        <c-modal-header>
+          <h5 cModalTitle>View Estimate Details</h5>
+          <button (click)="toggleViewEstimateDemo()" cButtonClose></button>
+        </c-modal-header>
+
+        <c-modal-body>          
+          <div *ngIf="estimateData">
+            <p><strong>Job ID:</strong> {{ estimateData.jobId }}</p>
+            <p><strong>Room:</strong> {{ estimateData.room?.name }}</p>
+            <p><strong>Width:</strong> {{ estimateData.width }} ft</p>
+            <p><strong>Total Sq. Ft.:</strong> {{ estimateData.totalSquarefeet }}</p>
+            <p><strong>Total Estimate:</strong> ${{ estimateData.totalEstimate }}</p>
+            <hr>
+            <div *ngFor="let service of estimateData.selectedServices">
+              <p><strong>Surface:</strong> {{ service.service?.name }} - ${{ service.service?.price }}</p>
+              <p><strong>Method:</strong> {{ service.method?.name }} - ${{ service.method?.price }}</p>
+              <p><strong>Estimated Cost:</strong> ${{ service.estimatedCost }}</p>
+              <hr>
+            </div>
+          </div>
+        </c-modal-body>
+
+        <c-modal-footer>
+          <button (click)="toggleViewEstimateDemo()" cButton color="secondary">Close</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- End View Modal -->
+
+
+
+
       <!-- Estimate Body Section -->
       <c-card-body>
         <table class="table table-responsive-sm table-bordered table-striped">
@@ -449,7 +483,7 @@
             <tr>
               <th>JobId</th>
               <th>Room</th>
-              <th>Service</th>
+              <th>Surface</th>
               <!-- <th>Item Clean</th>
               <th>Dry Cleaning</th>
               <th>Hard Surface</th> -->
@@ -491,6 +525,16 @@
 
               <!-- Action Buttons -->
               <td>
+
+                <!-- View Button -->
+                <button (click)="toggleViewEstimateDemo()" (click)="getEstimateDetails(estimate._id)" class="me-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                  </svg>
+                </button>
+
+                <!-- Delete Button -->
                 <button (click)="deleteEstimate(estimate._id)">
                   <svg cIcon name="cil-trash" size="sm"></svg>
                 </button>
@@ -500,15 +544,6 @@
           </tbody>
         </table>
       </c-card-body>
-
-
-
-
-
-
-
-
-
 
     </c-card>
   </c-col>

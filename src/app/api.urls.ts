@@ -12,7 +12,6 @@ export const apiUrls = {
     JobsApi: 'http://18.209.91.97:5966/api/event/',
     roomsApi: 'http://18.209.91.97:5966/api/manage-rooms/',
     servicesApi: 'http://18.209.91.97:5966/api/services/',
-
     eventsApi:'http://18.209.91.97:5966/api/event/',
     categoryItemApi:'http://18.209.91.97:5966/api/categoryItem/',
     inventoryCategoryApi:'http://18.209.91.97:5966/api/inventoryCategory/',

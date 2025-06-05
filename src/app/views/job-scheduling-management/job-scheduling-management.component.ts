@@ -85,6 +85,8 @@ export class JobSchedulingManagementComponent {
   eventData: any;
   eventArray: any;
   selectedJobId: any;
+  estimateData: any;
+  public visibleViewEstimates = false;
 
   toggleLiveDemo2() {
     this.visible2 = !this.visible2;
@@ -100,6 +102,14 @@ export class JobSchedulingManagementComponent {
 
   handleLiveDemoChange(event: any) {
     this.visible = event;
+  }
+
+  toggleViewEstimateDemo() {
+    this.visibleViewEstimates = !this.visibleViewEstimates;
+  }
+
+  handleViewEstimateChangeDemo(event: any) {
+    this.visibleViewEstimates = event;
   }
 
   rooms: Room[] = [];
@@ -453,6 +463,19 @@ eventTypeColors: { [key: string]: string } = {
   getMethodName(methodId: string): string {
     const method = this.methods.find(m => m._id === methodId);
     return method ? method.name : '';
+  }
+
+  getEstimateDetails(id: string): void {
+    this.estimateService.getEstimateByIdService(id).subscribe({
+      next: (response) => {
+        console.log('Estimate Data:', response); 
+        this.estimateData = response.data;
+        this.visibleViewEstimates = true;
+      },
+      error: (err) => {
+        console.error('Error fetching estimate:', err);
+      }
+    });
   }
 
   deleteEstimate(id: any) {

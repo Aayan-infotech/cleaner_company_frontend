@@ -34,6 +34,10 @@ export class EstimateService {
     return this.http.get<any[]>(`${apiUrls.estimateAPI}getAll`)
   }
 
+  getEstimateByIdService(id: any): Observable <any> {
+    return this.http.get<any>(`${apiUrls.estimateAPI}getById/${id}`);
+  }
+
   deleteEstimateService(id: any): Observable<any> {
     return this.http.delete(`${apiUrls.estimateAPI}delete/${id}`);
   };
