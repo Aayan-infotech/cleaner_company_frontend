@@ -1,3 +1,4 @@
+<!-- Calender -->
 <c-row class="mb-4 align-items-center justify-content-between">
   <c-col xs="auto">
     <div class="d-flex align-items-center">
@@ -20,6 +21,8 @@
   </c-col>
 </c-row>
 
+
+<!-- Calender's Events -->
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
@@ -37,6 +40,7 @@
     </c-card>
   </c-col>
 </c-row>
+
 
 <!-- event list -->
 <c-row>
@@ -101,6 +105,7 @@
     </c-card>
   </c-col>
 </c-row>
+
 
 <!-- calendar modal start -->
 <c-modal size="lg" id="liveDemoModal" [(visible)]="visible3" (visibleChange)="handleLiveDemoChange3($event)">
@@ -212,8 +217,9 @@
   </c-modal-footer>
 </c-modal>
 <!-- calendar modal end -->
-<!-- history -->
 
+
+<!-- history -->
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
@@ -263,6 +269,7 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+
       <!-- Header Section -->
       <c-card-header class="d-flex align-items-center">
         <span>Recent Job Estimate</span>
@@ -278,15 +285,6 @@
           <button cButton color="primary" shape="rounded-pill" routerLink="/jobEstimate" size="sm">All Estimate</button>
         </div>
       </c-card-header>
-
-
-
-
-
-
-
-
-
 
       <!-- Start Modal -->
       <c-modal size="xl" id="liveDemoModal2" [visible]="visible2" (visibleChange)="handleLiveDemoChange2($event)">
@@ -333,6 +331,7 @@
 
                     <!-- First Section -->
                     <td class="pt-3" style="width: 13%;">
+
                       <!-- Room Dropdown -->
                       <div class="tooltip-container">
                         <select class="form-select form-select-sm" [(ngModel)]="estimate.room">
@@ -395,8 +394,6 @@
                                   <option value="" disabled>Select services</option>
                                   <option *ngFor="let service of allServices" [value]="service._id">{{ service.name }}</option>
                                 </select>
-                                
-                                <!-- <span class="tooltip-text">{{ getServiceName(selectedService.service) }}</span> -->
                               </div>
                             </td>
 
@@ -445,21 +442,6 @@
       </c-modal>
       <!-- End Modal -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       <!-- Estimate Body Section -->
       <c-card-body>
         <table class="table table-responsive-sm table-bordered table-striped">
@@ -481,7 +463,7 @@
             <tr *ngFor="let estimate of estArray | slice:0:3;">
 
               <!-- Job ID -->
-              <td>{{estimate._id}} </td>
+              <td>{{ estimate.jobId }}</td>
 
               <!-- Room names -->
               <td>{{ estimate.room.name }}</td>
@@ -492,25 +474,6 @@
                   {{ service.service?.name }} - ${{ service.service?.price }}
                 </div>
               </td>
-
-              <!-- <td>
-                <div *ngFor="let service of estimate.selectedServices">
-                  {{ service.itemClean?.name }} - ${{ service.itemClean?.price
-                  }}
-                </div>
-              </td>
-              <td>
-                <div *ngFor="let service of estimate.selectedServices">
-                  {{ service.dryCleaning?.name }} - ${{
-                  service.dryCleaning?.price }}
-                </div>
-              </td>
-              <td>
-                <div *ngFor="let service of estimate.selectedServices">
-                  {{ service.hardSurface?.name }} - ${{
-                  service.hardSurface?.price }}
-                </div>
-              </td> -->
 
               <!-- Methods Names -->
               <td>
