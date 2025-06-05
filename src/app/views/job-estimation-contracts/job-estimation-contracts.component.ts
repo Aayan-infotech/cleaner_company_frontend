@@ -9,6 +9,7 @@ import { EstimateService } from '../../services/estimate.service';
   templateUrl: './job-estimation-contracts.component.html',
   styleUrl: './job-estimation-contracts.component.scss',
 })
+
 export class JobEstimationContractsComponent implements OnInit {
 
   estimateForm!: FormGroup;
@@ -19,11 +20,16 @@ export class JobEstimationContractsComponent implements OnInit {
   roomsList: any[] = [];
   servicesList: any[] = [];
   public visible = false;
+  public visibleViewEstimate = false;
   totalSqFt: number = 0;
   showRoomSection: boolean = false;
   loading: boolean = false;  
+  estimateData: any;
   deletingEstimateId: string | null = null;
-
+  public selectedEstimate: any = null;
+  selectedServicePrice: number = 0;
+  selectedMethodPrice: number = 0;
+  
 
   constructor(
     private estimateService: EstimateService,
@@ -45,6 +51,14 @@ export class JobEstimationContractsComponent implements OnInit {
 
   handleLiveDemoChange(event: any) {
     this.visible = event;
+  }
+
+  toggleViewEstimate() {
+    this.visibleViewEstimate = !this.visibleViewEstimate;
+  }
+
+  handleViewEstimateChange(event: any) {
+    this.visibleViewEstimate = event;
   }
 
   // Initialize Form
@@ -189,5 +203,30 @@ export class JobEstimationContractsComponent implements OnInit {
       }
     });
   }
+
+  getEstimateDetails(id: string): void {
+    this.estimateService.getEstimateByIdService(id).subscribe({
+      next: (response) => {
+        console.log('Estimate Data:', response); 
+        this.estimateData = response.data;
+        this.visibleViewEstimate = true;
+      },
+      error: (err) => {
+        console.error('Error fetching estimate:', err);
+      }
+    });
+  }
+
+  onServiceChange(serviceId: string) {
+    const selectedService = this.servicesList.find(s => s._id === serviceId);
+    this.selectedServicePrice = selectedService?.price || 0;
+  }
+  
+  onMethodChange(methodId: string, serviceId: string) {
+    const methods = this.getMethodsForService(serviceId);
+    const selectedMethod = methods.find(m => m.method._id === methodId);
+    this.selectedMethodPrice = selectedMethod?.price || 0;
+  }
+  
   
 }
