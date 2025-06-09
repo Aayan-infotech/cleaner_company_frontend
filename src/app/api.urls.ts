@@ -18,6 +18,7 @@ export const apiUrls = {
     inventoryVanApi:'http://18.209.91.97:5966/api/vans/',
     empCertificatesApi: 'http://18.209.91.97:5966/api/certificate/',
     empMgmtApi: 'http://18.209.91.97:5966/api/employee/',
-    crmMgmtApi: 'http://18.209.91.97:5966/api/manage-crm',
+    crmMgmtApi: 'http://18.209.91.97:5966/api/manage-crm/',
+    groupsManageApi: 'http://18.209.91.97:5966/api/group/',
 
 }

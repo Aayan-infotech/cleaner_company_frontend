@@ -12,28 +12,28 @@ export class CrmService {
   // Create a new CRM entry
   createCRM(data: any): Observable<any> {
     const formData = this.buildFormData(data);
-    return this.http.post(`${apiUrls.crmMgmtApi}/add`, formData);
+    return this.http.post(`${apiUrls.crmMgmtApi}add`, formData);
   }
 
   // Get all CRM entries
   getAllCRM(): Observable<any> {
-    return this.http.get(`${apiUrls.crmMgmtApi}/get-all`);
+    return this.http.get(`${apiUrls.crmMgmtApi}get-all`);
   }
 
   // Get a CRM entry by ID
   getCRMById(id: string): Observable<any> {
-    return this.http.get(`${apiUrls.crmMgmtApi}/get/${id}`);
+    return this.http.get(`${apiUrls.crmMgmtApi}get/${id}`);
   }
 
   // Update a CRM entry
   updateCRM(id: string, data: any): Observable<any> {
     const formData = this.buildFormData(data);
-    return this.http.put(`${apiUrls.crmMgmtApi}/update/${id}`, formData);
+    return this.http.put(`${apiUrls.crmMgmtApi}update/${id}`, formData);
   }
 
   // Delete a CRM entry
   deleteCRMById(id: string): Observable<any> {
-    return this.http.delete(`${apiUrls.crmMgmtApi}/delete/${id}`);
+    return this.http.delete(`${apiUrls.crmMgmtApi}delete/${id}`);
   }
 
   // Utility to build FormData for file uploads

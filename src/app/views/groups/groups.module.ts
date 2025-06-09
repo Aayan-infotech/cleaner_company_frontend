@@ -1,4 +1,3 @@
-
 import { GroupsRoutingModule } from './groups-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -20,12 +19,14 @@ import {
   NavModule,
   ProgressModule,
   TableModule,
-  TabsModule
+  TabsModule,
+  PageItemDirective,
+  PageLinkDirective,
+  PaginationComponent,
 } from '@coreui/angular';
 import { WidgetsModule } from '../widgets/widgets.module';
 import { IconModule } from '@coreui/icons-angular';
 import { FormsModule } from '@angular/forms';
-
 
 @NgModule({
   declarations: [GroupsComponent],
@@ -51,7 +52,10 @@ import { FormsModule } from '@angular/forms';
     TableModule,
     TabsModule,
     WidgetsModule,
-    FormsModule
-  ]
+    FormsModule,
+    PageItemDirective,
+    PageLinkDirective,
+    PaginationComponent,
+  ],
 })
-export class GroupsModule { }
+export class GroupsModule {}

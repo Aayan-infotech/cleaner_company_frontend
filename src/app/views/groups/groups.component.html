@@ -16,30 +16,31 @@
             <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
                 
                 <c-modal-header>
-                <h5 cModalTitle>Add Group</h5>
-                <button (click)="toggleLiveDemo()" cButtonClose></button>
+                  <h5 cModalTitle>{{ isEditMode ? 'Edit Group Details' : 'Add Group' }}</h5>
+                  <button (click)="toggleLiveDemo()" cButtonClose></button>
                 </c-modal-header>
 
 
                 <c-modal-body>
+                  <form [formGroup]="groupForm" cForm>
                     <div class="mb-3">
-                        <label class="form-label">Group Name</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          [(ngModel)]="newGroupName"
-                          name="groupName"
-                          placeholder="Enter new group name"
-                        />
+                        <label for="groupName" class="fw-bold">Enter Group Name<span class="text-danger">*</span></label>
+                        <input type="text" cFormControl formControlName="groupName" id="groupName" placeholder="Group Name" />
+
+                        <!-- Warning Message -->
+                        <div *ngIf="groupForm.get('groupName')?.invalid && groupForm.get('groupName')?.touched" class="text-danger">
+                          Group name is required.
+                        </div>
+
                       </div>
+                  </form>
                 </c-modal-body>
 
 
                 <c-modal-footer>
-                <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
-                <button cButton color="success">Save changes</button>
+                  <button (click)="toggleLiveDemo(); resetForm()" cButton color="secondary">Close</button>
+                  <button (click)="submitGroup()" [disabled]="groupForm.invalid || isSubmittingGroup" cButton color="success">{{ isSubmittingGroup ? 'Saving...' : 'Save' }}</button>
                 </c-modal-footer>
-
 
             </c-modal>
 
@@ -47,25 +48,22 @@
             <!-- Manage Clients in Group Modal -->
             <c-modal size="xl" id="clientGroupModal" [visible]="clientModalVisible" (visibleChange)="handleClientModalChange($event)">
                 <c-modal-header>
-                  <h5 cModalTitle>Manage Clients in Group: {{ selectedGroup }}</h5>
+                  <h5 cModalTitle>Manage Clients in Group:</h5>
                   <button (click)="closeClientModal()" cButtonClose></button>
                 </c-modal-header>
               
                 <c-modal-body>
+
                   <!-- Add Existing Clients -->
                   <div class="row g-3 mb-5">
                     <div class="col-md-10">
                       <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
-                        <option [ngValue]="null" disabled selected>
-                          Select a client below to assign to this group
-                        </option>
-                        <option *ngFor="let client of getUnassignedClients()" [ngValue]="client">
-                          {{ client.name }} ({{ client.email }})
-                        </option>
+                        <option [ngValue]="null" disabled selected>Select a client below to assign to this group</option>
+                        <option *ngFor="let client of clientList" [ngValue]="client"> {{ client.name }} ({{ client.email }})</option>
                       </select>                         
                     </div>
                     <div class="col-md-2">
-                      <button class="btn btn-primary w-100" (click)="addClientToGroup()">Add</button>
+                      <button class="btn btn-primary w-100">Add</button>
                     </div>
                   </div>
               
@@ -81,13 +79,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let client of getClientsByGroup(selectedGroup); let i = index">
-                        <td>{{ i + 1 }}</td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.address }}</td>
+                      <tr>
+                        <td>1</td>
+                        <td>Client Name</td>
+                        <td>client#gmail.com</td>
+                        <td>Lucknow</td>
                         <td>
-                          <button class="btn btn-danger btn-sm" (click)="removeClientFromGroup(client)">Remove</button>
+                          <button class="mx-2" size="sm" title="Remove client"><svg cIcon name="cil-trash" size="sm"></svg></button>  
                         </td>
                       </tr>
                     </tbody>
@@ -110,7 +108,7 @@
 
                 <!-- Group Name -->
                 <div class="mt-2 mb-4 text-center text-danger">
-                  <strong>(Group Name)</strong>
+                  <strong>{{ selectedGroupName }}</strong>
                 </div> 
 
                 <!-- Group's Clients -->
@@ -119,17 +117,32 @@
                   <thead>
                     <tr style="background-color: #9da5b1;">
                       <th>#</th>
+                      <th>Image</th>
                       <th>Name</th>
                       <th>Email</th>
                       <th>Address</th>
+                      <th>Phones</th>
+                      <th>Payment</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>ClientName</td>
-                      <td>clientName#gmail.com</td>
-                      <td>Lucknow</td>
+                    <tr *ngFor="let client of selectedGroupClients; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>
+                        <img *ngIf="client.images?.length" [src]="'http://18.209.91.97:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 5px;" />
+                      </td>
+                      <td>{{ client.name }}</td>
+                      <td>{{ client.email }}</td>
+                      <td>{{ client.address }}</td>
+                      <td>
+                        <div *ngFor="let phone of client.phones">
+                          <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                        </div>
+                      </td>
+                      <td>{{ client.paymentOptions }}</td>
+
+                      
+
                     </tr>
                   </tbody>
                 </table>
@@ -146,31 +159,78 @@
             <!-- Body section -->
             <c-card-body>
                 <table [hover]="true" [responsive]="true" [striped]="true" cTable class="mb-0 border">
-                    <thead cTableColor="light">
-                        <tr>
-                            <th>#</th>
-                            <th>Group Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let group of groupList; let i = index">
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ group }}</td>
-                            <td>
-                              <button (click)="toggleGroupDetails()" class="me-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
-                                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
-                                </svg>
-                              </button>
-                              <button size="sm" (click)="toggleLiveDemo()" title="Remove group"><svg cIcon name="cil-pencil" size="sm"></svg></button>      
-                              <button class="mx-2" size="sm" (click)="deleteGroup(group)" title="Remove group"><svg cIcon name="cil-trash" size="sm"></svg></button>  
-                              <button class="btn btn-info btn-sm" (click)="openClientModal(group)">Manage Clients</button>                            
+                   
+                  <thead cTableColor="light">
+                    <tr>
+                      <th>#</th>
+                      <th>Group Name</th>
+                      <th>Actions</th>
+                    </tr>                        
+                  </thead>
 
-                            </td>
-                        </tr>
-                    </tbody>
+                  <tbody>
+                    <tr *ngFor="let group of groupList; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ group.groupName }}</td>
+                        <td>
+                          <!-- View Button -->
+                          <button (click)="getGroupById(group._id)" class="me-2" [disabled]="loadingGroupId === group._id">
+                            <ng-container *ngIf="loadingGroupId !== group._id; else loadingIcon">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                   class="bi bi-eye" viewBox="0 0 16 16">
+                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5
+                                         8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465
+                                         1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                              </svg>
+                            </ng-container>
+                          
+                            <ng-template #loadingIcon>
+                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </ng-template>
+                          </button>
+                          
+                          <!-- Edit Button -->
+                          <button size="sm" (click)="editGroup(group)" title="Remove group"><svg cIcon name="cil-pencil" size="sm"></svg></button>      
+                          
+                          <!-- Delete Button -->
+                          <button class="mx-2" size="sm" (click)="deleteGroupById(group._id)" title="Remove group"><svg cIcon name="cil-trash" size="sm"></svg></button>  
+                          
+                          <!-- Manage Client Button -->
+                          <button class="btn btn-info btn-sm" (click)="openClientModal(group)">Manage Clients</button>                         
+                        </td>
+                    </tr>
+                  </tbody>
+
+                  <tfoot>
+                    <tr>
+                        <td class="px-3" colspan="10">
+                            <div class="d-flex justify-content-between align-items-center">
+                                
+                                <!-- Pagination -->
+                                <div class="mt-3">
+                                    <c-pagination aria-label="Group pagination">
+                                        <li cPageItem [class.disabled]="currentPage === 1">
+                                          <a cPageLink (click)="changePage(currentPage - 1)" style="cursor:pointer;">Previous</a>
+                                        </li>
+                                        <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
+                                          <a cPageLink (click)="changePage(page)" style="cursor:pointer;">{{ page }}</a>
+                                        </li>
+                                        <li cPageItem [class.disabled]="currentPage === totalPages">
+                                          <a cPageLink (click)="changePage(currentPage + 1)" style="cursor:pointer;">Next</a>
+                                        </li>
+                                    </c-pagination>
+                                </div>
+
+                                <!-- Total Page -->
+                                <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
+                                    Total Group:<span class="text-dark"> {{ totalItems }}</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                  </tfoot>
+
                 </table>
             </c-card-body>
 
