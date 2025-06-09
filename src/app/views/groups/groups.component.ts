@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { CrmService } from '../../services/crm.service';
+import { Component, OnInit, inject, Input } from '@angular/core';
+import { FormGroup, FormControl, FormBuilder, Validators, } from '@angular/forms';
+import { GroupsService } from '../../services/groups.service';
 
 @Component({
   selector: 'app-groups',
@@ -9,80 +10,71 @@ import { CrmService } from '../../services/crm.service';
 })
 
 export class GroupsComponent {
+  
+  groupForm: FormGroup;
+  isEditMode = false;
+  selectedGroupId: string | null = null;
   visible = false;
   newGroupName = '';
   searchTerm = '';
   selectedGroup = '';
   public visibleGroupDetails = false;
+  groupData: any;
 
-
-  groupList: string[] = ['Group A', 'Group B', 'Group C'];
-
-  clientList = [
-    {
-      name: 'John Snow',
-      email: 'snow@gmail.com',
-      address: 'Castle Black',
-      group: 'Group A',
-      selected: false,
-    },
-    {
-      name: 'Dragon Singh',
-      email: 'dragon@gmail.com',
-      address: 'Forest in Winters',
-      group: 'Group A',
-      selected: false,
-    },
-    {
-      name: 'Arya Stark',
-      email: 'arya@gmail.com',
-      address: 'Winterfell',
-      group: 'Group B',
-      selected: false,
-    },
-  ];
-
-  filteredClients = [...this.clientList];
+  groupList: any[] = [];
+  clientList: any[] = [];
+  filteredClients: any[] = [];
 
   clientModalVisible = false;
   selectedClientToAdd: any = null;
 
-  constructor(private CrmService: CrmService) {}
+  groupDetails: any = null; 
+  selectedGroupClients: any[] = [];
+  selectedGroupName: string = '';
+  loadingGroupId: string | null = null;
+  isSubmittingGroup = false;
 
-  ngOnInit(): void {
-    this.loadClients();
-  }
-  
-  loadClients() {
-    this.CrmService.getAllCRM().subscribe({
-      next: (data: any[]) => {
-        this.clientList = data.map(client => ({
-          ...client,
-          group: client.group || ''  
-        }));
-  
-        this.filteredClients = [...this.clientList];
-        console.log("All clients: ", this.clientList);
-      },
-      error: (err) => {
-        console.error('Failed to load clients:', err);
-      }
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+
+  constructor(
+    private fb: FormBuilder,
+    private groupsService: GroupsService,
+  ) {
+    this.groupForm = this.fb.group({
+      groupName: ['', Validators.required]
     });
   }
-  
+
+  ngOnInit(): void {
+    this.getAllGroups();
+    this.getAllClients();
+  }
+
+  // Add Group Modal
   toggleLiveDemo() {
+    if (this.visible) {
+      this.resetForm(); 
+    } else {
+      if (!this.isEditMode) {
+        this.resetForm(); 
+      }
+    }
     this.visible = !this.visible;
   }
+  
 
   handleLiveDemoChange(event: any) {
     this.visible = event;
   }
 
+  // Client Modal
   handleClientModalChange(event: any) {
     this.clientModalVisible = event;
   }
 
-
+  // Add Client in group Modal
   toggleGroupDetails() {
     this.visibleGroupDetails = !this.visibleGroupDetails;
   }
@@ -91,14 +83,93 @@ export class GroupsComponent {
     this.visibleGroupDetails = event;
   }
 
-  addGroup() {
-    const trimmed = this.newGroupName.trim();
-    if (trimmed && !this.groupList.includes(trimmed)) {
-      this.groupList.push(trimmed);
-    }
-    this.newGroupName = '';
-    this.toggleLiveDemo();
+  getAllGroups(page: number = 1): void {
+    this.groupsService.getAllGroupsService(page, this.pageSize).subscribe({
+      next: (res) => {
+        this.groupList = res.data || [];
+        this.totalItems = res.pagination?.totalGroups || 0;
+        this.currentPage = res.pagination?.page || 1;
+      },
+      error: (err) => {
+        console.error("Error fetch get all groups", err);
+      }
+    });
   }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
+  }
+  
+  totalPagesArray(): number[] {
+    return Array(this.totalPages).fill(0).map((_, i) => i + 1);
+  }
+  
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.getAllGroups(page);
+    }
+  }
+  
+  getAllClients(): void {
+    this.groupsService.getAllClientsService().subscribe({
+      next: (res) => {
+        this.clientList = res.data?.crms || [];
+      },
+      error: (err) => {
+        console.error('Failed to load clients:', err);
+      }
+    });
+  }  
+
+  submitGroup(): void {
+    if (this.groupForm.invalid) return;
+
+     const data = this.groupForm.value;
+     this.isSubmittingGroup = true;
+
+    if (this.isEditMode && this.selectedGroupId) {
+      this.groupsService.updateGroupByIdService(this.selectedGroupId, data).subscribe({
+        next: () => {
+          this.getAllGroups();
+          this.toggleLiveDemo();
+          this.isSubmittingGroup = false;
+        },
+        error: (err) => {
+          console.error('Update failed', err); 
+          this.isSubmittingGroup = false;         
+        }
+      });
+    } else {
+      this.groupsService.createGroupService(data).subscribe({
+        next: (res) => {
+          this.getAllGroups();
+          this.toggleLiveDemo();
+          this.resetForm();
+          this.isSubmittingGroup = false;
+        },
+        error: (err) => {
+          console.error('Create failed', err);
+          this.isSubmittingGroup = false;
+        },
+      });
+    }
+  }
+
+  editGroup(data: any): void {
+    this.groupForm.reset(); 
+    this.groupForm.patchValue(data); 
+    this.selectedGroupId = data._id;
+    this.isEditMode = true;
+    this.visible = true;
+  }
+  
+
+  resetForm(): void {
+    this.groupForm.reset();
+    this.selectedGroupId = null;
+    this.isEditMode = false;
+  }
+  
 
   filterGroups() {
     const term = this.searchTerm.toLowerCase();
@@ -154,11 +225,39 @@ export class GroupsComponent {
     client.group = ''; // or null, depending on your logic
   }
 
-  deleteGroup(groupToDelete: string) {
-    this.groupList = this.groupList.filter((g) => g !== groupToDelete);
-    this.clientList.forEach((c) => {
-      if (c.group === groupToDelete) c.group = '';
+  getGroupById(id: any): void {
+    this.loadingGroupId = id;
+
+    this.groupsService.getGroupByIdService(id).subscribe({
+      next: (res) => {
+        console.log('Group data:', res);
+        this.groupData = res.data;
+        this.selectedGroupName = res.data.groupName || '';
+        this.selectedGroupClients = res.data.clients || [];
+        this.toggleGroupDetails();
+        this.loadingGroupId = null;
+        this.visibleGroupDetails = true;
+      },
+      error: (err) => {
+        console.error('Error fetching group by ID:', err);
+        this.loadingGroupId = null;
+      }
     });
+  }
+  
+
+  deleteGroupById(id: any): void {
+    if (confirm('Are you sure you want to delete this group?')) {
+      this.groupsService.deleteGroupByIdService(id).subscribe({
+        next: (res) => {
+          console.log('Group deleted:', res);
+          this.getAllGroups();
+        },
+        error: (err) => {
+          console.error('Error deleting group:', err);
+        }
+      });
+    }
   }
 
   
