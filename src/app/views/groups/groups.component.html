@@ -54,7 +54,7 @@
               
                 <c-modal-body>
 
-                  <!-- Add Existing Clients -->
+                  <!-- Add Existing Clients -->                   
                   <div class="row g-3 mb-5">
                     <div class="col-md-10">
                       <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
@@ -63,7 +63,13 @@
                       </select>                         
                     </div>
                     <div class="col-md-2">
-                      <button class="btn btn-primary w-100">Add</button>
+
+                      <!-- Add Client to Group Button -->
+                      <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center" (click)="addClientToGroup()" [disabled]="!selectedClientToAdd || isAddingClient">
+                        <span *ngIf="!isAddingClient">Add</span>
+                        <span *ngIf="isAddingClient" class="spinner-border spinner-border-sm py-2" role="status" aria-hidden="true"></span>
+                      </button>
+
                     </div>
                   </div>
               
@@ -79,13 +85,23 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Client Name</td>
-                        <td>client#gmail.com</td>
-                        <td>Lucknow</td>
+                      <tr *ngFor="let client of assignedClients; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.address }}</td>
                         <td>
-                          <button class="mx-2" size="sm" title="Remove client"><svg cIcon name="cil-trash" size="sm"></svg></button>  
+
+                          <!-- Remove Client Button -->
+                          <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
+                            <ng-container *ngIf="removingClientId !== client._id">
+                              <svg cIcon name="cil-trash" size="sm"></svg>
+                            </ng-container>
+                            <ng-container *ngIf="removingClientId === client._id">
+                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </ng-container>
+                          </button>
+                  
                         </td>
                       </tr>
                     </tbody>
