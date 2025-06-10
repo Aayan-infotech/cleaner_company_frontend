@@ -48,7 +48,10 @@
             <!-- Manage Clients in Group Modal -->
             <c-modal size="xl" id="clientGroupModal" [visible]="clientModalVisible" (visibleChange)="handleClientModalChange($event)">
                 <c-modal-header>
-                  <h5 cModalTitle>Manage Clients in Group:</h5>
+                  <h5 cModalTitle> Manage Clients in Group: 
+                    <span class="text-primary">
+                      {{ selectedGroup?.groupName ? (selectedGroup.groupName | titlecase) : '' }}
+                    </span></h5>
                   <button (click)="closeClientModal()" cButtonClose></button>
                 </c-modal-header>
               
@@ -57,10 +60,18 @@
                   <!-- Add Existing Clients -->                   
                   <div class="row g-3 mb-5">
                     <div class="col-md-10">
-                      <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
+
+                      <!-- Warning Messgae For Add Duplicate Client To Group -->
+                      <div *ngIf="duplicateClientMsg" class="alert alert-warning py-2 mb-2" role="alert">
+                        {{ duplicateClientMsg }}
+                      </div>
+
+                      <!-- Select Client From Dropdown -->
+                      <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient" (change)="onClientSelectChange()">
                         <option [ngValue]="null" disabled selected>Select a client below to assign to this group</option>
-                        <option *ngFor="let client of clientList" [ngValue]="client"> {{ client.name }} ({{ client.email }})</option>
-                      </select>                         
+                        <option *ngFor="let client of clientList" [ngValue]="client"> {{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}    ({{ client.email }})</option>
+                      </select>                        
+
                     </div>
                     <div class="col-md-2">
 
@@ -83,17 +94,30 @@
                     <thead>
                       <tr style="background-color: #9da5b1;">
                         <th>#</th>
+                        <th>Photo</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Payment</th>
+                        <th>Phones</th>
                         <th>Address</th>
                         <th>Action</th>
                       </tr>
                     </thead>
+
                     <tbody>
                       <tr *ngFor="let client of assignedClients; let i = index">
                         <td>{{ i + 1 }}</td>
+                        <td>
+                          <img *ngIf="client.images?.length" [src]="'http://18.209.91.97:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 5px;" />
+                        </td>
                         <td>{{ client.name }}</td>
                         <td>{{ client.email }}</td>
+                        <td>{{ client.paymentOptions }}</td>
+                        <td>
+                          <div *ngFor="let phone of client.phones">
+                            <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                          </div>
+                        </td>
                         <td>{{ client.address }}</td>
                         <td>
 
@@ -110,6 +134,10 @@
                         </td>
                       </tr>
                     </tbody>
+
+
+
+
                   </table>
                 </c-modal-body>
               
@@ -128,8 +156,8 @@
               <c-modal-body>
 
                 <!-- Group Name -->
-                <div class="mt-2 mb-4 text-center text-danger">
-                  <strong>{{ selectedGroupName }}</strong>
+                <div class="mt-2 mb-4 text-center text-primary">
+                  <strong class="fs-4">{{ selectedGroupName ? (selectedGroupName.charAt(0).toUpperCase() + selectedGroupName.slice(1)) : '' }}</strong>
                 </div> 
 
                 <!-- Group's Clients -->
@@ -138,12 +166,12 @@
                   <thead>
                     <tr style="background-color: #9da5b1;">
                       <th>#</th>
-                      <th>Image</th>
+                      <th>Photo</th>
                       <th>Name</th>
                       <th>Email</th>
-                      <th>Address</th>
-                      <th>Phones</th>
                       <th>Payment</th>
+                      <th>Phones</th>
+                      <th>Address</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -152,17 +180,15 @@
                       <td>
                         <img *ngIf="client.images?.length" [src]="'http://18.209.91.97:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 5px;" />
                       </td>
-                      <td>{{ client.name }}</td>
+                      <td>{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</td>
                       <td>{{ client.email }}</td>
-                      <td>{{ client.address }}</td>
+                      <td>{{ client.paymentOptions }}</td>
                       <td>
                         <div *ngFor="let phone of client.phones">
                           <strong>{{ phone.type }}:</strong> {{ phone.number }}
                         </div>
                       </td>
-                      <td>{{ client.paymentOptions }}</td>
-
-                      
+                      <td>{{ client.address }}</td>
 
                     </tr>
                   </tbody>
@@ -179,9 +205,7 @@
             
             <!-- Body section -->
             <c-card-body>
-
               
-
               <table [hover]="true" [responsive]="true" [striped]="true" cTable class="mb-0 border">
                    
                 <thead cTableColor="light">
@@ -210,7 +234,7 @@
                   <!-- Group Rows -->
                   <tr *ngFor="let group of groupList; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td>{{ group.groupName }}</td>
+                    <td>{{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }}</td>
                     <td>
                       <!-- View Button -->
                       <button (click)="getGroupById(group._id)" class="me-2" [disabled]="loadingGroupId === group._id">
@@ -241,8 +265,7 @@
                       </button>
                     </td>
                   </tr>
-                </tbody>
-                
+                </tbody>                
 
                 <tfoot>
                   <tr>
@@ -278,11 +301,9 @@
                       </div>
                     </td>
                   </tr>
-                </tfoot>
-                
+                </tfoot>                
 
               </table>
-
                 
             </c-card-body>
 
