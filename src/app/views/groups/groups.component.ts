@@ -35,7 +35,7 @@ export class GroupsComponent {
   clientModalVisible = false;
   isAddingClient: boolean = false;
   removingClientId: string | null = null;
-
+  duplicateClientMsg: string | null = null;
   groupDetails: any = null; 
   selectedGroupClients: any[] = [];
   selectedGroupName: string = '';
@@ -246,15 +246,25 @@ export class GroupsComponent {
     this.assignedClients = [];
   }
   
-
-
+  onClientSelectChange(): void {
+    this.duplicateClientMsg = null;
+  }
+  
   addClientToGroup(): void {
     if (!this.selectedGroup || !this.selectedClientToAdd) return;
   
     const groupId = this.selectedGroup._id;
     const clientId = this.selectedClientToAdd._id;
 
+     // Check for duplicate
+    const alreadyAssigned = this.assignedClients.some(client => client._id === clientId);
+    if (alreadyAssigned) {
+      this.duplicateClientMsg = 'This client is already assigned to the group.';
+      return;
+    }
+
     this.isAddingClient = true;
+    this.duplicateClientMsg = null;
   
     this.groupsService.addClientsToGroup(groupId, [clientId]).subscribe({
       next: (res) => {
@@ -289,7 +299,4 @@ export class GroupsComponent {
     });
   }
 
-
-
-  
 }
