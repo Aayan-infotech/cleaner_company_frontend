@@ -17,16 +17,24 @@ export class GroupsComponent {
   visible = false;
   newGroupName = '';
   searchTerm = '';
-  selectedGroup = '';
   public visibleGroupDetails = false;
   groupData: any;
 
   groupList: any[] = [];
-  clientList: any[] = [];
   filteredClients: any[] = [];
+  selectedGroup: any = null;
+  loadingGroups: boolean = false;
 
-  clientModalVisible = false;
+
+
+  // client
+  addClientForm!: FormGroup;
+  clientList: any[] = [];
   selectedClientToAdd: any = null;
+  assignedClients: any[] = [];
+  clientModalVisible = false;
+  isAddingClient: boolean = false;
+  removingClientId: string | null = null;
 
   groupDetails: any = null; 
   selectedGroupClients: any[] = [];
@@ -42,8 +50,15 @@ export class GroupsComponent {
     private fb: FormBuilder,
     private groupsService: GroupsService,
   ) {
+
+    // Group Form
     this.groupForm = this.fb.group({
       groupName: ['', Validators.required]
+    });
+
+    // Client Form
+    this.addClientForm = this.fb.group({
+      clients: ['', Validators.required],
     });
   }
 
@@ -64,17 +79,13 @@ export class GroupsComponent {
     this.visible = !this.visible;
   }
   
-
   handleLiveDemoChange(event: any) {
     this.visible = event;
   }
 
   // Client Modal
-  handleClientModalChange(event: any) {
-    this.clientModalVisible = event;
-  }
+  
 
-  // Add Client in group Modal
   toggleGroupDetails() {
     this.visibleGroupDetails = !this.visibleGroupDetails;
   }
@@ -84,14 +95,18 @@ export class GroupsComponent {
   }
 
   getAllGroups(page: number = 1): void {
+    this.loadingGroups = true;
+
     this.groupsService.getAllGroupsService(page, this.pageSize).subscribe({
       next: (res) => {
         this.groupList = res.data || [];
         this.totalItems = res.pagination?.totalGroups || 0;
         this.currentPage = res.pagination?.page || 1;
+        this.loadingGroups = false;
       },
       error: (err) => {
         console.error("Error fetch get all groups", err);
+        this.loadingGroups = false;
       }
     });
   }
@@ -110,17 +125,6 @@ export class GroupsComponent {
     }
   }
   
-  getAllClients(): void {
-    this.groupsService.getAllClientsService().subscribe({
-      next: (res) => {
-        this.clientList = res.data?.crms || [];
-      },
-      error: (err) => {
-        console.error('Failed to load clients:', err);
-      }
-    });
-  }  
-
   submitGroup(): void {
     if (this.groupForm.invalid) return;
 
@@ -163,66 +167,10 @@ export class GroupsComponent {
     this.visible = true;
   }
   
-
   resetForm(): void {
     this.groupForm.reset();
     this.selectedGroupId = null;
     this.isEditMode = false;
-  }
-  
-
-  filterGroups() {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredClients = this.clientList.filter((client) =>
-      client.group.toLowerCase().includes(term)
-    );
-  }
-
-  filterBySelectedGroup() {
-    if (this.selectedGroup) {
-      this.filteredClients = this.clientList.filter(
-        (c) => c.group === this.selectedGroup
-      );
-    } else {
-      this.filteredClients = [...this.clientList];
-    }
-  }
-
-  openClientModal(group: string) {
-    this.selectedGroup = group;
-    this.clientModalVisible = true;
-    this.selectedClientToAdd = null;
-  }
-
-  toggleManageClientModal() {
-    this.visible = !this.visible;
-  }
-
-  handleManageClientModal(event: any) {
-    this.visible = event;
-  }
-
-  closeClientModal() {
-    this.clientModalVisible = false;
-  }
-
-  getClientsByGroup(group: string) {
-    return this.clientList.filter((c) => c.group === group);
-  }
-
-  getUnassignedClients() {
-    return this.clientList.filter(client => !client.group || client.group === '');
-  }  
-
-  addClientToGroup() {
-    if (this.selectedClientToAdd) {
-      this.selectedClientToAdd.group = this.selectedGroup;
-      this.selectedClientToAdd = null;
-    }
-  }
-
-  removeClientFromGroup(client: any) {
-    client.group = ''; // or null, depending on your logic
   }
 
   getGroupById(id: any): void {
@@ -245,7 +193,6 @@ export class GroupsComponent {
     });
   }
   
-
   deleteGroupById(id: any): void {
     if (confirm('Are you sure you want to delete this group?')) {
       this.groupsService.deleteGroupByIdService(id).subscribe({
@@ -259,6 +206,90 @@ export class GroupsComponent {
       });
     }
   }
+
+
+
+  // Client Section
+
+  toggleManageClientModal() {
+    this.visible = !this.visible;
+  }
+
+  handleClientModalChange(visible: boolean): void {
+    this.clientModalVisible = visible;
+  }
+
+  getAllClients(): void {
+    this.groupsService.getAllClientsService().subscribe({
+      next: (res) => {
+        this.clientList = res.data?.crms || [];
+      },
+      error: (err) => {
+        console.error('Failed to load clients:', err);
+      }
+    });
+  } 
+
+
+  openClientModal(group: any): void {
+    this.selectedGroup = group;
+    this.selectedClientToAdd = null;
+    this.clientModalVisible = true;
+    this.getAllClients(); 
+    this.assignedClients = group.clients || []; 
+  }
+
+  closeClientModal(): void {
+    this.clientModalVisible = false;
+    this.selectedGroup = null;
+    this.selectedClientToAdd = null;
+    this.assignedClients = [];
+  }
+  
+
+
+  addClientToGroup(): void {
+    if (!this.selectedGroup || !this.selectedClientToAdd) return;
+  
+    const groupId = this.selectedGroup._id;
+    const clientId = this.selectedClientToAdd._id;
+
+    this.isAddingClient = true;
+  
+    this.groupsService.addClientsToGroup(groupId, [clientId]).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.assignedClients = res.data?.clients || [];
+          this.selectedClientToAdd = null;
+        }
+        this.isAddingClient = false;
+      },
+      error: (err) => {
+        console.error('Failed to add client:', err);
+        this.isAddingClient = false;
+      }
+    });
+  }
+
+  removeClientFromGroup(clientId: string): void {
+    const groupId = this.selectedGroup?._id;
+    if (!groupId) return;
+
+    this.removingClientId = clientId;
+  
+    this.groupsService.removeClientFromGroup(groupId, clientId).subscribe({
+      next: (res) => {
+        this.assignedClients = this.assignedClients.filter(c => c._id !== clientId);
+        this.removingClientId = null;
+      },
+      error: (err) => {
+        console.error('Failed to remove client:', err);
+        this.removingClientId = null;
+      }
+    });
+  }
+
+
 
   
 }

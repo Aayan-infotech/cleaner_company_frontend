@@ -54,7 +54,7 @@
               
                 <c-modal-body>
 
-                  <!-- Add Existing Clients -->
+                  <!-- Add Existing Clients -->                   
                   <div class="row g-3 mb-5">
                     <div class="col-md-10">
                       <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient">
@@ -63,7 +63,18 @@
                       </select>                         
                     </div>
                     <div class="col-md-2">
-                      <button class="btn btn-primary w-100">Add</button>
+
+                      <!-- Add Client to Group Button -->
+                      <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center" (click)="addClientToGroup()" [disabled]="!selectedClientToAdd || isAddingClient" style="min-height: 38px;">
+                        <ng-container *ngIf="!isAddingClient; else loading">Add</ng-container>
+                        <ng-template #loading>
+                          <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>
+                        </ng-template>
+                      </button>
+
+
                     </div>
                   </div>
               
@@ -79,13 +90,23 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Client Name</td>
-                        <td>client#gmail.com</td>
-                        <td>Lucknow</td>
+                      <tr *ngFor="let client of assignedClients; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.address }}</td>
                         <td>
-                          <button class="mx-2" size="sm" title="Remove client"><svg cIcon name="cil-trash" size="sm"></svg></button>  
+
+                          <!-- Remove Client Button -->
+                          <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
+                            <ng-container *ngIf="removingClientId !== client._id">
+                              <svg cIcon name="cil-trash" size="sm"></svg>
+                            </ng-container>
+                            <ng-container *ngIf="removingClientId === client._id">
+                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            </ng-container>
+                          </button>
+                  
                         </td>
                       </tr>
                     </tbody>
@@ -158,80 +179,111 @@
             
             <!-- Body section -->
             <c-card-body>
-                <table [hover]="true" [responsive]="true" [striped]="true" cTable class="mb-0 border">
+
+              
+
+              <table [hover]="true" [responsive]="true" [striped]="true" cTable class="mb-0 border">
                    
-                  <thead cTableColor="light">
-                    <tr>
-                      <th>#</th>
-                      <th>Group Name</th>
-                      <th>Actions</th>
-                    </tr>                        
-                  </thead>
+                <thead cTableColor="light">
+                  <tr>
+                    <th>#</th>
+                    <th>Group Name</th>
+                    <th>Actions</th>
+                  </tr>                        
+                </thead>
 
-                  <tbody>
-                    <tr *ngFor="let group of groupList; let i = index">
-                        <td>{{ i + 1 }}</td>
-                        <td>{{ group.groupName }}</td>
-                        <td>
-                          <!-- View Button -->
-                          <button (click)="getGroupById(group._id)" class="me-2" [disabled]="loadingGroupId === group._id">
-                            <ng-container *ngIf="loadingGroupId !== group._id; else loadingIcon">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                   class="bi bi-eye" viewBox="0 0 16 16">
-                                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5
-                                         8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465
-                                         1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-                                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-                              </svg>
-                            </ng-container>
-                          
-                            <ng-template #loadingIcon>
-                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            </ng-template>
-                          </button>
-                          
-                          <!-- Edit Button -->
-                          <button size="sm" (click)="editGroup(group)" title="Remove group"><svg cIcon name="cil-pencil" size="sm"></svg></button>      
-                          
-                          <!-- Delete Button -->
-                          <button class="mx-2" size="sm" (click)="deleteGroupById(group._id)" title="Remove group"><svg cIcon name="cil-trash" size="sm"></svg></button>  
-                          
-                          <!-- Manage Client Button -->
-                          <button class="btn btn-info btn-sm" (click)="openClientModal(group)">Manage Clients</button>                         
-                        </td>
-                    </tr>
-                  </tbody>
+                <tbody>
+                  <!-- Spinner Row -->
+                  <tr *ngIf="loadingGroups">
+                    <td colspan="3" class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading groups...</span>
+                      </div>
+                    </td>
+                  </tr>
+                
+                  <!-- No Data Message -->
+                  <tr *ngIf="!loadingGroups && groupList.length === 0">
+                    <td colspan="3" class="text-center py-3 text-muted">No groups found.</td>
+                  </tr>
+                
+                  <!-- Group Rows -->
+                  <tr *ngFor="let group of groupList; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ group.groupName }}</td>
+                    <td>
+                      <!-- View Button -->
+                      <button (click)="getGroupById(group._id)" class="me-2" [disabled]="loadingGroupId === group._id">
+                        <ng-container *ngIf="loadingGroupId !== group._id; else loadingIcon">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                          </svg>
+                        </ng-container>
+                        <ng-template #loadingIcon>
+                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </ng-template>
+                      </button>
+                
+                      <!-- Edit -->
+                      <button size="sm" (click)="editGroup(group)" title="Edit group">
+                        <svg cIcon name="cil-pencil" size="sm"></svg>
+                      </button>
+                
+                      <!-- Delete -->
+                      <button class="mx-2" size="sm" (click)="deleteGroupById(group._id)" title="Delete group">
+                        <svg cIcon name="cil-trash" size="sm"></svg>
+                      </button>
+                
+                      <!-- Manage Clients -->
+                      <button class="btn btn-info btn-sm" (click)="openClientModal(group)">
+                        Manage Clients
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                
 
-                  <tfoot>
-                    <tr>
-                        <td class="px-3" colspan="10">
-                            <div class="d-flex justify-content-between align-items-center">
-                                
-                                <!-- Pagination -->
-                                <div class="mt-3">
-                                    <c-pagination aria-label="Group pagination">
-                                        <li cPageItem [class.disabled]="currentPage === 1">
-                                          <a cPageLink (click)="changePage(currentPage - 1)" style="cursor:pointer;">Previous</a>
-                                        </li>
-                                        <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
-                                          <a cPageLink (click)="changePage(page)" style="cursor:pointer;">{{ page }}</a>
-                                        </li>
-                                        <li cPageItem [class.disabled]="currentPage === totalPages">
-                                          <a cPageLink (click)="changePage(currentPage + 1)" style="cursor:pointer;">Next</a>
-                                        </li>
-                                    </c-pagination>
-                                </div>
+                <tfoot>
+                  <tr>
+                    <td colspan="10" class="px-3">
+                      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 py-3 border-top">
+                
+                        <!-- Pagination -->
+                        <div>
+                          <c-pagination aria-label="Page navigation">
+                            <!-- Previous Button -->
+                            <li cPageItem [class.disabled]="currentPage === 1">
+                              <a cPageLink (click)="changePage(currentPage - 1)" class="page-link" style="cursor:pointer;">Previous</a>
+                            </li>
+                          
+                            <!-- Page Numbers -->
+                            <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
+                              <a cPageLink (click)="changePage(page)" class="page-link" style="cursor:pointer;">{{ page }}</a>
+                            </li>
+                          
+                            <!-- Next Button -->
+                            <li cPageItem [class.disabled]="currentPage === totalPages">
+                              <a cPageLink (click)="changePage(currentPage + 1)" class="page-link" style="cursor:pointer;">Next</a>
+                            </li>
+                          </c-pagination>
+                          
+                        </div>
+                
+                        <!-- Total Group Count -->
+                        <div class="bg-light border rounded px-4 py-2 shadow-sm text-secondary fw-semibold">
+                          Total Groups: <span class="text-dark">{{ totalItems }}</span>
+                        </div>
+                
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
+                
 
-                                <!-- Total Page -->
-                                <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
-                                    Total Group:<span class="text-dark"> {{ totalItems }}</span>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                  </tfoot>
+              </table>
 
-                </table>
+                
             </c-card-body>
 
         </c-card>
