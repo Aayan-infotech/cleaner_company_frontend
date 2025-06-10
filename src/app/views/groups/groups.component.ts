@@ -23,6 +23,9 @@ export class GroupsComponent {
   groupList: any[] = [];
   filteredClients: any[] = [];
   selectedGroup: any = null;
+  loadingGroups: boolean = false;
+
+
 
   // client
   addClientForm!: FormGroup;
@@ -92,14 +95,18 @@ export class GroupsComponent {
   }
 
   getAllGroups(page: number = 1): void {
+    this.loadingGroups = true;
+
     this.groupsService.getAllGroupsService(page, this.pageSize).subscribe({
       next: (res) => {
         this.groupList = res.data || [];
         this.totalItems = res.pagination?.totalGroups || 0;
         this.currentPage = res.pagination?.page || 1;
+        this.loadingGroups = false;
       },
       error: (err) => {
         console.error("Error fetch get all groups", err);
+        this.loadingGroups = false;
       }
     });
   }
