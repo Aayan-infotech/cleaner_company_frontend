@@ -116,6 +116,15 @@ const routes: Routes = [
         loadChildren: () =>
           import('./views/marketing/marketing.module').then((m) => m.MarketingModule)
       },
+
+      {
+        path: 'manageCategories',
+        loadChildren: () =>
+          import('./views/marketing-section/manage-categories/manage-categories.module').then((m) => m.ManageCategoriesModule)
+      },
+
+
+
       {
         path: 'template-library',
         loadChildren: () =>

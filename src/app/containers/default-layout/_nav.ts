@@ -30,8 +30,18 @@ export const navItems: INavData[] = [
     url: '/crm',
     iconComponent: { name: 'cil-user' }
   },
-
-
+  {
+    name: 'Marketing Section',
+    url: '/more',
+    iconComponent: { name: 'cil-bell' },
+    children: [
+      {
+        name: 'Manage Categories',
+        url: '/manageCategories',
+        iconComponent: { name: 'cil-notes' }
+      }
+    ]
+  },
   {
     name: 'Manage Inventory',
     url: '/manageInventory',
@@ -80,7 +90,7 @@ export const navItems: INavData[] = [
   {
     name: 'More',
     url: '/more',
-    iconComponent: { name: 'cil-bell' },
+    iconComponent: { name: 'cil-options' },
     children: [
       {
         name: 'Employee Time Control',
