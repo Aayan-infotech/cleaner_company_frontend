@@ -1,0 +1,163 @@
+<c-row>
+    <c-col xs>
+      <c-card>
+          <!-- Header Section -->
+          <c-card-header class="d-flex justify-content-between align-items-center">
+              <div>Categories Management</div>
+
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <button cButton (click)="toggleAddCategoryModal()">Add Category</button>
+              </div>
+          </c-card-header>
+  
+          <!-- Start Add Category Modal -->
+          <c-modal id="addMethodModal" [visible]="visibleAddCategory" (visibleChange)="handleAddCategoryChange($event)">
+              <c-modal-header>
+                <h5 cModalTitle>Add New category</h5>
+                <button (click)="toggleAddCategoryModal()" cButtonClose></button>
+              </c-modal-header>
+  
+              <c-modal-body>
+  
+                  <form cForm>
+                      <div class="mb-3">
+                        <label cLabel for="t" class="fw-bold">Enter Category Name<span class="text-danger">*</span></label>
+                        <input type="text" cFormControl formControlName="t" id="t" class="py-2" placeholder="Category Name" />
+                        <!-- <div *ngIf="methodForm.get('name')?.touched && methodForm.get('name')?.invalid" class="text-danger small">
+                            Method name is required.
+                        </div> -->
+                      </div>
+                  </form>
+                  
+              </c-modal-body>
+              
+              <c-modal-footer>
+                <button (click)="toggleAddCategoryModal()" cButton color="secondary">Close</button>
+                <button cButton color="primary">Save</button>
+              </c-modal-footer>
+          </c-modal>
+          <!-- End Add Category Modal -->
+
+
+          <!-- Start View Category Details Modal -->
+          <c-modal id="liveDemoModal" [visible]="visibleViewCategory" (visibleChange)="handleViewCategoryChange($event)">
+            <c-modal-header>
+              <h5 cModalTitle>View Method <span class="text-danger">category name</span> Details</h5>
+              <button (click)="toggleViewCategoryModal()" cButtonClose></button>
+            </c-modal-header>
+
+            <c-modal-body>
+                <div>
+                    <strong class="mb-3 text-primary"></strong>
+
+                    <div class="mb-2">
+                        <strong>Method Name: </strong>
+                        <span class="text-primary">Category name</span>
+                    </div>
+                    
+                    <div class="mb-2">
+                      <strong>Created At: </strong>
+                      <span>11-06-2025</span>
+                    </div>
+                    
+                    <div>
+                      <strong>Last Updated: </strong>
+                      <span>11-06-2025</span>
+                    </div>
+                    
+                  </div>
+            </c-modal-body>
+
+            <c-modal-footer>
+              <button (click)="toggleViewCategoryModal()" cButton color="secondary">Close</button>
+            </c-modal-footer>
+          </c-modal>
+          <!-- End View Category Details Modal -->
+
+
+  
+          <!-- Body Section -->
+          <c-card-body>
+              <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+                  <thead cTableColor="light">
+                      <tr>
+                          <th>S No.</th>                       
+                          <th>Category Name</th>
+                          <th>Actions</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>1</td>
+                          <td>Category Name</td>
+                          <td>
+                              <!-- View Category Button -->
+                              <button (click)="toggleViewCategoryModal()" title="View Category Details">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                  </svg>
+                              </button>
+  
+                              <!-- Edit Category Button -->
+                              <button title="Edit Category Details" class="mx-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                      <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                  </svg>
+                              </button>
+  
+                              <!-- Delete Category Button -->
+                              <button title="Delete Category Details">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                      <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                  </svg>
+                              </button>
+                          </td>
+          
+                      </tr>
+
+                      <!-- No Category Are Available -->
+                      <tr>
+                        <td colspan="5" class="text-center text-muted">No Category found.</td>
+                      </tr>
+
+                  </tbody>
+
+                  <!-- Footer -->
+                  <!-- <tfoot>
+                    <tr>
+                      <td class="px-3" colspan="10">
+                        <div class="d-flex justify-content-between align-items-center">
+
+                          <div class="mt-3">
+                            <c-pagination aria-label="Category pagination">
+                                <li cPageItem [class.disabled]="currentPage === 1">
+                                  <a cPageLink (click)="changePage(currentPage - 1)" style="cursor:pointer;">Previous</a>
+                                </li>
+                                <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
+                                  <a cPageLink (click)="changePage(page)" style="cursor:pointer;">{{ page }}</a>
+                                </li>
+                                <li cPageItem [class.disabled]="currentPage === totalPages">
+                                  <a cPageLink (click)="changePage(currentPage + 1)" style="cursor:pointer;">Next</a>
+                                </li>
+                            </c-pagination>
+                          </div>
+
+                          <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
+                            Total Category:<span class="text-dark"> 10K</span>
+                          </div>
+
+                        </div>
+                      </td>                        
+                    </tr>
+                  </tfoot> -->
+                    
+              </table>
+          </c-card-body>    
+          <!-- Body End -->
+  
+      </c-card>
+    </c-col>
+</c-row>
+  
