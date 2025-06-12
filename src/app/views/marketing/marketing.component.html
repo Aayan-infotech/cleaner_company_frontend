@@ -42,18 +42,24 @@
                                             <c-col [sm]="12" class="pb-4">
                                                 <c-card>
                                                     <c-card-body class="bg-secondary rounded">
+
+                                                        <!-- Carousel Section -->
                                                         <c-carousel [animate]="false" transition="crossfade">
-                                                            <c-carousel-inner>
-                                                                <c-carousel-control [routerLink] caption="Previous"
-                                                                    direction="prev">Template Library
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="25"
-                                                                        height="25" fill="currentColor"
-                                                                        class="bi bi-caret-left-fill"
-                                                                        viewBox="0 0 16 16">
-                                                                        <path
-                                                                            d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+
+                                                            <!-- Carousel Pre Button -->
+                                                            <c-carousel-control [routerLink] caption="Previous" direction="prev">
+                                                                <div class="d-flex ps-5">
+                                                                    <div class="text-nowrap me-1">
+                                                                        Template Library
+                                                                    </div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                                                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                                                                     </svg>
-                                                                </c-carousel-control>
+                                                                </div>
+                                                            </c-carousel-control>
+
+                                                            <!-- Carousel Body -->
+                                                            <c-carousel-inner>
                                                                 <c-carousel-item *ngFor="let slide of slides"
                                                                     class="text-center">
                                                                     <!-- <img [src]="slide.src" alt="{{slide.title}}"
@@ -61,6 +67,8 @@
                                                                         <div>{{slide.title}}</div>
                                                                 </c-carousel-item>
                                                             </c-carousel-inner>
+
+                                                            <!-- Carousel Next Button -->
                                                             <c-carousel-control [routerLink] caption="Next"
                                                                 direction="next" class="color-black">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25"
@@ -70,6 +78,7 @@
                                                                         d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                                                                 </svg>1/30
                                                             </c-carousel-control>
+
                                                         </c-carousel>
                                                     </c-card-body>
                                                 </c-card>
