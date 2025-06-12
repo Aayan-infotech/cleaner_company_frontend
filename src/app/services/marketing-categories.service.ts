@@ -15,7 +15,7 @@ export class MarketingCategoriesService {
     return this.http.post(`${apiUrls.marketingCategoriesApi}createCategory`, data);
   }
 
-  // Get All Categories with Pagination
+  // Get All Categories With Pagination
   getAllCategoriesService(page: number = 1, limit: number = 10): Observable<any> {
     return this.http.get(`${apiUrls.marketingCategoriesApi}getAllCategories`, {
       params: {
@@ -23,6 +23,11 @@ export class MarketingCategoriesService {
         limit: limit.toString(),
       }
     });
+  }
+
+  // Get All Categories Without Pagination
+  getAllCategoryService(): Observable <any> {
+    return this.http.get(`${apiUrls.marketingCategoriesApi}getAll`);
   }
 
   // Get Category By ID

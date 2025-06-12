@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MarketingCategoriesService } from '../../services/marketing-categories.service';
 
 @Component({
   selector: 'app-marketing',
@@ -7,6 +8,11 @@ import { Component } from '@angular/core';
   styleUrl: './marketing.component.scss'
 })
 export class MarketingComponent {
+
+  allCategories: any[] = [];
+  selectedCategoryId: string = '';
+
+  constructor(private categoriesService: MarketingCategoriesService) {};
 
  slides: any[] = new Array(3).fill({ id: -1, src: '', title: '', subtitle: '' });
 
@@ -29,6 +35,20 @@ export class MarketingComponent {
       title: 'Default Template3',
       subtitle: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
     };
+    
+    this.getAllCategories();
   }
+
+  getAllCategories(): void {
+    this.categoriesService.getAllCategoryService().subscribe({
+      next: (res) => {
+        this.allCategories = res.data || [];
+      },
+      error: (err) => {
+        console.error("Error fetch all categories", err);        
+      }
+    })
+  }
+  
   
 }

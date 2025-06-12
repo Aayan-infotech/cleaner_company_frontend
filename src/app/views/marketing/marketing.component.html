@@ -15,16 +15,15 @@
                                         <c-col [sm]="12">
                                             <c-card class="my-3">
                                                 <c-card-body>
-                                                    <div
-                                                        style="display: flex !important; justify-content: center; flex-direction: column;">
-                                                        <button class="px-2" cButton color="dark" variant="outline"
-                                                            size="sm" shape="rounded-pill">Customer Alert</button>
-                                                        <button class="my-2 px-2" cButton color="dark" variant="outline"
-                                                            size="sm" shape="rounded-pill">Customer Reminder</button>
-                                                        <button class="px-2" cButton color="dark" variant="outline"
-                                                            size="sm" shape="rounded-pill">Customer Education</button>
-                                                        <button class="my-2 px-2" cButton color="dark" variant="outline"
-                                                            size="sm" shape="rounded-pill">Customer Special</button>
+                                                    <div style="display: flex !important; justify-content: center; flex-direction: column;">
+                                                        
+                                                        <!-- Dropdown for All Categories -->
+                                                        <select aria-label="Default select example" cSelect class="form-select my-2 rounded-pill text-dark text-center" [(ngModel)]="selectedCategoryId">
+                                                            <option value="" disabled selected>Select a category</option>
+                                                            <option *ngFor="let category of allCategories" [value]="category._id"> 
+                                                              Customer <span>{{ category.categoryName.charAt(0).toUpperCase() + category.categoryName.slice(1) }}</span>
+                                                            </option>
+                                                        </select>
                                                     </div>
                                                 </c-card-body>
                                             </c-card>
