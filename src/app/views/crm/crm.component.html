@@ -335,9 +335,13 @@
 
             <tr *ngFor="let client of filteredCRMList; let i = index">
               <td>{{ i + 1 }}</td>
+              
               <td class="text-center">
-                <c-avatar shape="rounded-1" size="md" [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" style="width: 3rem; height: 3rem;"></c-avatar>
+                <div class="rounded-circle border border-primary d-inline-block overflow-hidden" style="width: 48px; height: 48px;">
+                  <img [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" alt="avatar" class="w-100 h-100 object-fit-cover">
+                </div>
               </td>
+
               <td>{{ client.name }}</td>
               <td>{{ client.email }}</td>
               <!-- <td>
