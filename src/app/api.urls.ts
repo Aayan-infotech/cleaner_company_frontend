@@ -21,5 +21,6 @@ export const apiUrls = {
     crmMgmtApi: 'http://18.209.91.97:5966/api/manage-crm/',
     groupsManageApi: 'http://18.209.91.97:5966/api/group/',
     marketingCategoriesApi: 'http://18.209.91.97:5966/api/categories/',
+    templateApis: 'http://18.209.91.97:5966/api/template/',
 
 }
