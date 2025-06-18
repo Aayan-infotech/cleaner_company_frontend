@@ -19,35 +19,45 @@
               <form cForm [formGroup]="loginForm" (ngSubmit)="submit()">
                 <h1>Login</h1>
                 <p class="text-medium-emphasis">Sign In to your account</p>
+
+                <!-- Error Message -->
+                <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                  {{ errorMessage }}
+                </div>  
+
+                <!-- Email -->
                 <c-input-group class="mb-3">
                   <span cInputGroupText>&#64;</span>
-                  <input  formControlName="email" autoComplete="email" cFormControl placeholder="Email" />
+                  <input formControlName="email" autoComplete="email" cFormControl placeholder="Email" />
                 </c-input-group>
+
+                <!-- Password -->
                 <c-input-group class="mb-4">
                   <span cInputGroupText>
                     <svg cIcon name="cilLockLocked"></svg>
                   </span>
-                  <input  formControlName="password" 
-                    autoComplete="current-password"
-                    cFormControl
-                    placeholder="Password"
-                    type="password"
-                  />
+                  <input formControlName="password" autoComplete="current-password" cFormControl placeholder="Password" type="password" />
                 </c-input-group>
+
                 <c-row>
+                  
+                  <!-- Login Button -->
                   <c-col xs="6">
                     <button type="submit" cButton class="px-4" color="dark">Login</button>
                   </c-col>
+
+                  <!-- Forget Password Button -->
                   <c-col class="text-right" xs="6">
                     <button cButton class="px-0" color="" routerLink="/forgetPassword">
                       Forgot password?
                     </button>
                   </c-col>
+
                 </c-row>
               </form>
             </c-card-body>
           </c-card>
-       
+
         </c-card-group>
       </c-col>
     </c-row>
