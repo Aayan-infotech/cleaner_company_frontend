@@ -347,7 +347,7 @@
               </td>
               
 
-              <td (click)="viewCrm(client._id)"><span style="cursor: pointer; transition: all 0.1s; padding-top: 19px; padding-left: 15px;" onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';" onmouseout="this.style.color=''; this.style.fontWeight='';">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</span></td>
+              <td><span (click)="viewCrm(client._id)" style="cursor: pointer; transition: all 0.1s; padding-top: 19px; padding-left: 15px;" onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';" onmouseout="this.style.color=''; this.style.fontWeight='';">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</span></td>
               <td style="padding-top: 19px;">{{ client.email }}</td>
               <td style="padding-top: 19px;">
                 <div *ngFor="let phone of client.phones">

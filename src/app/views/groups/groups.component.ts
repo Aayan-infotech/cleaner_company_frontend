@@ -1,5 +1,10 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
-import { FormGroup, FormControl, FormBuilder, Validators, } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
 import { GroupsService } from '../../services/groups.service';
 
 @Component({
@@ -8,9 +13,7 @@ import { GroupsService } from '../../services/groups.service';
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
 })
-
 export class GroupsComponent {
-  
   groupForm: FormGroup;
   isEditMode = false;
   selectedGroupId: string | null = null;
@@ -25,8 +28,6 @@ export class GroupsComponent {
   selectedGroup: any = null;
   loadingGroups: boolean = false;
 
-
-
   // client
   addClientForm!: FormGroup;
   clientList: any[] = [];
@@ -36,7 +37,7 @@ export class GroupsComponent {
   isAddingClient: boolean = false;
   removingClientId: string | null = null;
   duplicateClientMsg: string | null = null;
-  groupDetails: any = null; 
+  groupDetails: any = null;
   selectedGroupClients: any[] = [];
   selectedGroupName: string = '';
   loadingGroupId: string | null = null;
@@ -46,14 +47,10 @@ export class GroupsComponent {
   pageSize = 10;
   totalItems = 0;
 
-  constructor(
-    private fb: FormBuilder,
-    private groupsService: GroupsService,
-  ) {
-
+  constructor(private fb: FormBuilder, private groupsService: GroupsService) {
     // Group Form
     this.groupForm = this.fb.group({
-      groupName: ['', Validators.required]
+      groupName: ['', Validators.required],
     });
 
     // Client Form
@@ -70,21 +67,20 @@ export class GroupsComponent {
   // Add Group Modal
   toggleLiveDemo() {
     if (this.visible) {
-      this.resetForm(); 
+      this.resetForm();
     } else {
       if (!this.isEditMode) {
-        this.resetForm(); 
+        this.resetForm();
       }
     }
     this.visible = !this.visible;
   }
-  
+
   handleLiveDemoChange(event: any) {
     this.visible = event;
   }
 
   // Client Modal
-  
 
   toggleGroupDetails() {
     this.visibleGroupDetails = !this.visibleGroupDetails;
@@ -105,44 +101,48 @@ export class GroupsComponent {
         this.loadingGroups = false;
       },
       error: (err) => {
-        console.error("Error fetch get all groups", err);
+        console.error('Error fetch get all groups', err);
         this.loadingGroups = false;
-      }
+      },
     });
   }
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
   }
-  
+
   totalPagesArray(): number[] {
-    return Array(this.totalPages).fill(0).map((_, i) => i + 1);
+    return Array(this.totalPages)
+      .fill(0)
+      .map((_, i) => i + 1);
   }
-  
+
   changePage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.getAllGroups(page);
     }
   }
-  
+
   submitGroup(): void {
     if (this.groupForm.invalid) return;
 
-     const data = this.groupForm.value;
-     this.isSubmittingGroup = true;
+    const data = this.groupForm.value;
+    this.isSubmittingGroup = true;
 
     if (this.isEditMode && this.selectedGroupId) {
-      this.groupsService.updateGroupByIdService(this.selectedGroupId, data).subscribe({
-        next: () => {
-          this.getAllGroups();
-          this.toggleLiveDemo();
-          this.isSubmittingGroup = false;
-        },
-        error: (err) => {
-          console.error('Update failed', err); 
-          this.isSubmittingGroup = false;         
-        }
-      });
+      this.groupsService
+        .updateGroupByIdService(this.selectedGroupId, data)
+        .subscribe({
+          next: () => {
+            this.getAllGroups();
+            this.toggleLiveDemo();
+            this.isSubmittingGroup = false;
+          },
+          error: (err) => {
+            console.error('Update failed', err);
+            this.isSubmittingGroup = false;
+          },
+        });
     } else {
       this.groupsService.createGroupService(data).subscribe({
         next: (res) => {
@@ -160,13 +160,13 @@ export class GroupsComponent {
   }
 
   editGroup(data: any): void {
-    this.groupForm.reset(); 
-    this.groupForm.patchValue(data); 
+    this.groupForm.reset();
+    this.groupForm.patchValue(data);
     this.selectedGroupId = data._id;
     this.isEditMode = true;
     this.visible = true;
   }
-  
+
   resetForm(): void {
     this.groupForm.reset();
     this.selectedGroupId = null;
@@ -189,10 +189,10 @@ export class GroupsComponent {
       error: (err) => {
         console.error('Error fetching group by ID:', err);
         this.loadingGroupId = null;
-      }
+      },
     });
   }
-  
+
   deleteGroupById(id: any): void {
     if (confirm('Are you sure you want to delete this group?')) {
       this.groupsService.deleteGroupByIdService(id).subscribe({
@@ -202,12 +202,10 @@ export class GroupsComponent {
         },
         error: (err) => {
           console.error('Error deleting group:', err);
-        }
+        },
       });
     }
   }
-
-
 
   // Client Section
 
@@ -226,17 +224,16 @@ export class GroupsComponent {
       },
       error: (err) => {
         console.error('Failed to load clients:', err);
-      }
+      },
     });
-  } 
-
+  }
 
   openClientModal(group: any): void {
     this.selectedGroup = group;
     this.selectedClientToAdd = null;
     this.clientModalVisible = true;
-    this.getAllClients(); 
-    this.assignedClients = group.clients || []; 
+    this.getAllClients();
+    this.assignedClients = group.clients || [];
   }
 
   closeClientModal(): void {
@@ -245,19 +242,21 @@ export class GroupsComponent {
     this.selectedClientToAdd = null;
     this.assignedClients = [];
   }
-  
+
   onClientSelectChange(): void {
     this.duplicateClientMsg = null;
   }
-  
+
   addClientToGroup(): void {
     if (!this.selectedGroup || !this.selectedClientToAdd) return;
-  
+
     const groupId = this.selectedGroup._id;
     const clientId = this.selectedClientToAdd._id;
 
-     // Check for duplicate
-    const alreadyAssigned = this.assignedClients.some(client => client._id === clientId);
+    // Check for duplicate
+    const alreadyAssigned = this.assignedClients.some(
+      (client) => client._id === clientId
+    );
     if (alreadyAssigned) {
       this.duplicateClientMsg = 'This client is already assigned to the group.';
       return;
@@ -265,7 +264,7 @@ export class GroupsComponent {
 
     this.isAddingClient = true;
     this.duplicateClientMsg = null;
-  
+
     this.groupsService.addClientsToGroup(groupId, [clientId]).subscribe({
       next: (res) => {
         if (res.success) {
@@ -277,7 +276,7 @@ export class GroupsComponent {
       error: (err) => {
         console.error('Failed to add client:', err);
         this.isAddingClient = false;
-      }
+      },
     });
   }
 
@@ -286,17 +285,36 @@ export class GroupsComponent {
     if (!groupId) return;
 
     this.removingClientId = clientId;
-  
+
     this.groupsService.removeClientFromGroup(groupId, clientId).subscribe({
       next: (res) => {
-        this.assignedClients = this.assignedClients.filter(c => c._id !== clientId);
+        this.assignedClients = this.assignedClients.filter(
+          (c) => c._id !== clientId
+        );
         this.removingClientId = null;
       },
       error: (err) => {
         console.error('Failed to remove client:', err);
         this.removingClientId = null;
-      }
+      },
     });
   }
 
+  // Search Section
+  get filteredGroupList(): any[] {
+    if (!this.searchTerm.trim()) {
+      return this.groupList;
+    }
+    
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.groupList.filter(
+      (group) =>
+        (group.groupName ?? '').toLowerCase().includes(term) ||
+        (group?.description ?? '').toLowerCase().includes(term) ||
+        (group.clients ?? []).some((c: any) =>
+          (c.name ?? '').toLowerCase().includes(term)
+        )
+    );
+  }
 }
