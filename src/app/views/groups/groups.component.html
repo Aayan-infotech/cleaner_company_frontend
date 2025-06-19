@@ -232,9 +232,9 @@
                   </tr>
                 
                   <!-- Group Rows -->
-                  <tr *ngFor="let group of groupList; let i = index">
+                  <tr *ngFor="let group of filteredGroupList; let i = index">
                     <td>{{ i + 1 }}</td>
-                    <td (click)="getGroupById(group._id)"><span style="cursor: pointer; transition: all 0.1s;" onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';" onmouseout="this.style.color=''; this.style.fontWeight='';">{{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }}</span></td>
+                    <td><span (click)="getGroupById(group._id)" style="cursor: pointer; transition: all 0.1s;" onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';" onmouseout="this.style.color=''; this.style.fontWeight='';">{{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }}</span></td>
                     <td>
                       <!-- View Button -->
                       <!-- <button (click)="getGroupById(group._id)" class="me-2" [disabled]="loadingGroupId === group._id">
