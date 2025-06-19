@@ -1,0 +1,8 @@
+.hover-avatar {
+    transition: transform 0.1s ease, filter 0.3s ease;
+}
+
+.hover-avatar:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
