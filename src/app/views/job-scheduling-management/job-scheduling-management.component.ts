@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, Renderer2 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsersService } from '../../services/users.service';
@@ -18,7 +18,6 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { DatePipe } from '@angular/common';
 import { EstimateService } from '../../services/estimate.service';
-
 
 export interface Event {
   _id: string;
@@ -48,35 +47,30 @@ interface Estimate {
   selectedServices: SelectedServices[];
 }
 
-
 @Component({
   selector: 'app-job-scheduling-management',
   standalone: false,
   templateUrl: './job-scheduling-management.component.html',
   styleUrl: './job-scheduling-management.component.scss',
-  providers: [DatePipe]
+  providers: [DatePipe],
 })
-
 export class JobSchedulingManagementComponent {
-
   allJobs: any[] = [];
 
   allServices: any[] = [];
   estimate: any = {
-    selectedServices: [
-      { service: '', method: '', estimatedCost: 0 }
-    ]
+    selectedServices: [{ service: '', method: '', estimatedCost: 0 }],
   };
 
-  allMethods: any[] =[];
-
+  allMethods: any[] = [];
+  renderer = inject(Renderer2);
   EventsService = inject(CalendarEventService);
   fb = inject(FormBuilder);
   dropForm!: FormGroup;
 
   visible: any;
   usersService = inject(UsersService);
-  router = inject(Router)
+  router = inject(Router);
   userData!: any;
   userArray!: any;
   visible2: any;
@@ -119,11 +113,20 @@ export class JobSchedulingManagementComponent {
   hardSurfaces: HardSurface[] = [];
   methods: Method[] = [];
 
-  estimates: { room: string, length: number, width: number, totalSquareFoot: number, selectedServices: { service: string, method: string, estimatedCost: number }[] }[] = [];
-
+  estimates: {
+    room: string;
+    length: number;
+    width: number;
+    totalSquareFoot: number;
+    selectedServices: {
+      service: string;
+      method: string;
+      estimatedCost: number;
+    }[];
+  }[] = [];
 
   //calendar
-  
+
   eventFb = inject(FormBuilder);
   eventForm!: FormGroup;
 
@@ -133,54 +136,58 @@ export class JobSchedulingManagementComponent {
   public visible3 = false;
   datePipe = inject(DatePipe);
 
-  empMgmtService = inject(EmpMgmtService)
+  empMgmtService = inject(EmpMgmtService);
   userForm!: FormGroup;
   empData!: any;
   empArray: any[] = [];
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
-    weekends: false ,
-    plugins: [dayGridPlugin, interactionPlugin, interactionPlugin,
+    weekends: false,
+    plugins: [
+      dayGridPlugin,
+      interactionPlugin,
+      interactionPlugin,
       dayGridPlugin,
       timeGridPlugin,
-      listPlugin,],
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-      },
+      listPlugin,
+    ],
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+    },
     dateClick: (arg) => this.handleDateClick(arg),
-    events: this.calendarArray
+    events: this.calendarArray,
   };
 
   toggleWeekends() {
-    this.calendarOptions.weekends = !this.calendarOptions.weekends // toggle the boolean!
+    this.calendarOptions.weekends = !this.calendarOptions.weekends; // toggle the boolean!
   }
 
-  
   currentPage1: number = 1;
   totalPages1: number = 0;
   limit: number = 10;
   statusFilter: string = '';
   searchQuery: string = '';
-  eventType = [
-    "Job","Employee","Holiday","Office"
-  ]
-eventTypeColors: { [key: string]: string } = {
-  Job: "#ffb879",
-  Employee: "#ffe3b2",
-  Holiday: "#a8faf3",
-  Office: "#2996f7",
-};
-  selectedEventType = ''; 
+  eventType = ['Job', 'Employee', 'Holiday', 'Office'];
+  eventTypeColors: { [key: string]: string } = {
+    Job: '#ffb879',
+    Employee: '#ffe3b2',
+    Holiday: '#a8faf3',
+    Office: '#2996f7',
+  };
+  selectedEventType = '';
 
   //  history
 
   historyArray: Event[] = [];
   historyData: any;
 
-  constructor(private apiService: ApiService, private estimateService: EstimateService) { }
+  constructor(
+    private apiService: ApiService,
+    private estimateService: EstimateService
+  ) {}
 
   ngOnInit(): void {
     this.eventForm = this.eventFb.group({
@@ -196,45 +203,55 @@ eventTypeColors: { [key: string]: string } = {
       clientContact: ['', Validators.required],
       eventType: ['', Validators.required],
     });
-    this.apiService.getRooms().subscribe(data => this.rooms = data);
-    this.apiService.getServices().subscribe(data => this.services = data);
-    this.apiService.getItemCleans().subscribe(data => this.itemCleans = data);
-    this.apiService.getDryCleanings().subscribe(data => this.dryCleanings = data);
-    this.apiService.getHardSurfaces().subscribe(data => this.hardSurfaces = data);
-    this.apiService.getMethods().subscribe(data => this.methods = data);
+    this.apiService.getRooms().subscribe((data) => (this.rooms = data));
+    this.apiService.getServices().subscribe((data) => (this.services = data));
+    this.apiService
+      .getItemCleans()
+      .subscribe((data) => (this.itemCleans = data));
+    this.apiService
+      .getDryCleanings()
+      .subscribe((data) => (this.dryCleanings = data));
+    this.apiService
+      .getHardSurfaces()
+      .subscribe((data) => (this.hardSurfaces = data));
+    this.apiService.getMethods().subscribe((data) => (this.methods = data));
     this.getAllUsers();
     this.getAllEstimatesData();
-    this.getAllHistory()
+    this.getAllHistory();
     this.getAllCalendar();
     this.getAllJobs();
     this.getAllServices();
+    this.loadGoogleMaps();
   }
 
   getAllUsers() {
-    this.empMgmtService.getAllEmpMgmtsService( this.currentPage1,
-      this.limit,
-      this.statusFilter || '',
-      this.searchQuery || '').subscribe({
-      next: (res) => {
-        console.log(res)
-        this.empData = res;
-        this.empArray = this.empData.data.employees;
-        console.log('User Array:', this.empArray);
-      },
-      error: (err) => {
-        console.error('Error fetching users:', err);
-      }
-    });
-  };
+    this.empMgmtService
+      .getAllEmpMgmtsService(
+        this.currentPage1,
+        this.limit,
+        this.statusFilter || '',
+        this.searchQuery || ''
+      )
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.empData = res;
+          this.empArray = this.empData.data.employees;
+          console.log('User Array:', this.empArray);
+        },
+        error: (err) => {
+          console.error('Error fetching users:', err);
+        },
+      });
+  }
 
   // All estimates
   getAllEstimatesData() {
-    this.estimateService.getAllEstimates()
-      .subscribe((res) => {
-        this.estData = res;
-        this.estArray = this.estData.data;
-        console.log("All estimates: ",this.estArray);
-      });
+    this.estimateService.getAllEstimates().subscribe((res) => {
+      this.estData = res;
+      this.estArray = this.estData.data;
+      console.log('All estimates: ', this.estArray);
+    });
   }
 
   // Get all Jobs
@@ -250,9 +267,9 @@ eventTypeColors: { [key: string]: string } = {
       },
       error: (err) => {
         console.error('Error fetching jobs:', err);
-      }
-    })  
-  };
+      },
+    });
+  }
 
   // Get All Services
   getAllServices(): void {
@@ -267,18 +284,18 @@ eventTypeColors: { [key: string]: string } = {
       },
       error: (err) => {
         console.error('API error:', err);
-      }
+      },
     });
   }
 
   getServiceName(serviceId: string): string {
-    const service = this.allServices.find(s => s._id === serviceId);
+    const service = this.allServices.find((s) => s._id === serviceId);
     return service ? service.name : 'Unknown Service';
   }
 
   // Returns array of method objects for the given service ID
   getMethodsForService(serviceId: string): any[] {
-    const service = this.allServices.find(s => s._id === serviceId);
+    const service = this.allServices.find((s) => s._id === serviceId);
     if (service && service.methods) {
       // methods array contains { method: {...} } objects
       return service.methods.map((m: any) => m.method);
@@ -288,20 +305,20 @@ eventTypeColors: { [key: string]: string } = {
 
   // Optional: clears method when service changes
   onServiceChange(index: number): void {
-    this.estimates[index].selectedServices.forEach((selectedService, svcIdx) => {
-      selectedService.method = '';
-    });
+    this.estimates[index].selectedServices.forEach(
+      (selectedService, svcIdx) => {
+        selectedService.method = '';
+      }
+    );
   }
- 
-  
+
   onMethodChange(roomIndex: number): void {
     const room = this.estimates[roomIndex];
     room.selectedServices.forEach((selectedService) => {
-      selectedService.estimatedCost = this.calculateServicePrice(selectedService);
+      selectedService.estimatedCost =
+        this.calculateServicePrice(selectedService);
     });
   }
-  
-  
 
   updateEstimateTotal(): void {
     this.estimate.totalPrice = this.estimate.selectedServices.reduce(
@@ -309,27 +326,38 @@ eventTypeColors: { [key: string]: string } = {
       0
     );
   }
-  
-  getTotalEstimatePrice(): number {
-    return this.estimate.selectedServices.reduce((sum: number, selectedService: any) => {
-      return sum + this.calculateServicePrice(selectedService);
-    }, 0);
-  }
-  
 
+  getTotalEstimatePrice(): number {
+    return this.estimate.selectedServices.reduce(
+      (sum: number, selectedService: any) => {
+        return sum + this.calculateServicePrice(selectedService);
+      },
+      0
+    );
+  }
 
   // Helper function to retrieve subitems based on the selected item ID
   getSubItems(itemCleanId: string) {
-    const item = this.itemCleans.find(ic => ic._id === itemCleanId);
+    const item = this.itemCleans.find((ic) => ic._id === itemCleanId);
     return item ? item.subItems : [];
   }
 
   addRoom() {
-    this.estimates.push({ room: '', length: 0, width: 0, totalSquareFoot: 0, selectedServices: [] });
+    this.estimates.push({
+      room: '',
+      length: 0,
+      width: 0,
+      totalSquareFoot: 0,
+      selectedServices: [],
+    });
   }
 
   addService(index: number) {
-    this.estimates[index].selectedServices.push({ service: '', method: '', estimatedCost: 0 });
+    this.estimates[index].selectedServices.push({
+      service: '',
+      method: '',
+      estimatedCost: 0,
+    });
   }
 
   removeRoom(index: number) {
@@ -340,10 +368,14 @@ eventTypeColors: { [key: string]: string } = {
     this.estimates[roomIndex].selectedServices.splice(serviceIndex, 1);
   }
 
- // Assuming selectedService: { service: string, method: string }
+  // Assuming selectedService: { service: string, method: string }
   calculateServicePrice(selectedService: any): number {
-    const service = this.allServices.find(s => s._id === selectedService.service);
-    const method = service?.methods?.find((m: any) => m._id === selectedService.method);
+    const service = this.allServices.find(
+      (s) => s._id === selectedService.service
+    );
+    const method = service?.methods?.find(
+      (m: any) => m._id === selectedService.method
+    );
 
     const servicePrice = service?.price || 0;
     const methodPrice = method?.price || 0;
@@ -351,61 +383,33 @@ eventTypeColors: { [key: string]: string } = {
     return servicePrice + methodPrice;
   }
 
-
-
   calculateEstimate(): number {
     return this.estimates.reduce((total, estimate) => {
-      return total + estimate.selectedServices.reduce((serviceTotal, selectedService) => {
-        return serviceTotal + this.calculateServicePrice(selectedService);
-      }, 0);
+      return (
+        total +
+        estimate.selectedServices.reduce((serviceTotal, selectedService) => {
+          return serviceTotal + this.calculateServicePrice(selectedService);
+        }, 0)
+      );
     }, 0);
-  }
-
-
-  submitEstimate1() {
-    // Calculate estimated cost for each service and add it to the estimates
-    this.estimates.forEach(estimate => {
-      estimate.selectedServices.forEach(selectedService => {
-        selectedService.estimatedCost = this.calculateServicePrice(selectedService);
-      });
-    });
-
-    const estimateData = {
-      jobId: this.selectedJobId,
-      totalEstimate: this.calculateEstimate(),
-      estimates: this.estimates
-    };
-
-    this.estimateService.submitEstimate(estimateData)
-      .subscribe({
-        next: (res) => {
-          alert("Item Created");
-          console.log("Estimate Submitted", res);
-          this.resetEstimates();
-          this.getAllEstimatesData();
-        },
-        error: (err) => {
-          console.log(err);
-        }
-      });
   }
 
   submitEstimate(): void {
     const estimatePayload = {
       jobId: this.selectedJobId,
-      estimates: this.estimates.map(est => ({
+      estimates: this.estimates.map((est) => ({
         room: est.room,
         length: est.length,
         width: est.width,
         totalSquareFoot: est.totalSquareFoot,
-        selectedServices: est.selectedServices.map(s => ({
-          serviceId: s.service,  // rename here
-          methodId: s.method,    // rename here
+        selectedServices: est.selectedServices.map((s) => ({
+          serviceId: s.service, // rename here
+          methodId: s.method, // rename here
           estimatedCost: this.calculateServicePrice(s),
-        }))
-      }))
+        })),
+      })),
     };
-  
+
     this.estimateService.submitEstimate(estimatePayload).subscribe({
       next: (res) => {
         console.log('Estimate submitted:', res);
@@ -414,20 +418,16 @@ eventTypeColors: { [key: string]: string } = {
       },
       error: (err) => {
         console.error('Error submitting estimate:', err);
-      }
+      },
     });
   }
-  
-  
-  
-  
 
   resetEstimates() {
     this.estimates = [];
   }
 
   getRoomName(roomId: string): string {
-    const room = this.rooms.find(r => r._id === roomId);
+    const room = this.rooms.find((r) => r._id === roomId);
     return room ? room.name : '';
   }
 
@@ -436,75 +436,72 @@ eventTypeColors: { [key: string]: string } = {
   //   return service ? service.name : '';
   // }
 
-
-  
-  
-
   // getItemCleanName(itemCleanId: string): string {
   //   const itemClean = this.itemCleans.find(ic => ic._id === itemCleanId);
   //   return itemClean ? itemClean.name : '';
   // }
 
   getItemCleanName(itemCleanId: string): string {
-    const itemClean = this.itemCleans.find(ic => ic._id === itemCleanId);
+    const itemClean = this.itemCleans.find((ic) => ic._id === itemCleanId);
     return itemClean ? itemClean.name : '';
   }
 
   getDryCleaningName(dryCleaningId: string): string {
-    const dryCleaning = this.dryCleanings.find(dc => dc._id === dryCleaningId);
+    const dryCleaning = this.dryCleanings.find(
+      (dc) => dc._id === dryCleaningId
+    );
     return dryCleaning ? dryCleaning.name : '';
   }
 
   getHardSurfaceName(hardSurfaceId: string): string {
-    const hardSurface = this.hardSurfaces.find(hs => hs._id === hardSurfaceId);
+    const hardSurface = this.hardSurfaces.find(
+      (hs) => hs._id === hardSurfaceId
+    );
     return hardSurface ? hardSurface.name : '';
   }
 
   getMethodName(methodId: string): string {
-    const method = this.methods.find(m => m._id === methodId);
+    const method = this.methods.find((m) => m._id === methodId);
     return method ? method.name : '';
   }
 
   getEstimateDetails(id: string): void {
     this.estimateService.getEstimateByIdService(id).subscribe({
       next: (response) => {
-        console.log('Estimate Data:', response); 
+        console.log('Estimate Data:', response);
         this.estimateData = response.data;
         this.visibleViewEstimates = true;
       },
       error: (err) => {
         console.error('Error fetching estimate:', err);
-      }
+      },
     });
   }
 
   deleteEstimate(id: any) {
-    this.estimateService.deleteEstimateService(id)
-      .subscribe(res => {
-        alert('Estimate Deleted')
-        this.getAllEstimatesData();
-      })
+    this.estimateService.deleteEstimateService(id).subscribe((res) => {
+      alert('Estimate Deleted');
+      this.getAllEstimatesData();
+    });
   }
 
   // calender start
-
 
   handleDateClick(arg: DateClickArg) {
     this.resetForm(); // Reset the form
     this.visible3 = true;
     this.eventForm.patchValue({
-      date: arg.dateStr
+      date: arg.dateStr,
     });
-  };
+  }
 
   toggleLiveDemo3() {
     this.visible3 = !this.visible3;
-  };
+  }
 
   handleLiveDemoChange3(event: any) {
     this.visible3 = event;
-  };
-
+  }
 
   submit() {
     if (this.eventForm.valid) {
@@ -524,36 +521,37 @@ eventTypeColors: { [key: string]: string } = {
       if (this.editData) {
         // Editing existing event
         calendarData['_id'] = this.editData._id; // Assuming _id is present in editData
-        this.EventsService.updateEventService(calendarData, this.editData._id).subscribe({
+        this.EventsService.updateEventService(
+          calendarData,
+          this.editData._id
+        ).subscribe({
           next: (res) => {
-            alert("Event Updated");
+            alert('Event Updated');
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
-
           },
           error: (err) => {
             console.error('Error updating event:', err);
-          }
+          },
         });
       } else {
         // Creating new event
         calendarData['date'] = this.eventForm.get('date')?.value;
         this.EventsService.createEventService(calendarData).subscribe({
           next: (res) => {
-            alert("Event Scheduled");
+            alert('Event Scheduled');
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
-
           },
           error: (err) => {
             console.error('Error creating event:', err);
-          }
+          },
         });
       }
     }
-  };
+  }
 
   editEvent(event: any): void {
     this.editData = event;
@@ -564,98 +562,104 @@ eventTypeColors: { [key: string]: string } = {
       endTime: event.endTime,
       employeeName: event.employeeName,
       description: event.description,
-      clientName:  event.clientName,
-      clientEmail:  event.clientEmail,
-      address:  event.address,
-      clientContact:  event.clientContact,
-      eventType: event.eventType
+      clientName: event.clientName,
+      clientEmail: event.clientEmail,
+      address: event.address,
+      clientContact: event.clientContact,
+      eventType: event.eventType,
     });
     this.visible3 = true; // Show the modal for editing
   }
-
 
   clickAddMember() {
     this.resetForm();
   }
   resetForm(): void {
     this.eventForm.reset();
-    this.editData = null; 
+    this.editData = null;
   }
 
   getAllCalendar() {
     this.EventsService.getAllEventsService().subscribe((res) => {
-        this.calendarData = res;
-        this.calendarArray = this.calendarData?.data?.map((event: any) => {
-            // Format date and times
-            const formattedDate = this.datePipe.transform(event.date, 'yyyy-MM-dd');
+      this.calendarData = res;
+      this.calendarArray =
+        this.calendarData?.data?.map((event: any) => {
+          // Format date and times
+          const formattedDate = this.datePipe.transform(
+            event.date,
+            'yyyy-MM-dd'
+          );
 
-            // Convert start and end times to AM/PM format
-            const formatTimeToAMPM = (timeStr: string) => {
-                const [hours, minutes] = timeStr.split(':').map(Number);
-                const period = hours >= 12 ? 'PM' : 'AM';
-                const adjustedHours = hours % 12 || 12;
-                return `${adjustedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
-            };
+          // Convert start and end times to AM/PM format
+          const formatTimeToAMPM = (timeStr: string) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const adjustedHours = hours % 12 || 12;
+            return `${adjustedHours}:${
+              minutes < 10 ? '0' : ''
+            }${minutes} ${period}`;
+          };
 
-            const startTime = formatTimeToAMPM(event.startTime);
-            const endTime = formatTimeToAMPM(event.endTime);
-            
-            const eventTypeColors: { [key: string]: string } = {
-              Job:'#ffb879',
-              Employee:'#ffe3b2',
-              Holiday:'#a8faf3',
-              Office: '#2996f7'
-            };
-            const eventColor = eventTypeColors[event.eventType] || '#007bff'; // Default Blue
-            const formattedEvent = {
-                _id: event._id,
-                title: event.title,
-                date: formattedDate,
-                time: `${startTime} - ${endTime}`,
-                description: event.description,
-                employeeName: event.employeeName,
-                clientName: event.clientName,
-                clientEmail: event.clientEmail,
-                address: event.address,
-                clientContact: event.clientContact,
-                jobId: event.jobId,
-                status: event.status,
-                eventType: event.eventType,
-                backgroundColor: eventColor,
-                borderColor: eventColor,
-            };
-            return formattedEvent;
+          const startTime = formatTimeToAMPM(event.startTime);
+          const endTime = formatTimeToAMPM(event.endTime);
+
+          const eventTypeColors: { [key: string]: string } = {
+            Job: '#ffb879',
+            Employee: '#ffe3b2',
+            Holiday: '#a8faf3',
+            Office: '#2996f7',
+          };
+          const eventColor = eventTypeColors[event.eventType] || '#007bff'; // Default Blue
+          const formattedEvent = {
+            _id: event._id,
+            title: event.title,
+            date: formattedDate,
+            time: `${startTime} - ${endTime}`,
+            description: event.description,
+            employeeName: event.employeeName,
+            clientName: event.clientName,
+            clientEmail: event.clientEmail,
+            address: event.address,
+            clientContact: event.clientContact,
+            jobId: event.jobId,
+            status: event.status,
+            eventType: event.eventType,
+            backgroundColor: eventColor,
+            borderColor: eventColor,
+          };
+          return formattedEvent;
         }) || [];
-        console.log('Event Array:', this.calendarArray);
-        this.updateCalendarOptions();
+      console.log('Event Array:', this.calendarArray);
+      this.updateCalendarOptions();
     });
-}
+  }
 
-filterEvents() {
-  const filteredEvents = this.selectedEventType
-    ? this.calendarArray.filter((event) => event.eventType === this.selectedEventType)
-    : this.calendarArray; // Show all events if no type is selected
+  filterEvents() {
+    const filteredEvents = this.selectedEventType
+      ? this.calendarArray.filter(
+          (event) => event.eventType === this.selectedEventType
+        )
+      : this.calendarArray; // Show all events if no type is selected
 
-  this.calendarOptions = { ...this.calendarOptions, events: filteredEvents };
-}
+    this.calendarOptions = { ...this.calendarOptions, events: filteredEvents };
+  }
 
-
-updateCalendarOptions() {
-  this.calendarOptions = {
-    initialView: 'dayGridMonth',
-    events: this.calendarArray,
-    eventClick: (info) => {
-      alert(
-        `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
-      );
-    },
-    eventContent: function (arg) {
-      return {
-        html: `<div style="color: black; font-weight: bold;">${arg.event.title}</div>`
-      };
-    },
-  };
-}
+  updateCalendarOptions() {
+    this.calendarOptions = {
+      initialView: 'dayGridMonth',
+      events: this.calendarArray,
+      eventClick: (info) => {
+        alert(
+          `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
+        );
+      },
+      eventContent: function (arg) {
+        return {
+          html: `<div style="color: black; font-weight: bold;">${arg.event.title}</div>`,
+        };
+      },
+    };
+  }
 
   deleteEvent(id: any) {
     if (confirm('Are you sure you want to delete this event?')) {
@@ -665,56 +669,117 @@ updateCalendarOptions() {
         },
         error: (err) => {
           console.error('Error deleting event:', err);
-        }
+        },
       });
     }
-  };
-
-    // calender end
-
-    // history start
-
-    getAllHistory() {
-      this.EventsService.getAllEventsService().subscribe((res) => {
-          this.historyData = res;
-          this.historyArray = this.historyData?.data?.map((event: any) => {
-              // Format date and times
-              const formattedDate = this.datePipe.transform(event.date, 'yyyy-MM-dd');
-  
-              // Convert start and end times to AM/PM format
-              const formatTimeToAMPM = (timeStr: string) => {
-                  const [hours, minutes] = timeStr.split(':').map(Number);
-                  const period = hours >= 12 ? 'PM' : 'AM';
-                  const adjustedHours = hours % 12 || 12;
-                  return `${adjustedHours}:${minutes < 10 ? '0' : ''}${minutes} ${period}`;
-              };
-  
-              const startTime = formatTimeToAMPM(event.startTime);
-              const endTime = formatTimeToAMPM(event.endTime);
-  
-              const formattedEvent = {
-                  _id: event._id,
-                  title: event.title,
-                  date: formattedDate,
-                  time: `${startTime} - ${endTime}`,
-                  description: event.description,
-                  userName: event.userName,
-                  clientName: event.clientName,
-                  clientEmail: event.clientEmail,
-                  address: event.address,
-                  clientContact: event.clientContact,
-                  jobId: event.jobId,
-                  status: event.status
-              };
-              return formattedEvent;
-          }) || [];
-          console.log('History Array:', this.historyArray);
-      });
   }
-    // history end
 
+  // calender end
 
+  // history start
+
+  getAllHistory() {
+    this.EventsService.getAllEventsService().subscribe((res) => {
+      this.historyData = res;
+      this.historyArray =
+        this.historyData?.data?.map((event: any) => {
+          // Format date and times
+          const formattedDate = this.datePipe.transform(
+            event.date,
+            'yyyy-MM-dd'
+          );
+
+          // Convert start and end times to AM/PM format
+          const formatTimeToAMPM = (timeStr: string) => {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const adjustedHours = hours % 12 || 12;
+            return `${adjustedHours}:${
+              minutes < 10 ? '0' : ''
+            }${minutes} ${period}`;
+          };
+
+          const startTime = formatTimeToAMPM(event.startTime);
+          const endTime = formatTimeToAMPM(event.endTime);
+
+          const formattedEvent = {
+            _id: event._id,
+            title: event.title,
+            date: formattedDate,
+            time: `${startTime} - ${endTime}`,
+            description: event.description,
+            userName: event.userName,
+            clientName: event.clientName,
+            clientEmail: event.clientEmail,
+            address: event.address,
+            clientContact: event.clientContact,
+            jobId: event.jobId,
+            status: event.status,
+          };
+          return formattedEvent;
+        }) || [];
+      console.log('History Array:', this.historyArray);
+    });
+  }
+  // history end
+
+  // google for address
+  loadGoogleMaps(): void {
+    if (!window['google']) {
+      const script = this.renderer.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCVQ5c2gXZPufIBicJqN7WMq5YFjG-VlTY&libraries=places&callback=initAutocomplete`;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    } else {
+      this.initAutocomplete(); // If already loaded, call it directly
+    }
+  }
+  
+  initAutocomplete(): void {
+    console.log('Google Maps Autocomplete initialized!');
+
+    const input = document.getElementById('pac-input2') as HTMLInputElement;
+    if (!input) {
+      console.error('Input element not found!');
+      return;
+    }
+
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['address'],
+      fields: ['place_id', 'geometry', 'formatted_address', 'name'],
+    });
+
+    setTimeout(() => {
+      const pacContainers = document.getElementsByClassName('pac-container');
+      Array.from(pacContainers).forEach((container) => {
+        (container as HTMLElement).style.zIndex = '9999';
+        document.body.appendChild(container);
+      });
+    }, 500); // Delay ensures the element is available in the DOM
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+
+      if (!place.geometry || !place.geometry.location) {
+        window.alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+
+      const latitude = place.geometry.location.lat();
+      const longitude = place.geometry.location.lng();
+
+      console.log('Selected Place:', place.name);
+      console.log('Formatted Address:', place.formatted_address);
+      console.log('Latitude:', latitude);
+      console.log('Longitude:', longitude);
+
+      // ✅ Assign the selected address, lat, and lng to the form controls
+      this.eventForm.patchValue({
+        address: place.formatted_address,
+        lat: latitude,
+        lng: longitude,
+      });
+    });
+  }
 }
-
-
-
