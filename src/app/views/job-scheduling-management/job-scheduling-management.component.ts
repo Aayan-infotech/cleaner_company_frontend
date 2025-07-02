@@ -402,7 +402,7 @@ export class JobSchedulingManagementComponent {
   initAutocomplete(): void {
     console.log('Google Maps Autocomplete initialized!');
 
-    const input = document.getElementById('pac-input-job') as HTMLInputElement;
+    const input = document.getElementById('pac-input2') as HTMLInputElement;
     if (!input) {
       console.error('Input element not found!');
       return;
