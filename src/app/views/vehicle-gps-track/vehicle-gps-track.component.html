@@ -51,16 +51,20 @@
           </div>
           <div class="date-time-controls" style="flex: 1;">
             <!-- Calendar Button -->
-            <c-col xs="12" class="p-3 border mb-3" style="text-decoration: none !important;">
-              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/dashboard">
-                Calendar
-              </button>
-              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/crm">
-                Add New Client
-              </button>
-              <button cButton size="sm" color="primary" class="me-md-2" routerLink="/jobSchedulingManagement">
-                Start New Estimate
-              </button>
+            <c-col xs="12" class="p-3 border mb-3">
+              <div class="d-flex flex-wrap justify-content-center align-items-center mb-3">
+                <button cButton size="sm" color="primary" class="me-md-2" routerLink="/dashboard">
+                  Calendar
+                </button>
+                <button cButton size="sm" color="primary" class="me-md-2" routerLink="/crm">
+                  Add New Client
+                </button>
+              </div>
+              <div class="d-flex flex-wrap justify-content-center align-items-center">
+                <button cButton size="sm" color="primary" class="me-md-2" routerLink="/jobSchedulingManagement">
+                  Start New Estimate
+                </button>
+              </div>
             </c-col>
 
             <!-- Date Navigation -->
