@@ -37,7 +37,6 @@
 <!-- Modal for adding events -->
 <c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange3($event)">
   <c-modal-header>
-    <!-- <h5 cModalTitle>Add Event</h5> -->
     <h5 cModalTitle>{{ editData ? 'Edit Event' : 'Add Event' }}</h5>
     <button (click)="toggleLiveDemo3()" cButtonClose></button>
   </c-modal-header>
