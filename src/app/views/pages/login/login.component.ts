@@ -9,11 +9,17 @@ import { AuthService } from '../../../services/auth.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
+
   fb = inject(FormBuilder);
   router = inject(Router);
   authService = inject(AuthService);
   loginForm!: FormGroup;
   errorMessage: string = '';
+  showPassword: boolean = false; 
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -39,4 +45,5 @@ export class LoginComponent {
       },
     });
   }
+
 }
