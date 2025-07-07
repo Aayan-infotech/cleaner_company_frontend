@@ -3,130 +3,383 @@
         <c-card class="mb-4">
             <c-card-header>Marketing</c-card-header>
 
-            <c-modal-body class="py-3 px-2">
-                <div class="container">
+            <!-- Modal Add Template -->
+            <c-modal size="xl" id="addTemplateDemoModal" [visible]="visibleAddTemplate" (visibleChange)="handleAddTemplateDemoChange($event)">
+                <c-modal-header>
+                  <h5 cModalTitle>Add New Template</h5>
+                  <button (click)="toggleAddTemplateDemo()" cButtonClose></button>
+                </c-modal-header>
+
+                <c-modal-body>
                     <div class="row">
 
-                        <div class="col-md-4">
+
+                        <!-- First Section -->
+                        <div class="col-md-7">
+
+                            <!-- Main card -->
                             <c-card>
-                                <c-card-body class="text-center">
-                                    <h6>View Category</h6>
-                                    <c-row>
-                                        <c-col [sm]="12">
-                                            <c-card class="my-3">
-                                                <c-card-body>
-                                                    <div style="display: flex !important; justify-content: center; flex-direction: column;">
-                                                        
-                                                        <!-- Dropdown for All Categories -->
-                                                        <select aria-label="Default select example" cSelect class="form-select my-2 rounded-pill text-dark text-center" [(ngModel)]="selectedCategoryId">
-                                                            <option value="" disabled selected>Select a category</option>
-                                                            <option *ngFor="let category of allCategories" [value]="category._id"> 
-                                                              Customer <span>{{ category.categoryName.charAt(0).toUpperCase() + category.categoryName.slice(1) }}</span>
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </c-card-body>
-                                            </c-card>
-                                        </c-col>
-                                        <div >Save as New Template</div>
-                                    </c-row>
+                                <c-card-header class="text-center">By Additional Themes</c-card-header>
+
+                                <!-- Main card Body -->
+                                <c-card-body>
+                                    
+                                    <!-- First card -->
+                                    <c-card class="p-3">
+
+                                        <div class="position-relative">
+                                            <c-carousel [animate]="false" transition="crossfade">
+                                          
+                                              <!-- Carousel Inner -->
+                                              <c-carousel-inner>
+                                                <c-carousel-item *ngFor="let chunk of templateCarouselSlideChunks">
+                                                  <c-row class="px-5">
+
+                                                    <c-col *ngFor="let card of chunk" [md]="4" class="mb-3">
+
+                                                      <c-card>
+                                                        <c-card-header class="p-1 text-center">{{ card.title }}</c-card-header>
+                                                        <c-card-body class="bg-danger">
+                                                          <p class="text-center">{{ card.subtitle }}</p>
+                                                        </c-card-body>
+                                                      </c-card>
+
+                                                    </c-col>
+
+                                                  </c-row>
+                                                </c-carousel-item>
+                                              </c-carousel-inner>
+
+                                          
+                                              <!-- Prev Button -->
+                                              <c-carousel-control caption="Previous" direction="prev" class="position-absolute top-50 start-0 translate-middle-y zindex-1" style="width: auto;">
+                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="width: 40px; height: 40px;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-left-fill" viewBox="0 0 16 16" style="cursor: pointer;">
+                                                      <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                                                    </svg>
+                                                </div>
+                                              </c-carousel-control>
+
+                                          
+                                              <!-- Next Button -->
+                                              <c-carousel-control caption="Next" direction="next" class="position-absolute top-50 end-0 translate-middle-y zindex-1" style="width: auto;">
+                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="width: 40px; height: 40px;">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-right-fill" viewBox="0 0 16 16" style="cursor: pointer;">
+                                                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                                                    </svg>
+                                                </div>
+                                              </c-carousel-control>
+
+                                          
+                                            </c-carousel>
+                                          </div>
+                                          
+                                          
+                                    </c-card>
+
+                                    <!-- Second card -->
+                                    <c-card class="my-3">
+                                        <c-card-header class="fw-bold">Text Options</c-card-header>
+                                        <c-card-body class="d-flex align-items-center justify-content-between flex-wrap">
+                                      
+                                          <!-- Color Button -->
+                                          <div class="text-center mx-2">
+                                            <button class="btn border rounded p-3" style="width: 30px; height: 30px; background-color: transparent;"></button>
+                                            <small class="d-block mt-1">Color</small>
+                                          </div>
+                                      
+                                          <!-- Font Button -->
+                                          <div class="text-center mx-2">
+                                            <button class="btn p-0 border-0">
+                                              <span class="fw-normal fs-5">AB</span>
+                                            </button>
+                                            <small class="d-block mt-1">Font</small>
+                                          </div>
+                                      
+                                          <!-- Bold Button -->
+                                          <div class="text-center mx-2">
+                                            <button class="btn p-0 border-0">
+                                              <span class="fw-bold fs-5">AB</span>
+                                            </button>
+                                            <small class="d-block mt-1">Bold</small>
+                                          </div>
+                                      
+                                          <!-- Italic Button -->
+                                          <div class="text-center mx-2">
+                                            <button class="btn p-0 border-0">
+                                              <span class="fst-italic fs-5">AB</span>
+                                            </button>
+                                            <small class="d-block mt-1">Italic</small>
+                                          </div>
+                                      
+                                          <!-- Size Buttons -->
+                                          <div class="text-center mx-2">
+                                            <div class="d-flex flex-column align-items-center border rounded px-2 py-1">
+                                              <button class="btn btn-sm p-0"><span style="font-size: 16px;">▲</span></button>
+                                              <span style="line-height: 1;">10</span>
+                                              <button class="btn btn-sm p-0"><span style="font-size: 16px;">▼</span></button>
+                                            </div>
+                                            <small class="d-block mt-1">Size</small>
+                                          </div>
+                                      
+                                        </c-card-body>
+                                    </c-card>
+                                      
+                                    <!-- Third card -->
+                                    <c-card class="p-3">
+                                        <c-card-body class="d-flex justify-content-start align-items-center gap-4">
+                                      
+                                          <!-- Text Field Label -->
+                                          <div class="text-center">
+                                            <span>Text Field</span>
+                                          </div>
+                                      
+                                          <!-- Color Box -->
+                                          <div class="text-center">
+                                            <button class="btn p-0 border rounded" [style.backgroundColor]="selectedColor" style="width: 40px; height: 40px;" (click)="triggerColorPicker()"></button>
+                                          
+                                            <!-- Hidden color input -->
+                                            <input type="color" #colorInput [value]="selectedColor" (change)="onColorChange($event)" style="display: none;" />
+                                          
+                                            <small class="d-block mt-1">Color</small>
+                                          </div>
+                                          
+                                      
+                                          <!-- Image Input -->
+                                          <div class="text-center">
+                                            <input type="text" class="form-control" placeholder="Image" style="width: 120px;" />
+                                          </div>
+                                      
+                                        </c-card-body>
+                                    </c-card>
+
+
+                                    <!-- Fourth Card -->
+                                    <c-card class="mt-3 p-3">
+                                        <c-card-body class="d-flex justify-content-start align-items-center gap-4">
+                                      
+                                          <!-- Background Label -->
+                                          <div class="text-center">
+                                            <span>Background</span>
+                                          </div>
+                                      
+                                          <!-- Color Picker Button -->
+                                          <div class="text-center">
+                                            <button class="btn p-0 border rounded"
+                                                    [style.backgroundColor]="backgroundColor"
+                                                    style="width: 40px; height: 40px;"
+                                                    (click)="triggerBgColorPicker()">
+                                            </button>
+                                      
+                                            <!-- Hidden color input -->
+                                            <input type="color"
+                                                   #bgColorInput
+                                                   [value]="backgroundColor"
+                                                   (change)="onBgColorChange($event)"
+                                                   style="display: none;" />
+                                      
+                                            <small class="d-block mt-1">Color</small>
+                                          </div>
+                                      
+                                          <!-- Image Input -->
+                                          <div class="text-center">
+                                            <input type="text" class="form-control" placeholder="Image" style="width: 120px;" />
+                                          </div>
+                                      
+                                        </c-card-body>
+                                    </c-card>
+                                    
                                 </c-card-body>
                             </c-card>
                         </div>
 
-                        <div class="col-md-8">
-                            <c-row>
-                                <c-col [sm]="12">
-                                    <c-card>
-                                        <c-card-body>
 
-                                            <!-- Header Carousel -->
-                                            <c-col [sm]="12" class="pb-4">
-                                                <c-card>
-                                                    <c-card-body class="bg-secondary rounded">
+                        <!-- Second Section -->
+                        <div class="col-md-5">
+                            
+                            <!-- Main card -->
+                            <c-card>
+                                <c-card-header class="text-center">Current Template Preview</c-card-header>                                
+                                <c-card-body class="bg-purple text-center text-dark" style="background-color: #5f00ba; min-height: 500px; padding: 1rem;">
 
-                                                        <!-- Carousel Section -->
-                                                        <c-carousel [animate]="false" transition="crossfade">
+                                    <div class="mx-auto mb-3" style="width: 150px; height: 220px; background-color: white;"></div>
+                                  
+                                    <div class="bg-white fw-bold py-2 mb-2">Lorium Ipsum</div>
+                                  
+                                    <div class="bg-white py-3 px-2 mb-3" style="min-height: 280px;">Lorium Ipsum</div>
+                               
+                                    <div class="bg-white mx-auto" style="width: 80%; height: 60px;"></div>
+                                  
+                                </c-card-body>
+                                  
+                            </c-card>
+
+                        </div>
+                    </div>
+
+
+
+                </c-modal-body>
+
+                <c-modal-footer>
+                  <button (click)="toggleAddTemplateDemo()" cButton color="secondary">Close</button>
+                  <button cButton color="primary">Save</button>
+                </c-modal-footer>
+            </c-modal>
+
+
+
+
+            <c-card-body class="py-3 px-2">
+                <div class="row">
+
+                    <!-- Show categories Section -->
+                    <div class="col-md-4">
+                        <c-card>
+                            <c-card-body class="text-center">
+                                <h6>View Category</h6>
+                                <c-row>
+                                    <c-col [sm]="12">
+                                        <c-card class="my-3">
+                                            <c-card-body>
+                                                <div style="display: flex !important; justify-content: center; flex-direction: column;">
+
+                                                    <!-- Dropdown for All Categories -->
+                                                    <select aria-label="Default select example" cSelect class="form-select my-2 rounded-pill text-dark text-center" [(ngModel)]="selectedCategoryId">
+                                                        <option value="" disabled selected>Select a category</option>
+                                                        <option *ngFor="let category of allCategories" [value]="category._id">Customer 
+                                                            <span>{{ category.categoryName.charAt(0).toUpperCase() + category.categoryName.slice(1) }}</span>
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </c-card-body>
+                                        </c-card>
+                                    </c-col>
+
+                                    <!-- Add Template Button -->
+                                    <div>
+                                        <button cButton (click)="toggleAddTemplateDemo()">Add New Template</button>
+                                    </div>
+
+                                </c-row>
+                            </c-card-body>
+                        </c-card>
+                    </div>
+
+                    <!-- Show Template Section -->
+                    <div class="col-md-8">
+                        <c-row>
+                            <c-col [sm]="12">
+                                <c-card>
+                                    <c-card-body>
+
+                                        <!-- Header Carousel -->
+                                        <c-col [sm]="12" class="pb-4">
+                                            <c-card>
+                                                <c-card-body class="bg-secondary rounded">
+
+                                                    <!-- Carousel Section -->
+                                                    <c-carousel [animate]="false" transition="crossfade">
+
+                                                        <!-- Carousel Pre Button -->
+                                                        <c-carousel-control [routerLink] caption="Previous"
+                                                            direction="prev">
+                                                            <div class="d-flex ps-5">
+                                                                <div class="text-nowrap me-1">
+                                                                    Template Library
+                                                                </div>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="25"
+                                                                    height="25" fill="currentColor"
+                                                                    class="bi bi-caret-left-fill"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                                                                </svg>
+                                                            </div>
+                                                        </c-carousel-control>
+
+                                                        <!-- Carousel Body -->
+                                                        <c-carousel-inner>
+                                                            <c-carousel-item *ngFor="let slide of slides"
+                                                                class="text-center">
+                                                                <!-- <img [src]="slide.src" alt="{{slide.title}}"
+                                                                    class="d-block w-10" loading="lazy"> -->
+                                                                <div>{{slide.title}}</div>
+                                                            </c-carousel-item>
+                                                        </c-carousel-inner>
+
+                                                        <!-- Carousel Next Button -->
+                                                        <c-carousel-control [routerLink] caption="Next"
+                                                            direction="next" class="color-black">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="25"
+                                                                height="25" fill="currentColor"
+                                                                class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                                                            </svg>1/30
+                                                        </c-carousel-control>
+
+                                                    </c-carousel>
+                                                </c-card-body>
+                                            </c-card>
+                                        </c-col>
+
+                                        <!-- Template Section -->
+                                        <c-col [sm]="12">
+                                            <c-card>
+                                                <c-card-body>
+
+                                                    <!-- Second Carousel Section -->
+                                                    <c-carousel [animate]="false" transition="crossfade">
+
+                                                        <c-row>
 
                                                             <!-- Carousel Pre Button -->
-                                                            <c-carousel-control [routerLink] caption="Previous" direction="prev">
-                                                                <div class="d-flex ps-5">
-                                                                    <div class="text-nowrap me-1">
-                                                                        Template Library
-                                                                    </div>
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                                                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                                                            <c-carousel-control [routerLink] caption="Previous"
+                                                                direction="prev">
+                                                                <div
+                                                                    class="d-flex justify-content-center align-items-center h-100">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                                        width="60" height="60" fill="black"
+                                                                        class="bi bi-caret-left-fill"
+                                                                        viewBox="0 0 16 16"
+                                                                        style="cursor: pointer;">
+                                                                        <path
+                                                                            d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                                                                     </svg>
                                                                 </div>
                                                             </c-carousel-control>
 
-                                                            <!-- Carousel Body -->
+                                                            <!-- Template Body Section -->
                                                             <c-carousel-inner>
-                                                                <c-carousel-item *ngFor="let slide of slides"
+                                                                <c-carousel-item
+                                                                    *ngFor="let TempSlide of layoutTemplateSlides"
                                                                     class="text-center">
-                                                                    <!-- <img [src]="slide.src" alt="{{slide.title}}"
-                                                                        class="d-block w-10" loading="lazy"> -->
-                                                                        <div>{{slide.title}}</div>
-                                                                </c-carousel-item>
-                                                            </c-carousel-inner>
-
-                                                            <!-- Carousel Next Button -->
-                                                            <c-carousel-control [routerLink] caption="Next"
-                                                                direction="next" class="color-black">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="25"
-                                                                    height="25" fill="currentColor"
-                                                                    class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                                                                    <path
-                                                                        d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                                                                </svg>1/30
-                                                            </c-carousel-control>
-
-                                                        </c-carousel>
-                                                    </c-card-body>
-                                                </c-card>
-                                            </c-col>
-
-                                            <!-- Template Section -->
-                                            <c-col [sm]="12">
-                                                <c-card>
-                                                    <c-card-body>
-
-                                                        <!-- Second Carousel Section -->
-                                                        <c-carousel [animate]="false" transition="crossfade">
-
-                                                            <c-row>
-
-                                                                <!-- Carousel Pre Button -->
-                                                                <c-carousel-control [routerLink] caption="Previous" direction="prev">
-                                                                    <div class="d-flex justify-content-center align-items-center h-100">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="black" class="bi bi-caret-left-fill" viewBox="0 0 16 16" style="cursor: pointer;">
-                                                                            <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-                                                                        </svg>     
-                                                                    </div>
-                                                                </c-carousel-control>
-
-                                                                <!-- Template Body Section -->
-                                                                <c-carousel-inner>
-                                                                    <c-carousel-item *ngFor="let TempSlide of layoutTemplateSlides" class="text-center">
-                                                                      <c-col [sm]="6" class="mx-auto">
-                                                                        <div class="d-flex justify-content-between pb-3">
-                                                                          <div>{{ TempSlide.title }}</div>
-                                                                          <div>{{ TempSlide.subtitle }}</div>
+                                                                    <c-col [sm]="6" class="mx-auto">
+                                                                        <div
+                                                                            class="d-flex justify-content-between pb-3">
+                                                                            <div>{{ TempSlide.title }}</div>
+                                                                            <div>{{ TempSlide.subtitle }}</div>
                                                                         </div>
                                                                         <c-card>
                                                                             <c-card-body>
                                                                                 <c-row>
                                                                                     <c-col [sm]="6">
                                                                                         <c-card>
-                                                                                            <c-card-body style="height: 80px;">
-                                                                                                <h6 cCardTitle>Compant Logo</h6>
+                                                                                            <c-card-body
+                                                                                                style="height: 80px;">
+                                                                                                <h6 cCardTitle>
+                                                                                                    Compant Logo
+                                                                                                </h6>
                                                                                             </c-card-body>
                                                                                         </c-card>
                                                                                     </c-col>
                                                                                     <c-col [sm]="6">
                                                                                         <c-card>
                                                                                             <c-card-body>
-                                                                                                <h6 cCardTitle>Employee Picture</h6>
+                                                                                                <h6 cCardTitle>
+                                                                                                    Employee Picture
+                                                                                                </h6>
                                                                                             </c-card-body>
                                                                                         </c-card>
                                                                                     </c-col>
@@ -134,9 +387,11 @@
                                                                                 <c-row class="my-1">
                                                                                     <c-col [sm]="12">
                                                                                         <c-card>
-                                                                                            <c-card-body class="text-center">
+                                                                                            <c-card-body
+                                                                                                class="text-center">
                                                                                                 <h5 cCardText>
-                                                                                                    We are 15 Minutes away!!
+                                                                                                    We are 15
+                                                                                                    Minutes away!!
                                                                                                 </h5>
                                                                                             </c-card-body>
                                                                                         </c-card>
@@ -145,12 +400,18 @@
                                                                                 <c-row>
                                                                                     <c-col [sm]="12">
                                                                                         <c-card>
-                                                                                            <c-card-body class="text-start">
+                                                                                            <c-card-body
+                                                                                                class="text-start">
                                                                                                 <h6 cCardText>
                                                                                                     Client Name
                                                                                                 </h6>
                                                                                                 <p cCardText>
-                                                                                                    We are just 15 minutes away from making your home carpets dazzle your guests.
+                                                                                                    We are just 15
+                                                                                                    minutes away
+                                                                                                    from making your
+                                                                                                    home carpets
+                                                                                                    dazzle your
+                                                                                                    guests.
                                                                                                 </p>
                                                                                             </c-card-body>
                                                                                         </c-card>
@@ -160,52 +421,67 @@
                                                                                     <c-col [sm]="12">
                                                                                         <div
                                                                                             class="d-flex justify-content-center pt-3">
-                                                                                            <button cButton color="primary" size="sm" shape="rounded-pill" class="me-3 px-4">OK!</button>
-                                                                                            <button cButton size="sm" shape="rounded-pill" color="primary" class="px-4">Call</button>
+                                                                                            <button cButton
+                                                                                                color="primary"
+                                                                                                size="sm"
+                                                                                                shape="rounded-pill"
+                                                                                                class="me-3 px-4">OK!</button>
+                                                                                            <button cButton
+                                                                                                size="sm"
+                                                                                                shape="rounded-pill"
+                                                                                                color="primary"
+                                                                                                class="px-4">Call</button>
                                                                                         </div>
                                                                                     </c-col>
                                                                                 </c-row>
                                                                             </c-card-body>
                                                                         </c-card>
-                                                                      </c-col>
-                                                                    </c-carousel-item>
-                                                                </c-carousel-inner>
-                                                                  
+                                                                    </c-col>
+                                                                </c-carousel-item>
+                                                            </c-carousel-inner>
 
-                                                                <!-- Carousel Next Button -->
-                                                                <c-carousel-control [routerLink] caption="Next" direction="next">
-                                                                    <svg style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="black" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                                                                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                                                                    </svg>                                                                          
-                                                                </c-carousel-control>
-                                                                  
 
-                                                                <!-- save / update Button -->
-                                                                <c-col [sm]="3"></c-col>
-                                                                <c-col [sm]="6">
-                                                                    <div class="mt-3 d-flex justify-content-center">
-                                                                        <button cButton class="me-3">Save</button>
-                                                                        <button cButton color="secondary">Update</button>
-                                                                    </div>
-                                                                </c-col>
-                                                                <c-col [sm]="3"></c-col>
+                                                            <!-- Carousel Next Button -->
+                                                            <c-carousel-control [routerLink] caption="Next"
+                                                                direction="next">
+                                                                <svg style="cursor: pointer;"
+                                                                    xmlns="http://www.w3.org/2000/svg" width="60"
+                                                                    height="60" fill="black"
+                                                                    class="bi bi-caret-right-fill"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                                                                </svg>
+                                                            </c-carousel-control>
 
-                                                            </c-row>
-                                                        </c-carousel>
 
-                                                    </c-card-body>
-                                                </c-card>
-                                            </c-col>
+                                                            <!-- save / update Button -->
+                                                            <c-col [sm]="3"></c-col>
+                                                            <c-col [sm]="6">
+                                                                <div class="mt-3 d-flex justify-content-center">
+                                                                    <button cButton class="me-3">Save</button>
+                                                                    <button cButton
+                                                                        color="secondary">Update</button>
+                                                                </div>
+                                                            </c-col>
+                                                            <c-col [sm]="3"></c-col>
 
-                                        </c-card-body>
-                                    </c-card>
-                                </c-col>
-                            </c-row>
-                        </div>
+                                                        </c-row>
+                                                    </c-carousel>
 
+                                                </c-card-body>
+                                            </c-card>
+                                        </c-col>
+
+                                    </c-card-body>
+                                </c-card>
+                            </c-col>
+                        </c-row>
                     </div>
-                </div>
-            </c-modal-body>
+
+                </div>                    
+            </c-card-body>
+            
         </c-card>
     </c-col>
 </c-row>
