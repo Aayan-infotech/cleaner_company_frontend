@@ -25,7 +25,8 @@
 
                                     
                                     <!-- First card -->
-                                    <c-card class="p-3">
+                                    <c-card>
+                                        <c-card-header class="mb-3 fw-bold">Templates</c-card-header>
                                         <div class="position-relative">
                                             <c-carousel [animate]="false" transition="crossfade">
                                          
@@ -51,8 +52,8 @@
     
                                          
                                               <!-- Prev Button -->
-                                              <c-carousel-control caption="Previous" direction="prev" class="position-absolute top-50 start-0 translate-middle-y zindex-1" style="width: auto;">
-                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="width: 40px; height: 40px;">
+                                              <c-carousel-control caption="Previous" direction="prev" class="position-absolute top-50 start-0 translate-middle-y zindex-1 mx-2" style="width: auto;">
+                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="border:1px solid black; width: 30px; height: 30px;">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-left-fill" viewBox="0 0 16 16" style="cursor: pointer;">
                                                       <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                                                     </svg>
@@ -61,8 +62,8 @@
     
                                          
                                               <!-- Next Button -->
-                                              <c-carousel-control caption="Next" direction="next" class="position-absolute top-50 end-0 translate-middle-y zindex-1" style="width: auto;">
-                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="width: 40px; height: 40px;">
+                                              <c-carousel-control caption="Next" direction="next" class="position-absolute top-50 end-0 translate-middle-y zindex-1 mx-2" style="width: auto;">
+                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="border:1px solid black; width: 30px; height: 30px;">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-right-fill" viewBox="0 0 16 16" style="cursor: pointer;">
                                                         <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                                                     </svg>
@@ -218,8 +219,7 @@
 
                                     
                                         <!-- DESCRIPTION -->
-                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 280px;" contenteditable="true" #descContent 
-                                        [ngStyle]="{
+                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;" contenteditable="true" #descContent [ngStyle]="{
                                             'color': selectedTextColor,                                       
                                         }">
                                         {{ descText }}
