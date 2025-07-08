@@ -12,6 +12,34 @@ export class MarketingComponent {
 
   @ViewChild('colorInput') colorInput!: ElementRef<HTMLInputElement>;
   @ViewChild('bgColorInput') bgColorInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('textColorInput') textColorInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('previewContainer') previewContainer!: ElementRef;
+
+
+  selectedFont = "'Arial', sans-serif";
+  isBold = false;
+  isItalic = false;
+  fontSize = 14;
+
+  setFont(event: any) {
+    this.selectedFont = event.target.value;
+  }
+
+  toggleBold() {
+    this.isBold = !this.isBold;
+  }
+
+  toggleItalic() {
+    this.isItalic = !this.isItalic;
+  }
+
+  increaseFontSize() {
+    this.fontSize += 1;
+  }
+
+  decreaseFontSize() {
+    if (this.fontSize > 6) this.fontSize -= 1;
+  }
 
   allCategories: any[] = [];
   selectedCategoryId: string = '';
@@ -25,6 +53,8 @@ export class MarketingComponent {
   currentSlideIndex = 0;
   cardsPerSlide = 2;
 
+  selectedFontColor: string = '#000000';
+  selectedTextColor = '#000000'; 
   selectedColor = '#1c1c1c';
   backgroundColor = '#5f00ba';
 
@@ -138,6 +168,11 @@ export class MarketingComponent {
     }
   }
 
+  onTextColorChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedTextColor = input.value;
+  }
+
   triggerColorPicker(): void {
     this.colorInput.nativeElement.click();
   }
@@ -155,5 +190,49 @@ export class MarketingComponent {
     const input = event.target as HTMLInputElement;
     this.backgroundColor = input.value;
   }
+
+  triggerTextColorPicker(): void {
+    this.textColorInput.nativeElement.click();
+  }
+  
+
+  saveStyledTemplate() {
+    setTimeout(() => {
+      if (!this.previewContainer) {
+        console.error('Preview container is not available yet');
+        return;
+      }
+  
+      const previewHTML = this.previewContainer.nativeElement.innerHTML;
+  
+      const htmlContent = `
+        <html>
+        <head>
+          <style>
+            body {
+              background-color: ${this.backgroundColor};
+              font-family: ${this.selectedFont};
+              font-weight: ${this.isBold ? 'bold' : 'normal'};
+              font-style: ${this.isItalic ? 'italic' : 'normal'};
+              font-size: ${this.fontSize}px;
+              color: ${this.selectedFontColor};
+            }
+          </style>
+        </head>
+        <body>
+          ${previewHTML}
+        </body>
+        </html>
+      `;
+  
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'styled-template.html';
+      link.click();
+    }, 0);
+  }
+  
+  
 
 }
