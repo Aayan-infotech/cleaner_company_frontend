@@ -77,59 +77,66 @@
 
                                     <!-- Second card -->
                                     <c-card class="my-3">
-                                        <c-card-header class="fw-bold">Text Options</c-card-header>
+                                        <c-card-header class="fw-bold">Design Template</c-card-header>
 
                                         <c-card-body class="d-flex align-items-center justify-content-between flex-wrap">
-                                      
-                                          <!-- Color Button -->
-                                          <div class="text-center mx-2">
-                                            <button class="btn p-0 border rounded" [style.backgroundColor]="selectedFontColor" (click)="colorInput.click()" style="width: 40px; height: 40px;"></button>
-                                          
-                                            <input type="color" [(ngModel)]="selectedFontColor" #colorInput style="display: none;" />                                          
-                                            <small class="d-block mt-1">Color</small>
 
-                                          </div>
-                                          
-                                      
-                                          <!-- Font Button -->
-                                          <div class="text-center mx-2">
-                                            <select class="form-select" (change)="setFont($event)">
-                                              <option value="'Arial', sans-serif">Arial</option>
-                                              <option value="'Times New Roman', serif">Times New Roman</option>
-                                              <option value="'Courier New', monospace">Courier</option>
-                                            </select>
-                                            <small class="d-block mt-1">Font</small>
-                                          </div>
-                                      
-                                          <!-- Bold Button -->
-                                          <div class="text-center mx-2">
-                                            <button class="btn p-0 border-0" (click)="toggleBold()">
-                                              <span class="fw-bold fs-5">AB</span>
-                                            </button>
-                                            <small class="d-block mt-1">Bold</small>
-                                          </div>
-                                      
-                                          <!-- Italic Button -->
-                                          <div class="text-center mx-2">
-                                            <button class="btn p-0 border-0" (click)="toggleItalic()">
-                                              <span class="fst-italic fs-5">AB</span>
-                                            </button>
-                                            <small class="d-block mt-1">Italic</small>
-                                          </div>
-                                      
-                                          <!-- Size Buttons -->
-                                          <div class="text-center mx-2">
-                                            <div class="d-flex flex-column align-items-center border rounded px-2 py-1">
-                                              <button class="btn btn-sm p-0" (click)="increaseFontSize()">
-                                                <span style="font-size: 16px;">▲</span>
-                                              </button>
-                                              <span style="line-height: 1;">{{ fontSize }}</span>
-                                              <button class="btn btn-sm p-0" (click)="decreaseFontSize()">
-                                                <span style="font-size: 16px;">▼</span>
-                                              </button>
+                                            <!-- Logo -->
+                                            <c-card class="w-100 mb-3">
+                                                <c-card-body class="text-center">
+                                                    <label for="file" class="form-label fw-semibold">Upload Logo</label>
+                                                    <input type="file" id="file" class="form-control w-auto d-inline-block ms-2" (change)="onLogoSelected($event)" accept="image/*" />
+                                                </c-card-body>
+                                            </c-card>
+
+                                            <!-- Color Button -->
+                                            <div class="text-center mx-2">
+                                                <button class="btn p-0 border rounded" [style.backgroundColor]="selectedFontColor" (click)="colorInput.click()" style="width: 40px; height: 40px;"></button>
+                                            
+                                                <input type="color" [(ngModel)]="selectedFontColor" #colorInput style="display: none;" />                                          
+                                                <small class="d-block mt-1">Color</small>
+
+                                            </div>                                            
+                                        
+                                            <!-- Font Button -->
+                                            <div class="text-center mx-2">
+                                                <select class="form-select" (change)="setFont($event)">
+                                                <option value="'Arial', sans-serif">Arial</option>
+                                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                                <option value="'Courier New', monospace">Courier</option>
+                                                </select>
+                                                <small class="d-block mt-1">Font</small>
                                             </div>
-                                            <small class="d-block mt-1">Size</small>
-                                          </div>
+                                        
+                                            <!-- Bold Button -->
+                                            <div class="text-center mx-2">
+                                                <button class="btn p-0 border-0" (click)="toggleBold()">
+                                                <span class="fw-bold fs-5">AB</span>
+                                                </button>
+                                                <small class="d-block mt-1">Bold</small>
+                                            </div>
+                                        
+                                            <!-- Italic Button -->
+                                            <div class="text-center mx-2">
+                                                <button class="btn p-0 border-0" (click)="toggleItalic()">
+                                                <span class="fst-italic fs-5">AB</span>
+                                                </button>
+                                                <small class="d-block mt-1">Italic</small>
+                                            </div>
+                                        
+                                            <!-- Size Buttons -->
+                                            <div class="text-center mx-2">
+                                                <div class="d-flex flex-column align-items-center border rounded px-2 py-1">
+                                                <button class="btn btn-sm p-0" (click)="increaseFontSize()">
+                                                    <span style="font-size: 16px;">▲</span>
+                                                </button>
+                                                <span style="line-height: 1;">{{ fontSize }}</span>
+                                                <button class="btn btn-sm p-0" (click)="decreaseFontSize()">
+                                                    <span style="font-size: 16px;">▼</span>
+                                                </button>
+                                                </div>
+                                                <small class="d-block mt-1">Size</small>
+                                            </div>
                                       
                                         </c-card-body>
                                     </c-card>
@@ -193,22 +200,32 @@
                                 <c-card-body class="bg-purple text-center text-dark" [ngStyle]="{ 'background-color': backgroundColor }" style="min-height: 500px; padding: 1rem;">
                                     <div #previewContainer>
 
-                                        <div class="mx-auto mb-3" style="width: 150px; height: 220px; background-color: white;"></div>
+                                        <div class="mx-auto mb-3 top-white-box" style="width: 150px; height: 180px; background-color: white;">
+                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo" style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
+                                        </div>
                                     
-                                        <div class="bg-white py-2 mb-2" [ngStyle]="{
+                                        <!-- TITLE -->
+                                        <div class="bg-white py-2 mb-2" contenteditable="true" #titleContent
+                                        [ngStyle]="{
                                             'color': selectedFontColor,
                                             'font-family': selectedFont,
                                             'font-weight': isBold ? 'bold' : 'normal',
                                             'font-style': isItalic ? 'italic' : 'normal',
                                             'font-size.px': fontSize
-                                        }">Lorium Ipsum
+                                        }">
+                                        {{ titleText }}
                                         </div>
+
                                     
-                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 280px;"
-                                            [ngStyle]="{'color': selectedTextColor }">Lorium Ipsum
+                                        <!-- DESCRIPTION -->
+                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 280px;" contenteditable="true" #descContent 
+                                        [ngStyle]="{
+                                            'color': selectedTextColor,                                       
+                                        }">
+                                        {{ descText }}
                                         </div>
                                 
-                                        <div class="bg-white mx-auto" style="width: 80%; height: 60px;"></div>
+                                        <!-- <div class="bg-white mx-auto" style="width: 80%; height: 60px;"></div> -->
                                     </div>
                                   
                                 </c-card-body>
@@ -218,8 +235,6 @@
                         </div>
 
                     </div>
-
-
 
                 </c-modal-body>
 
