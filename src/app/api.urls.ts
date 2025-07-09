@@ -22,5 +22,6 @@ export const apiUrls = {
     groupsManageApi: 'http://18.209.91.97:5966/api/group/',
     marketingCategoriesApi: 'http://18.209.91.97:5966/api/categories/',
     templateApis: 'http://18.209.91.97:5966/api/template/',
+    template2Apis: 'http://18.209.91.97:5966/api/template2/',
 
 }
