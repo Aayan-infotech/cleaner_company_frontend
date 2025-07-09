@@ -23,59 +23,60 @@
                                 <c-card-header class="text-center">By Additional Themes</c-card-header>
                                 <!-- Main card Body -->
                                 <c-card-body>
-
                                     
                                     <!-- First card -->
                                     <c-card>
-                                        <c-card-header class="mb-3 fw-bold">Templates</c-card-header>
-                                        <div class="position-relative">
-                                            <c-carousel [animate]="false" transition="crossfade">
-                                         
-                                              <!-- Carousel Inner -->
-                                              <c-carousel-inner>
-                                                <c-carousel-item *ngFor="let chunk of templateCarouselSlideChunks">
-                                                  <c-row class="px-5">
-    
-                                                    <c-col *ngFor="let card of chunk" [md]="4" class="mb-3">
-    
-                                                      <c-card>
-                                                        <c-card-header class="p-1 text-center">{{ card.title }}</c-card-header>
-                                                        <c-card-body class="bg-danger">
-                                                          <p class="text-center">{{ card.subtitle }}</p>
-                                                        </c-card-body>
-                                                      </c-card>
-    
-                                                    </c-col>
-    
-                                                  </c-row>
-                                                </c-carousel-item>
-                                              </c-carousel-inner>
-    
-                                         
-                                              <!-- Prev Button -->
-                                              <c-carousel-control caption="Previous" direction="prev" class="position-absolute top-50 start-0 translate-middle-y zindex-1 mx-2" style="width: auto;">
-                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="border:1px solid black; width: 30px; height: 30px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-left-fill" viewBox="0 0 16 16" style="cursor: pointer;">
-                                                      <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-                                                    </svg>
-                                                </div>
-                                              </c-carousel-control>
-    
-                                         
-                                              <!-- Next Button -->
-                                              <c-carousel-control caption="Next" direction="next" class="position-absolute top-50 end-0 translate-middle-y zindex-1 mx-2" style="width: auto;">
-                                                <div class="d-flex justify-content-center align-items-center bg-white rounded-circle shadow" style="border:1px solid black; width: 30px; height: 30px;">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black" class="bi bi-caret-right-fill" viewBox="0 0 16 16" style="cursor: pointer;">
-                                                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                                                    </svg>
-                                                </div>
-                                              </c-carousel-control>
-    
-                                         
-                                            </c-carousel>
-                                        </div>                                     
-                                   </c-card>
+                                        <c-card-header class="fw-bold">Templates</c-card-header>
+                                        <c-card-body>
+                                            <div class="d-flex flex-wrap justify-content-center gap-4">
+                                          
+                                              <!-- If data Are Available -->
+                                              <div *ngFor="let temp of allTemplates" style="width: 150px;">
+                                                <div [ngStyle]="{
+                                                    'background-color': temp.backgroundColor || '#8000b0',
+                                                    'border': '1px solid #8000b0',
+                                                    'border-radius': '6px'
+                                                  }" class="p-3">
 
+                                                  <!-- Logo Section -->
+                                                  <div class="d-flex justify-content-center">
+                                                    <div style="width: 50px; height: 60px; background-color: white;">
+                                                      <img *ngIf="temp.logo" [src]="temp.logo" style="width: 100%; height: 100%; object-fit: cover;" />
+                                                    </div>
+                                                  </div>
+                                          
+                                                  <!-- Title Section (Fixed font size for consistency) -->
+                                                  <div style="background-color: white; text-align: center; padding: 10px; margin-top: 15px;"
+                                                        [ngStyle]="{
+                                                        'color': temp.fontColor,
+                                                        'font-size.px': 14,
+                                                        'font-style': temp.isItalic ? 'italic' : 'normal',
+                                                        'font-weight': temp.isBold ? 'bold' : 'normal',
+                                                        'font-family': temp.font
+                                                        }"
+                                                        [innerHTML]="temp.titleHtml">
+                                                    </div>
+                                          
+                                                  <!-- Description Section (Fixed font size for consistency) -->
+                                                  <div style="background-color: white; min-height: 80px; padding: 20px; margin-top: 5px; text-align: center;"
+                                                    [ngStyle]="{
+                                                      'color': temp.textColor,
+                                                      'font-size.px': 14
+                                                    }">
+                                                        <div [innerHTML]="temp.descHtml"></div>
+                                                    </div>
+                                                </div>
+                                              </div>
+                                          
+                                              <!-- No Templates Message -->
+                                              <div *ngIf="allTemplates.length === 0" class="text-danger text-center my-2">
+                                                No Templates Added
+                                              </div>
+
+                                            </div>
+                                          </c-card-body>
+                                          
+                                   </c-card>
 
                                     <!-- Second card -->
                                     <c-card class="my-3">
@@ -185,8 +186,7 @@
                                             </c-card-body>
                                         </c-card>
 
-                                    </div>
-  
+                                    </div>  
                                     
                                 </c-card-body>
                             </c-card>
@@ -240,7 +240,7 @@
 
                 <c-modal-footer>
                   <button (click)="toggleAddTemplateDemo()" cButton color="secondary">Close</button>
-                  <button (click)="saveStyledTemplate()" cButton color="primary">Save</button>
+                  <button (click)="saveTemplateToDb()" cButton color="primary">Save</button>
                 </c-modal-footer>
             </c-modal>
             

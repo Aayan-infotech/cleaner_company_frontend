@@ -1,6 +1,6 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MarketingCategoriesService } from '../../services/marketing-categories.service';
-import { TemplateService } from '../../services/template.service';
+import { Template2Service } from '../../services/template2.service';
 
 @Component({
   selector: 'app-marketing',
@@ -20,6 +20,7 @@ export class MarketingComponent {
   logoDataUrl: string | null = null;
   titleText: string = 'Title';
   descText: string = 'Description';
+  allTemplates: any[] = [];
 
 
   selectedFont = "'Arial', sans-serif";
@@ -66,7 +67,7 @@ export class MarketingComponent {
 
   constructor(
     private categoriesService: MarketingCategoriesService,
-    private templateService: TemplateService,
+    private templateService: Template2Service,
   ) { };
 
   slides: any[] = new Array(3).fill({ id: -1, src: '', title: '', subtitle: '' });
@@ -110,17 +111,6 @@ export class MarketingComponent {
       title: 'Template 3',
       subtitle: 'Template'
     };
-
-    this.templateCarouselSlides = [
-      { id: 0, title: 'Template A', subtitle: 'Description A' },
-      { id: 1, title: 'Template B', subtitle: 'Description B' },
-      { id: 2, title: 'Template C', subtitle: 'Description C' },
-      { id: 3, title: 'Template D', subtitle: 'Description D' },
-      { id: 4, title: 'Template E', subtitle: 'Description E' },
-      { id: 5, title: 'Template F', subtitle: 'Description F' }
-    ];
-
-    this.templateCarouselSlideChunks = this.chunkArray(this.templateCarouselSlides, 3);
 
     this.getAllCategories();
     this.getAllTemplates();
@@ -166,7 +156,21 @@ export class MarketingComponent {
     })
   }
 
-  getAllTemplates(): void { }
+  getAllTemplates(): void {
+    this.templateService.getAllTemplatesService().subscribe({
+      next: (res) => {
+        this.allTemplates = res.data || [];
+        console.log("Templates fetched:", this.allTemplates);
+  
+        // Split fetched templates into carousel chunks
+        this.templateCarouselSlideChunks = this.chunkArray(this.allTemplates, 3);
+      },
+      error: (err) => {
+        console.error("Error fetching templates:", err);
+      }
+    });
+  }
+  
 
   // Custom Slider Methods
   getVisibleCards(): any[] {
@@ -215,104 +219,43 @@ export class MarketingComponent {
   }
 
 
-  saveStyledTemplate() {
+  saveTemplateToDb() {
     setTimeout(() => {
-      if (!this.titleContent || !this.descContent || !this.previewContainer) {
-        console.error('Missing one or more DOM references.');
+      if (!this.titleContent || !this.descContent) {
+        console.error('Missing DOM references');
         return;
       }
   
       const titleHtml = this.titleContent.nativeElement.innerHTML;
       const descHtml = this.descContent.nativeElement.innerHTML;
   
-      const htmlContent = `
-        <html>
-          <head>
-            <style>
-              body {
-                margin: 0;
-                padding: 0;
-                background-color: #f8f9fa;
-                font-family: ${this.selectedFont};
-              }
+      const payload = {
+        logo: this.logoDataUrl,
+        titleHtml,
+        descHtml,
+        fontFamily: this.selectedFont,
+        fontSize: this.fontSize,
+        fontColor: this.selectedFontColor,
+        fontWeight: this.isBold ? 'bold' : 'normal',
+        fontStyle: this.isItalic ? 'italic' : 'normal',
+        backgroundColor: this.backgroundColor,
+        textColor: this.selectedTextColor,
+      };
   
-              .template-wrapper {
-                max-width: 500px;
-                margin: 2rem auto;
-                background-color: ${this.backgroundColor};
-                padding: 1rem;
-                border-radius: 8px;
-                text-align: center;
-              }
-  
-              .top-white-box {
-                width: 150px;
-                height: 180px;
-                background-color: white;
-                margin: 0 auto 1rem auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              }
-  
-              .top-white-box img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border: 1px solid white;
-              }
-  
-              .title-block {
-                background-color: white;
-                color: ${this.selectedFontColor};
-                font-family: ${this.selectedFont};
-                font-weight: ${this.isBold ? 'bold' : 'normal'};
-                font-style: ${this.isItalic ? 'italic' : 'normal'};
-                font-size: ${this.fontSize}px;
-                padding: 0.5rem 0;
-                margin-bottom: 0.5rem;
-              }
-  
-              .desc-block {
-                background-color: white;
-                min-height: 280px;
-                padding: 1rem;
-                color: ${this.selectedTextColor};
-                font-size: 14px;
-                font-family: ${this.selectedFont};
-                text-align: left;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="template-wrapper">
-              <div class="top-white-box">
-                ${
-                  this.logoDataUrl
-                    ? `<img src="${this.logoDataUrl}" alt="Logo" />`
-                    : 'Logo'
-                }
-              </div>
-  
-              <div class="title-block">
-                ${titleHtml}
-              </div>
-  
-              <div class="desc-block">
-                ${descHtml}
-              </div>
-            </div>
-          </body>
-        </html>
-      `;
-  
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'styled-template.html';
-      link.click();
+      this.templateService.createTemplateService(payload).subscribe({
+        next: (res) => {
+          this.getAllTemplates();
+          this.toggleAddTemplateDemo();
+        },
+        error: (err) => {
+          console.error('Save error:', err);
+        }
+      });
     }, 0);
   }
+  
+  
+  
 
 
 }
