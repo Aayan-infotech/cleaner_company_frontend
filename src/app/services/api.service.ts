@@ -14,7 +14,7 @@ import { Material } from '../models/material';
 })
 
 export class ApiService {
-  private apiUrl = 'http://18.209.91.97:5966/api2';
+  private apiUrl = 'http://52.20.55.193:5966/api2';
 
   constructor(private http: HttpClient) {}
 

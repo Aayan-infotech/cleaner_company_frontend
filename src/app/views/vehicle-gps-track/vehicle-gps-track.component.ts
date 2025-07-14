@@ -502,7 +502,7 @@ export class VehicleGpsTrackComponent implements OnInit, AfterViewInit {
 
   async getAllCalendar(): Promise<void> {
     try {
-      const response: any = await this.http.get('http://18.209.91.97:5966/api/event/').toPromise();
+      const response: any = await this.http.get('http://52.20.55.193:5966/api/event/').toPromise();
       if (response.status === 200 && Array.isArray(response.data)) {
         this.jobs = response.data;
         this.filterJobsByDate(); 

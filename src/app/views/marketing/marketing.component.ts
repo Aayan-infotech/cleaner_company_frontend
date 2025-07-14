@@ -253,6 +253,19 @@ export class MarketingComponent {
       });
     }, 0);
   }
+
+
+  deleteTemplate(templateId: string): void {
+    this.templateService.deleteTemplateService(templateId).subscribe({
+      next: (res) => {
+        console.log('Template deleted successfully:', res);
+        this.getAllTemplates();
+      },
+      error: (err) => {
+        console.error('Error deleting template:', err);
+      }
+    }); 
+  }
   
   
   
