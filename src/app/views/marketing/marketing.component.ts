@@ -22,7 +22,7 @@ export class MarketingComponent {
   descText: string = 'Description';
   allTemplates: any[] = [];
   hoveredTemplateId: string | null = null;
-
+  deletingTemplateId: string | null = null;
 
   selectedFont = "'Arial', sans-serif";
   isBold = false;
@@ -255,9 +255,6 @@ export class MarketingComponent {
     }, 0);
   }
 
-  deletingTemplateId: string | null = null;
-
-
   deleteTemplate(templateId: string): void {
     this.deletingTemplateId = templateId;
   
@@ -274,8 +271,5 @@ export class MarketingComponent {
     });
   }
   
-  
-  
-
 
 }
