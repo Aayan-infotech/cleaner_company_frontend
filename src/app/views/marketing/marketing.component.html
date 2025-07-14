@@ -6,10 +6,11 @@
             <c-card-header>Marketing</c-card-header>
 
             <!-- Modal Add Template -->
-            <c-modal size="xl" id="addTemplateDemoModal" [visible]="visibleAddTemplate" (visibleChange)="handleAddTemplateDemoChange($event)">
+            <c-modal size="xl" id="addTemplateDemoModal" [visible]="visibleAddTemplate"
+                (visibleChange)="handleAddTemplateDemoChange($event)">
                 <c-modal-header>
-                  <h5 cModalTitle>Add New Template</h5>
-                  <button (click)="toggleAddTemplateDemo()" cButtonClose></button>
+                    <h5 cModalTitle>Add New Template</h5>
+                    <button (click)="toggleAddTemplateDemo()" cButtonClose></button>
                 </c-modal-header>
 
                 <c-modal-body>
@@ -23,150 +24,168 @@
                                 <c-card-header class="text-center">By Additional Themes</c-card-header>
                                 <!-- Main card Body -->
                                 <c-card-body>
-                                    
+
                                     <!-- First card -->
                                     <c-card>
                                         <c-card-header class="fw-bold">Templates</c-card-header>
                                         <c-card-body>
                                             <div class="d-flex flex-wrap justify-content-center gap-4">
-                                          
-                                              <!-- If data Are Available -->
-                                              <div *ngFor="let temp of allTemplates" style="width: 150px;">
-                                                <div [ngStyle]="{
+
+                                                <!-- If data Are Available -->
+                                                <div *ngFor="let temp of allTemplates" style="width: 150px;">
+                                                    <div [ngStyle]="{
                                                     'background-color': temp.backgroundColor || '#8000b0',
                                                     'border': '1px solid #8000b0',
                                                     'border-radius': '6px'
                                                   }" class="p-3">
 
-                                                  <!-- Logo Section -->
-                                                  <div class="d-flex justify-content-center">
-                                                    <div style="width: 50px; height: 60px; background-color: white;">
-                                                      <img *ngIf="temp.logo" [src]="temp.logo" style="width: 100%; height: 100%; object-fit: cover;" />
-                                                    </div>
-                                                  </div>
-                                          
-                                                  <!-- Title Section (Fixed font size for consistency) -->
-                                                  <div style="background-color: white; text-align: center; padding: 10px; margin-top: 15px;"
-                                                        [ngStyle]="{
+                                                        <!-- Logo Section -->
+                                                        <div class="d-flex justify-content-center">
+                                                            <div
+                                                                style="width: 50px; height: 60px; background-color: white;">
+                                                                <img *ngIf="temp.logo" [src]="temp.logo"
+                                                                    style="width: 100%; height: 100%; object-fit: cover;" />
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Title Section (Fixed font size for consistency) -->
+                                                        <div style="background-color: white; text-align: center; padding: 10px; margin-top: 15px;"
+                                                            [ngStyle]="{
                                                         'color': temp.fontColor,
                                                         'font-size.px': 14,
                                                         'font-style': temp.isItalic ? 'italic' : 'normal',
                                                         'font-weight': temp.isBold ? 'bold' : 'normal',
                                                         'font-family': temp.font
-                                                        }"
-                                                        [innerHTML]="temp.titleHtml">
-                                                    </div>
-                                          
-                                                  <!-- Description Section (Fixed font size for consistency) -->
-                                                  <div style="background-color: white; min-height: 80px; padding: 20px; margin-top: 5px; text-align: center;"
-                                                    [ngStyle]="{
+                                                        }" [innerHTML]="temp.titleHtml">
+                                                        </div>
+
+                                                        <!-- Description Section (Fixed font size for consistency) -->
+                                                        <div style="background-color: white; min-height: 80px; padding: 20px; margin-top: 5px; text-align: center;"
+                                                            [ngStyle]="{
                                                       'color': temp.textColor,
                                                       'font-size.px': 14
                                                     }">
-                                                        <div [innerHTML]="temp.descHtml"></div>
+                                                            <div [innerHTML]="temp.descHtml"></div>
+                                                        </div>
+
+                                                        <button cButton color="danger" (click)="deleteTemplate(temp._id)">delete</button>
                                                     </div>
                                                 </div>
-                                              </div>
-                                          
-                                              <!-- No Templates Message -->
-                                              <div *ngIf="allTemplates.length === 0" class="text-danger text-center my-2">
-                                                No Templates Added
-                                              </div>
+
+                                                <!-- No Templates Message -->
+                                                <div *ngIf="allTemplates.length === 0"
+                                                    class="text-danger text-center my-2">
+                                                    No Templates Added
+                                                </div>
 
                                             </div>
-                                          </c-card-body>
-                                          
-                                   </c-card>
+                                        </c-card-body>
+
+                                    </c-card>
 
                                     <!-- Second card -->
                                     <c-card class="my-3">
                                         <c-card-header class="fw-bold">Design Template</c-card-header>
 
-                                        <c-card-body class="d-flex align-items-center justify-content-between flex-wrap">
+                                        <c-card-body
+                                            class="d-flex align-items-center justify-content-between flex-wrap">
 
                                             <!-- Logo -->
                                             <c-card class="w-100 mb-3">
                                                 <c-card-body class="text-center">
                                                     <label for="file" class="form-label fw-semibold">Upload Logo</label>
-                                                    <input type="file" id="file" class="form-control w-auto d-inline-block ms-2" (change)="onLogoSelected($event)" accept="image/*" />
+                                                    <input type="file" id="file"
+                                                        class="form-control w-auto d-inline-block ms-2"
+                                                        (change)="onLogoSelected($event)" accept="image/*" />
                                                 </c-card-body>
                                             </c-card>
 
                                             <!-- Color Button -->
                                             <div class="text-center mx-2">
-                                                <button class="btn p-0 border rounded" [style.backgroundColor]="selectedFontColor" (click)="colorInput.click()" style="width: 40px; height: 40px;"></button>
-                                            
-                                                <input type="color" [(ngModel)]="selectedFontColor" #colorInput style="display: none;" />                                          
+                                                <button class="btn p-0 border rounded"
+                                                    [style.backgroundColor]="selectedFontColor"
+                                                    (click)="colorInput.click()"
+                                                    style="width: 40px; height: 40px;"></button>
+
+                                                <input type="color" [(ngModel)]="selectedFontColor" #colorInput
+                                                    style="display: none;" />
                                                 <small class="d-block mt-1">Color</small>
 
-                                            </div>                                            
-                                        
+                                            </div>
+
                                             <!-- Font Button -->
                                             <div class="text-center mx-2">
                                                 <select class="form-select" (change)="setFont($event)">
-                                                <option value="'Arial', sans-serif">Arial</option>
-                                                <option value="'Times New Roman', serif">Times New Roman</option>
-                                                <option value="'Courier New', monospace">Courier</option>
+                                                    <option value="'Arial', sans-serif">Arial</option>
+                                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                                    <option value="'Courier New', monospace">Courier</option>
                                                 </select>
                                                 <small class="d-block mt-1">Font</small>
                                             </div>
-                                        
+
                                             <!-- Bold Button -->
                                             <div class="text-center mx-2">
                                                 <button class="btn p-0 border-0" (click)="toggleBold()">
-                                                <span class="fw-bold fs-5">AB</span>
+                                                    <span class="fw-bold fs-5">AB</span>
                                                 </button>
                                                 <small class="d-block mt-1">Bold</small>
                                             </div>
-                                        
+
                                             <!-- Italic Button -->
                                             <div class="text-center mx-2">
                                                 <button class="btn p-0 border-0" (click)="toggleItalic()">
-                                                <span class="fst-italic fs-5">AB</span>
+                                                    <span class="fst-italic fs-5">AB</span>
                                                 </button>
                                                 <small class="d-block mt-1">Italic</small>
                                             </div>
-                                        
+
                                             <!-- Size Buttons -->
                                             <div class="text-center mx-2">
-                                                <div class="d-flex flex-column align-items-center border rounded px-2 py-1">
-                                                <button class="btn btn-sm p-0" (click)="increaseFontSize()">
-                                                    <span style="font-size: 16px;">▲</span>
-                                                </button>
-                                                <span style="line-height: 1;">{{ fontSize }}</span>
-                                                <button class="btn btn-sm p-0" (click)="decreaseFontSize()">
-                                                    <span style="font-size: 16px;">▼</span>
-                                                </button>
+                                                <div
+                                                    class="d-flex flex-column align-items-center border rounded px-2 py-1">
+                                                    <button class="btn btn-sm p-0" (click)="increaseFontSize()">
+                                                        <span style="font-size: 16px;">▲</span>
+                                                    </button>
+
+                                                    <span style="line-height: 1;">{{ fontSize }}</span>
+
+                                                    <button class="btn btn-sm p-0" (click)="decreaseFontSize()">
+                                                        <span style="font-size: 16px;">▼</span>
+                                                    </button>
                                                 </div>
                                                 <small class="d-block mt-1">Size</small>
                                             </div>
-                                      
+
                                         </c-card-body>
                                     </c-card>
-                                      
+
                                     <!-- Third card -->
                                     <div class="d-flex gap-3 flex-wrap">
 
                                         <!-- First Card -->
-                                        <c-card class="p-3" style="flex: 1;">                                            
+                                        <c-card class="p-3" style="flex: 1;">
                                             <c-card-body class="d-flex justify-content-start align-items-center gap-4">
 
                                                 <!-- Text Field Label -->
                                                 <div class="text-center">
-                                                  <span>Text Field</span>
+                                                    <span>Text Field</span>
                                                 </div>
-                                              
+
                                                 <!-- Text Color Picker (Live Preview) -->
                                                 <div class="text-center">
-                                                  <button class="btn p-0 border rounded" (click)="textColorInput.click()" [style.backgroundColor]="selectedTextColor"style="width: 40px; height: 40px;"></button>
-                                              
-                                                  <input type="color" #textColorInput [(ngModel)]="selectedTextColor" style="display: none;" />                                              
-                                                  <small class="d-block mt-1">Text Color</small>
+                                                    <button class="btn p-0 border rounded"
+                                                        (click)="textColorInput.click()"
+                                                        [style.backgroundColor]="selectedTextColor"
+                                                        style="width: 40px; height: 40px;"></button>
+
+                                                    <input type="color" #textColorInput [(ngModel)]="selectedTextColor"
+                                                        style="display: none;" />
+                                                    <small class="d-block mt-1">Text Color</small>
                                                 </div>
-                                              
-                                              </c-card-body>
+
+                                            </c-card-body>
                                         </c-card>
-                                    
+
                                         <!-- Second Card -->
                                         <c-card class="p-3" style="flex: 1;">
                                             <c-card-body class="d-flex justify-content-start align-items-center gap-4">
@@ -175,61 +194,69 @@
                                                 <div class="text-center">
                                                     <span>Background</span>
                                                 </div>
-                                        
+
                                                 <!-- Color Picker Button -->
                                                 <div class="text-center">
-                                                    <button class="btn p-0 border rounded" (click)="bgColorInput.click()" [style.backgroundColor]="backgroundColor" style="width: 40px; height: 40px;"></button>
-                                              
-                                                    <input type="color" #bgColorInput [(ngModel)]="backgroundColor" style="display: none;" />                                              
+                                                    <button class="btn p-0 border rounded"
+                                                        (click)="bgColorInput.click()"
+                                                        [style.backgroundColor]="backgroundColor"
+                                                        style="width: 40px; height: 40px;"></button>
+
+                                                    <input type="color" #bgColorInput [(ngModel)]="backgroundColor"
+                                                        style="display: none;" />
                                                     <small class="d-block mt-1">Background Color</small>
                                                 </div>
                                             </c-card-body>
                                         </c-card>
 
-                                    </div>  
-                                    
+                                    </div>
+
                                 </c-card-body>
                             </c-card>
                         </div>
 
                         <!-- Second Section -->
                         <div class="col-md-5">
-                            
+
                             <!-- Main card -->
                             <c-card>
-                                <c-card-header class="text-center">Current Template Preview</c-card-header>                                
-                                <c-card-body class="bg-purple text-center text-dark" [ngStyle]="{ 'background-color': backgroundColor }" style="min-height: 500px; padding: 1rem;">
+                                <c-card-header class="text-center">Current Template Preview</c-card-header>
+                                <c-card-body class="bg-purple text-center text-dark"
+                                    [ngStyle]="{ 'background-color': backgroundColor }"
+                                    style="min-height: 500px; padding: 1rem;">
                                     <div #previewContainer>
 
-                                        <div class="mx-auto mb-3 top-white-box" style="width: 150px; height: 180px; background-color: white;">
-                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo" style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
+                                        <div class="mx-auto mb-3 top-white-box"
+                                            style="width: 150px; height: 180px; background-color: white;">
+                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo"
+                                                style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
                                         </div>
-                                    
+
                                         <!-- TITLE -->
-                                        <div class="bg-white py-2 mb-2" contenteditable="true" #titleContent
-                                        [ngStyle]="{
+                                        <div class="bg-white py-2 mb-2" contenteditable="true" #titleContent [ngStyle]="{
                                             'color': selectedFontColor,
                                             'font-family': selectedFont,
                                             'font-weight': isBold ? 'bold' : 'normal',
                                             'font-style': isItalic ? 'italic' : 'normal',
                                             'font-size.px': fontSize
                                         }">
-                                        {{ titleText }}
+                                            {{ titleText }}
                                         </div>
 
-                                    
+
                                         <!-- DESCRIPTION -->
-                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;" contenteditable="true" #descContent [ngStyle]="{
+                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;"
+                                            contenteditable="true" #descContent [ngStyle]="{
                                             'color': selectedTextColor,                                       
                                         }">
-                                        {{ descText }}
+                                            {{ descText }}
                                         </div>
-                                
+
                                         <!-- <div class="bg-white mx-auto" style="width: 80%; height: 60px;"></div> -->
                                     </div>
-                                  
+
                                 </c-card-body>
-                                  
+
                             </c-card>
 
                         </div>
@@ -239,11 +266,11 @@
                 </c-modal-body>
 
                 <c-modal-footer>
-                  <button (click)="toggleAddTemplateDemo()" cButton color="secondary">Close</button>
-                  <button (click)="saveTemplateToDb()" cButton color="primary">Save</button>
+                    <button (click)="toggleAddTemplateDemo()" cButton color="secondary">Close</button>
+                    <button (click)="saveTemplateToDb()" cButton color="primary">Save</button>
                 </c-modal-footer>
             </c-modal>
-            
+
 
             <!-- Body section -->
             <c-card-body class="py-3 px-2">
@@ -258,13 +285,18 @@
                                     <c-col [sm]="12">
                                         <c-card class="my-3">
                                             <c-card-body>
-                                                <div style="display: flex !important; justify-content: center; flex-direction: column;">
+                                                <div
+                                                    style="display: flex !important; justify-content: center; flex-direction: column;">
 
                                                     <!-- Dropdown for All Categories -->
-                                                    <select aria-label="Default select example" cSelect class="form-select my-2 rounded-pill text-dark text-center" [(ngModel)]="selectedCategoryId">
+                                                    <select aria-label="Default select example" cSelect
+                                                        class="form-select my-2 rounded-pill text-dark text-center"
+                                                        [(ngModel)]="selectedCategoryId">
                                                         <option value="" disabled selected>Select a category</option>
-                                                        <option *ngFor="let category of allCategories" [value]="category._id">Customer 
-                                                            <span>{{ category.categoryName.charAt(0).toUpperCase() + category.categoryName.slice(1) }}</span>
+                                                        <option *ngFor="let category of allCategories"
+                                                            [value]="category._id">Customer
+                                                            <span>{{ category.categoryName.charAt(0).toUpperCase() +
+                                                                category.categoryName.slice(1) }}</span>
                                                         </option>
                                                     </select>
                                                 </div>
@@ -306,8 +338,7 @@
                                                                 </div>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="25"
                                                                     height="25" fill="currentColor"
-                                                                    class="bi bi-caret-left-fill"
-                                                                    viewBox="0 0 16 16">
+                                                                    class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                                                                     <path
                                                                         d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                                                                 </svg>
@@ -325,8 +356,8 @@
                                                         </c-carousel-inner>
 
                                                         <!-- Carousel Next Button -->
-                                                        <c-carousel-control [routerLink] caption="Next"
-                                                            direction="next" class="color-black">
+                                                        <c-carousel-control [routerLink] caption="Next" direction="next"
+                                                            class="color-black">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="25"
                                                                 height="25" fill="currentColor"
                                                                 class="bi bi-caret-right-fill" viewBox="0 0 16 16">
@@ -355,11 +386,10 @@
                                                                 direction="prev">
                                                                 <div
                                                                     class="d-flex justify-content-center align-items-center h-100">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        width="60" height="60" fill="black"
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="60"
+                                                                        height="60" fill="black"
                                                                         class="bi bi-caret-left-fill"
-                                                                        viewBox="0 0 16 16"
-                                                                        style="cursor: pointer;">
+                                                                        viewBox="0 0 16 16" style="cursor: pointer;">
                                                                         <path
                                                                             d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
                                                                     </svg>
@@ -442,8 +472,7 @@
                                                                                                 size="sm"
                                                                                                 shape="rounded-pill"
                                                                                                 class="me-3 px-4">OK!</button>
-                                                                                            <button cButton
-                                                                                                size="sm"
+                                                                                            <button cButton size="sm"
                                                                                                 shape="rounded-pill"
                                                                                                 color="primary"
                                                                                                 class="px-4">Call</button>
@@ -463,8 +492,7 @@
                                                                 <svg style="cursor: pointer;"
                                                                     xmlns="http://www.w3.org/2000/svg" width="60"
                                                                     height="60" fill="black"
-                                                                    class="bi bi-caret-right-fill"
-                                                                    viewBox="0 0 16 16">
+                                                                    class="bi bi-caret-right-fill" viewBox="0 0 16 16">
                                                                     <path
                                                                         d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
                                                                 </svg>
@@ -476,8 +504,7 @@
                                                             <c-col [sm]="6">
                                                                 <div class="mt-3 d-flex justify-content-center">
                                                                     <button cButton class="me-3">Save</button>
-                                                                    <button cButton
-                                                                        color="secondary">Update</button>
+                                                                    <button cButton color="secondary">Update</button>
                                                                 </div>
                                                             </c-col>
                                                             <c-col [sm]="3"></c-col>
@@ -495,9 +522,9 @@
                         </c-row>
                     </div>
 
-                </div>                    
+                </div>
             </c-card-body>
-            
+
         </c-card>
     </c-col>
 </c-row>

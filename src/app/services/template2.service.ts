@@ -22,5 +22,9 @@ export class Template2Service {
     return this.http.get(`${apiUrls.template2Apis}${id}`);
   };
 
+  deleteTemplateService(id: any): Observable<any> {
+    return this.http.delete(`${apiUrls.template2Apis}${id}`);
+  }   
+
   
 }

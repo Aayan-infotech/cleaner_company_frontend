@@ -21,7 +21,7 @@ export class ProfilesService {
 
   //get profile by id
   getProfileByIdService(id: any) {
-    return this.http.get(`http://18.209.91.97:5966/api/profile${id}`);
+    return this.http.get(`http://52.20.55.193:5966/api/profile${id}`);
   };
 
   //update profile details by id
@@ -31,7 +31,7 @@ export class ProfilesService {
 
   //delete profile by id
   deleteProfileService(id: any) {
-    return this.http.delete(`http://18.209.91.97:5966/api/profile${id}`);
+    return this.http.delete(`http://52.20.55.193:5966/api/profile${id}`);
   };
 
 }
