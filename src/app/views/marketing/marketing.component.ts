@@ -21,6 +21,7 @@ export class MarketingComponent {
   titleText: string = 'Title';
   descText: string = 'Description';
   allTemplates: any[] = [];
+  hoveredTemplateId: string | null = null;
 
 
   selectedFont = "'Arial', sans-serif";
@@ -254,17 +255,23 @@ export class MarketingComponent {
     }, 0);
   }
 
+  deletingTemplateId: string | null = null;
+
 
   deleteTemplate(templateId: string): void {
+    this.deletingTemplateId = templateId;
+  
     this.templateService.deleteTemplateService(templateId).subscribe({
       next: (res) => {
         console.log('Template deleted successfully:', res);
         this.getAllTemplates();
+        this.deletingTemplateId = null;
       },
       error: (err) => {
         console.error('Error deleting template:', err);
+        this.deletingTemplateId = null;
       }
-    }); 
+    });
   }
   
   

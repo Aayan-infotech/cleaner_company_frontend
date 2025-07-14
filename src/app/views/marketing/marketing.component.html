@@ -32,51 +32,66 @@
                                             <div class="d-flex flex-wrap justify-content-center gap-4">
 
                                                 <!-- If data Are Available -->
-                                                <div *ngFor="let temp of allTemplates" style="width: 150px;">
-                                                    <div [ngStyle]="{
-                                                    'background-color': temp.backgroundColor || '#8000b0',
-                                                    'border': '1px solid #8000b0',
-                                                    'border-radius': '6px'
-                                                  }" class="p-3">
+                                                <div *ngFor="let temp of allTemplates" class="position-relative" style="width: 150px;">
+  
+                                                    <!-- Card -->
+                                                    <div class="p-3 border rounded position-relative" (mouseenter)="hoveredTemplateId = temp._id" (mouseleave)="hoveredTemplateId = null"
+                                                      [ngStyle]="{
+                                                        'background-color': temp.backgroundColor || '#8000b0',
+                                                        'border-color': temp.backgroundColor || '#8000b0'
+                                                      }">
+                                                  
+                                                      <!-- Delete Button (only visible on hover) -->
+                                                      <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center" *ngIf="hoveredTemplateId === temp._id" [disabled]="deletingTemplateId === temp._id" (click)="deleteTemplate(temp._id)" title="Delete Template">
 
-                                                        <!-- Logo Section -->
-                                                        <div class="d-flex justify-content-center">
-                                                            <div
-                                                                style="width: 50px; height: 60px; background-color: white;">
-                                                                <img *ngIf="temp.logo" [src]="temp.logo"
-                                                                    style="width: 100%; height: 100%; object-fit: cover;" />
-                                                            </div>
+                                                        <ng-container *ngIf="deletingTemplateId === temp._id; else deleteText">
+                                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        </ng-container>
+                                                        
+                                                        <ng-template #deleteText>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                                                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                                            </svg>
+                                                        </ng-template>
+
+                                                      </button>
+                                                  
+                                                      <!-- Logo Section -->
+                                                      <div class="d-flex justify-content-center">
+                                                        <div style="width: 50px; height: 60px; background-color: white;">
+                                                          <img *ngIf="temp.logo" [src]="temp.logo"
+                                                               style="width: 100%; height: 100%; object-fit: cover;" />
                                                         </div>
-
-                                                        <!-- Title Section (Fixed font size for consistency) -->
-                                                        <div style="background-color: white; text-align: center; padding: 10px; margin-top: 15px;"
-                                                            [ngStyle]="{
-                                                        'color': temp.fontColor,
-                                                        'font-size.px': 14,
-                                                        'font-style': temp.isItalic ? 'italic' : 'normal',
-                                                        'font-weight': temp.isBold ? 'bold' : 'normal',
-                                                        'font-family': temp.font
-                                                        }" [innerHTML]="temp.titleHtml">
-                                                        </div>
-
-                                                        <!-- Description Section (Fixed font size for consistency) -->
-                                                        <div style="background-color: white; min-height: 80px; padding: 20px; margin-top: 5px; text-align: center;"
-                                                            [ngStyle]="{
-                                                      'color': temp.textColor,
-                                                      'font-size.px': 14
-                                                    }">
+                                                      </div>
+                                                  
+                                                      <!-- Title Section -->
+                                                      <div class="bg-white text-center mt-3 p-2"
+                                                        [ngStyle]="{
+                                                          'color': temp.fontColor,
+                                                          'font-size.px': 14,
+                                                          'font-style': temp.isItalic ? 'italic' : 'normal',
+                                                          'font-weight': temp.isBold ? 'bold' : 'normal',
+                                                          'font-family': temp.font
+                                                        }"
+                                                        [innerHTML]="temp.titleHtml">
+                                                      </div>
+                                                  
+                                                      <!-- Description Section -->
+                                                      <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;"
+                                                        [ngStyle]="{
+                                                          'color': temp.textColor,
+                                                          'font-size.px': 14
+                                                        }">
                                                             <div [innerHTML]="temp.descHtml"></div>
-                                                        </div>
-
-                                                        <button cButton color="danger" (click)="deleteTemplate(temp._id)">delete</button>
+                                                      </div>
+                                                  
                                                     </div>
-                                                </div>
+                                                  </div>
+                                                  
 
                                                 <!-- No Templates Message -->
-                                                <div *ngIf="allTemplates.length === 0"
-                                                    class="text-danger text-center my-2">
-                                                    No Templates Added
-                                                </div>
+                                                <div *ngIf="allTemplates.length === 0" class="text-danger text-center my-2">No Templates Added</div>
 
                                             </div>
                                         </c-card-body>
