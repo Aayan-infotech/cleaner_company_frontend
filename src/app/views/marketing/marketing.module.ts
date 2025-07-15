@@ -24,12 +24,13 @@ import {
   CarouselComponent,
   CarouselControlComponent,
   CarouselInnerComponent,
-  CarouselItemComponent
+  CarouselItemComponent,
 } from '@coreui/angular';
 import { WidgetsModule } from '../widgets/widgets.module';
 import { IconModule } from '@coreui/icons-angular';
 import { FormsModule } from '@angular/forms';
 import { ChartjsModule } from '@coreui/angular-chartjs';
+
 
 
 @NgModule({
