@@ -155,7 +155,6 @@ export class MarketingComponent {
     this.getAllClients();
   }
 
-
   chunkArray(array: any[], size: number): any[][] {
     const result: any[][] = [];
     for (let i = 0; i < array.length; i += size) {
@@ -323,7 +322,6 @@ export class MarketingComponent {
     });
   }
 
-
   // Get All Groups
   getAllGroups(): void {
     this.groupsService.getAllGroupsService().subscribe({
@@ -370,6 +368,24 @@ export class MarketingComponent {
       (client.name?.toLowerCase().includes(lower) || client.email?.toLowerCase().includes(lower))
     );
   }
+
+  // Title Truncation
+  titleStripAndTruncateHtml(html: string, wordLimit: number = 2): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const text = div.textContent || div.innerText || '';
+    return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
+  }
+  
+
+  // Description Truncation
+  stripAndTruncateHtml(html: string, wordLimit: number = 2): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const text = div.textContent || div.innerText || '';
+    return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
+  }
+  
   
 
 
