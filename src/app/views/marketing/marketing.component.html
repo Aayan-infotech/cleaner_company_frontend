@@ -32,153 +32,202 @@
                                             <div class="d-flex flex-wrap justify-content-center gap-4">
 
                                                 <!-- If data Are Available -->
-                                                <div *ngFor="let temp of allTemplates" class="position-relative" style="width: 150px;">
-  
+                                                <div *ngFor="let temp of allTemplates" class="position-relative"
+                                                    style="width: 150px;">
+
                                                     <!-- Card -->
-                                                    <div class="p-3 border rounded position-relative" (mouseenter)="hoveredTemplateId = temp._id" (mouseleave)="hoveredTemplateId = null"
-                                                      [ngStyle]="{
+                                                    <div class="p-3 border rounded position-relative"
+                                                        (mouseenter)="hoveredTemplateId = temp._id"
+                                                        (mouseleave)="hoveredTemplateId = null" [ngStyle]="{
                                                         'background-color': temp.backgroundColor || '#8000b0',
                                                         'border-color': temp.backgroundColor || '#8000b0'
                                                       }">
-                                                  
-                                                      <!-- Delete Button (only visible on hover) -->
-                                                      <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center" *ngIf="hoveredTemplateId === temp._id" [disabled]="deletingTemplateId === temp._id" (click)="deleteTemplate(temp._id)" title="Delete Template">
 
-                                                        <ng-container *ngIf="deletingTemplateId === temp._id; else deleteText">
-                                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                        </ng-container>
-                                                        
-                                                        <ng-template #deleteText>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                                                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                                        <!-- Delete Button (only visible on hover) -->
+                                                        <button
+                                                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                                                            *ngIf="hoveredTemplateId === temp._id"
+                                                            [disabled]="deletingTemplateId === temp._id"
+                                                            (click)="deleteTemplate(temp._id)" title="Delete Template">
+
+                                                            <ng-container
+                                                                *ngIf="deletingTemplateId === temp._id; else deleteText">
+                                                                <span class="spinner-border spinner-border-sm"
+                                                                    role="status" aria-hidden="true"></span>
+                                                            </ng-container>
+
+                                                            <ng-template #deleteText>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                    height="16" fill="currentColor" class="bi bi-trash"
+                                                                    viewBox="0 0 16 16">
+                                                                    <path
+                                                                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                                                    <path
+                                                                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                                                </svg>
+                                                            </ng-template>
+
+                                                        </button>
+
+
+                                                        <!-- New Share Template Button -->
+                                                        <button (click)="toggleShareTempDemo()"
+                                                            class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center"
+                                                            *ngIf="hoveredTemplateId === temp._id"
+                                                            title="Share Template">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-share"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3" />
                                                             </svg>
-                                                        </ng-template>
+                                                        </button>
 
-                                                      </button>
+                                                        <!-- Share Templaet Modal -->
+                                                        <c-modal id="shareTempModal" [visible]="visibleShareTemp"
+                                                            (visibleChange)="handleShareTempDemoChange($event)">
 
+                                                            <c-modal-header>
+                                                                <h5 cModalTitle>Share Templates</h5>
+                                                                <button (click)="toggleShareTempDemo()"
+                                                                    cButtonClose></button>
+                                                            </c-modal-header>
 
-                                                      <!-- New Share Template Button -->
-                                                      <button (click)="toggleShareTempDemo()" class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center" *ngIf="hoveredTemplateId === temp._id" title="Edit Template">
-                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
-                                                            <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5m-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3m11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/>
-                                                         </svg>        
-                                                      </button> 
+                                                            <c-modal-body>
+                                                                <!-- Tabs -->
+                                                                <ul class="nav nav-tabs mb-3">
+                                                                    <li class="nav-item">
+                                                                        <button class="nav-link"
+                                                                            [ngClass]="{ active: shareTab === 'group' }"
+                                                                            (click)="shareTab = 'group'">Groups</button>
+                                                                    </li>
 
-                                                      <!-- Share Templaet Modal -->
-                                                      <c-modal id="shareTempModal" [visible]="visibleShareTemp" (visibleChange)="handleShareTempDemoChange($event)">
-                                                        
-                                                        <c-modal-header>
-                                                          <h5 cModalTitle>Share Templates</h5>
-                                                          <button (click)="toggleShareTempDemo()" cButtonClose></button>
-                                                        </c-modal-header>
+                                                                    <li class="nav-item">
+                                                                        <button class="nav-link"
+                                                                            [ngClass]="{ active: shareTab === 'client' }"
+                                                                            (click)="shareTab = 'client'">Clients</button>
+                                                                    </li>
+                                                                </ul>
 
-                                                        <c-modal-body>
-                                                            <!-- Tabs -->
-                                                            <ul class="nav nav-tabs mb-3">
-                                                                <li class="nav-item">
-                                                                    <button class="nav-link" [ngClass]="{ active: shareTab === 'group' }" (click)="shareTab = 'group'">Groups</button>
-                                                                </li>
+                                                                <!-- Tab Content -->
+                                                                <div>
+                                                                    <!-- Group Tab -->
+                                                                    <div *ngIf="shareTab === 'group'">
 
-                                                                <li class="nav-item">
-                                                                    <button class="nav-link" [ngClass]="{ active: shareTab === 'client' }" (click)="shareTab = 'client'">Clients</button>
-                                                                </li>
-                                                            </ul>
-  
-                                                            <!-- Tab Content -->
-                                                            <div>
-                                                                <!-- Group Tab -->
-                                                                <div *ngIf="shareTab === 'group'">
-                                                                    
-                                                                    <div class="mb-3">
-                                                                        <input type="text" class="form-control" placeholder="Search Groups..." [(ngModel)]="groupSearchText"/>
-                                                                    </div>                           
-
-                                                                    <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
-                                                                       
-                                                                        <!-- Group List -->
-                                                                        <div class="form-check" *ngFor="let group of filteredGroups()">
-                                                                            <input class="form-check-input" type="checkbox" [id]="group._id" [value]="group._id" (change)="onGroupCheckboxChange($event, group)" >
-                                                                            <label class="form-check-label" [for]="group._id"> {{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }}  ({{ group.clients?.length || 0 }} clients)</label>
+                                                                        <div class="mb-3">
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Search Groups..."
+                                                                                [(ngModel)]="groupSearchText" />
                                                                         </div>
-                                                                        
-                                                                        <!-- No Groups Founds -->
-                                                                        <div *ngIf="filteredGroups().length === 0" class="text-danger text-center mt-2">
-                                                                            No groups found.
+
+                                                                        <div class="border rounded p-2"
+                                                                            style="max-height: 250px; overflow-y: auto;">
+
+                                                                            <!-- Group List -->
+                                                                            <div class="form-check"
+                                                                                *ngFor="let group of filteredGroups()">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox" [id]="group._id"
+                                                                                    [value]="group._id"
+                                                                                    (change)="onGroupCheckboxChange($event, group)">
+                                                                                <label class="form-check-label"
+                                                                                    [for]="group._id"> {{
+                                                                                    group.groupName ?
+                                                                                    (group.groupName.charAt(0).toUpperCase()
+                                                                                    + group.groupName.slice(1)) : '' }}
+                                                                                    ({{ group.clients?.length || 0 }}
+                                                                                    clients)</label>
+                                                                            </div>
+
+                                                                            <!-- No Groups Founds -->
+                                                                            <div *ngIf="filteredGroups().length === 0"
+                                                                                class="text-danger text-center mt-2">
+                                                                                No groups found.
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <!-- Clients Tab -->
+                                                                    <div *ngIf="shareTab === 'client'">
+
+                                                                        <div class="mb-3">
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Search Clients..."
+                                                                                [(ngModel)]="searchClientText" />
+                                                                        </div>
+
+                                                                        <div class="border rounded p-2"
+                                                                            style="max-height: 250px; overflow-y: auto;">
+
+                                                                            <!-- Client List -->
+                                                                            <div class="form-check"
+                                                                                *ngFor="let client of filteredClients()">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox" [id]="client._id" />
+                                                                                <label class="form-check-label"
+                                                                                    [for]="client._id">{{ client.name ?
+                                                                                    (client.name.charAt(0).toUpperCase()
+                                                                                    + client.name.slice(1)) : 'Unnamed
+                                                                                    Client' }} - {{ client.email
+                                                                                    }}</label>
+                                                                            </div>
+
+                                                                            <!-- No Clients Available -->
+                                                                            <div *ngIf="allClients.length === 0"
+                                                                                class="text-danger text-center">No
+                                                                                clients found</div>
                                                                         </div>
 
                                                                     </div>
 
                                                                 </div>
-                                                            
-                                                                <!-- Clients Tab -->
-                                                                <div *ngIf="shareTab === 'client'">
+                                                            </c-modal-body>
 
-                                                                    <div class="mb-3">
-                                                                        <input type="text" class="form-control" placeholder="Search Clients..." [(ngModel)]="searchClientText" />
-                                                                    </div>
+                                                            <c-modal-footer>
+                                                                <button (click)="toggleShareTempDemo()" cButton
+                                                                    color="secondary">Close</button>
+                                                                <button cButton color="primary">Share Temlate</button>
+                                                            </c-modal-footer>
 
-                                                                    <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
-                                                                        
-                                                                        <!-- Client List -->
-                                                                        <div class="form-check" *ngFor="let client of filteredClients()">
-                                                                            <input class="form-check-input" type="checkbox" [id]="client._id" />
-                                                                            <label class="form-check-label" [for]="client._id">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : 'Unnamed Client' }} - {{ client.email }}</label>
-                                                                        </div>
+                                                        </c-modal>
 
-                                                                        <!-- No Clients Available -->
-                                                                        <div *ngIf="allClients.length === 0" class="text-danger text-center">No clients found</div>
-                                                                    </div>
 
-                                                                </div>
-
-                                                            </div>  
-                                                        </c-modal-body>
-
-                                                        <c-modal-footer>
-                                                          <button (click)="toggleShareTempDemo()" cButton color="secondary">Close</button>
-                                                          <button cButton color="primary">Share Temlate</button>
-                                                        </c-modal-footer>
-
-                                                      </c-modal>
-
-                                                  
-                                                      <!-- Logo Section -->
-                                                      <div class="d-flex justify-content-center">
-                                                        <div style="width: 50px; height: 60px; background-color: white;">
-                                                          <img *ngIf="temp.logo" [src]="temp.logo"
-                                                               style="width: 100%; height: 100%; object-fit: cover;" />
+                                                        <!-- Logo Section -->
+                                                        <div class="d-flex justify-content-center">
+                                                            <div
+                                                                style="width: 50px; height: 60px; background-color: white;">
+                                                                <img *ngIf="temp.logo" [src]="temp.logo"
+                                                                    style="width: 100%; height: 100%; object-fit: cover;" />
+                                                            </div>
                                                         </div>
-                                                      </div>
-                                                  
-                                                      <!-- Title Section -->
-                                                      <div class="bg-white text-center mt-3 p-2"
-                                                        [ngStyle]="{
+
+                                                        <!-- Title Section -->
+                                                        <div class="bg-white text-center mt-3 p-2" [ngStyle]="{
                                                           'color': temp.fontColor,
                                                           'font-size.px': 14,
                                                           'font-style': temp.isItalic ? 'italic' : 'normal',
                                                           'font-weight': temp.isBold ? 'bold' : 'normal',
                                                           'font-family': temp.font
-                                                        }"
-                                                        [innerHTML]="temp.titleHtml">
-                                                      </div>
-                                                  
-                                                      <!-- Description Section -->
-                                                      <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;"
-                                                        [ngStyle]="{
-                                                          'color': temp.textColor,
-                                                          'font-size.px': 14
                                                         }">
-                                                            <div [innerHTML]="temp.descHtml"></div>
-                                                      </div>
-                                                  
+                                                            {{ stripAndTruncateHtml(temp.titleHtml) }}
+                                                        </div>
+
+                                                        <!-- Description Section -->
+                                                        <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;" [ngStyle]="{ 'color': temp.textColor, 'font-size.px': 14 }">
+                                                            {{ stripAndTruncateHtml(temp.descHtml) }}
+                                                        </div>
+
+
                                                     </div>
-                                                    
+
                                                 </div>
-                                                  
+
 
                                                 <!-- No Templates Message -->
-                                                <div *ngIf="allTemplates.length === 0" class="text-danger text-center my-2">No Templates Added</div>
+                                                <div *ngIf="allTemplates.length === 0"
+                                                    class="text-danger text-center my-2">No Templates Added</div>
 
                                             </div>
                                         </c-card-body>
@@ -218,14 +267,15 @@
                                             <!-- Font Button -->
                                             <div class="text-center mx-2">
                                                 <select class="form-select" (change)="setFont($event)">
-                                                  <option *ngFor="let font of googleFonts" [value]="font.css" [selected]="selectedFont === font.css">
-                                                    {{ font.name }}
-                                                  </option>
+                                                    <option *ngFor="let font of googleFonts" [value]="font.css"
+                                                        [selected]="selectedFont === font.css">
+                                                        {{ font.name }}
+                                                    </option>
                                                 </select>
                                                 <small class="d-block mt-1">Font</small>
                                             </div>
-                                              
-                                              
+
+
 
                                             <!-- Bold Button -->
                                             <div class="text-center mx-2">
