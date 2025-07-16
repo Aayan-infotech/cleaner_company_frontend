@@ -196,26 +196,24 @@
 
                                                         <!-- Logo Section -->
                                                         <div class="d-flex justify-content-center">
-                                                            <div
-                                                                style="width: 50px; height: 60px; background-color: white;">
-                                                                <img *ngIf="temp.logo" [src]="temp.logo"
-                                                                    style="width: 100%; height: 100%; object-fit: cover;" />
+                                                            <div style="width: 50px; height: 60px; background-color: white;">
+                                                                <img *ngIf="temp.logo && temp.logo.length" [src]="temp.logo[0].url" style="width: 100%; height: 100%; object-fit: cover;" />
                                                             </div>
                                                         </div>
 
                                                         <!-- Title Section -->
                                                         <div class="bg-white text-center mt-3 p-2" [ngStyle]="{
-                                                          'color': temp.fontColor,
+                                                          'color': temp.titleFontColor,
+                                                          'font-family': temp.titleFontFamily,
+                                                          'font-weight': temp.titleisBold ? 'bold' : 'normal',
+                                                          'font-style': temp.titleisItalic ? 'italic' : 'normal',
                                                           'font-size.px': 14,
-                                                          'font-style': temp.isItalic ? 'italic' : 'normal',
-                                                          'font-weight': temp.isBold ? 'bold' : 'normal',
-                                                          'font-family': temp.font
                                                         }">
                                                             {{ stripAndTruncateHtml(temp.titleHtml) }}
                                                         </div>
 
                                                         <!-- Description Section -->
-                                                        <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;" [ngStyle]="{ 'color': temp.textColor, 'font-size.px': 14 }">
+                                                        <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;" [ngStyle]="{ 'color': temp.desFontColor, 'font-size.px': 14 }">
                                                             {{ stripAndTruncateHtml(temp.descHtml) }}
                                                         </div>
 
@@ -226,8 +224,9 @@
 
 
                                                 <!-- No Templates Message -->
-                                                <div *ngIf="allTemplates.length === 0"
-                                                    class="text-danger text-center my-2">No Templates Added</div>
+                                                <div *ngIf="allTemplates?.length === 0" class="text-danger text-center my-2">
+                                                    No Templates Added
+                                                </div>
 
                                             </div>
                                         </c-card-body>
@@ -245,9 +244,7 @@
                                             <c-card class="w-100 mb-3">
                                                 <c-card-body class="text-center">
                                                     <label for="file" class="form-label fw-semibold">Upload Logo</label>
-                                                    <input type="file" id="file"
-                                                        class="form-control w-auto d-inline-block ms-2"
-                                                        (change)="onLogoSelected($event)" accept="image/*" />
+                                                    <input type="file" id="file" class="form-control w-auto d-inline-block ms-2" (change)="onLogoSelected($event)" accept="image/*" />
                                                 </c-card-body>
                                             </c-card>
 
@@ -380,13 +377,12 @@
                                     style="min-height: 500px; padding: 1rem;">
                                     <div #previewContainer>
 
-                                        <div class="mx-auto mb-3 top-white-box"
-                                            style="width: 150px; height: 180px; background-color: white;">
-                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo"
-                                                style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
+                                        <!-- Logo live Preview -->
+                                        <div class="mx-auto mb-3 top-white-box" style="width: 150px; height: 180px; background-color: white;">
+                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo" style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
                                         </div>
 
-                                        <!-- TITLE -->
+                                        <!-- Title -->
                                         <div class="bg-white py-2 mb-2" contenteditable="true" #titleContent [ngStyle]="{
                                             'color': selectedFontColor,
                                             'font-family': selectedFont,
@@ -398,9 +394,9 @@
                                         </div>
 
 
-                                        <!-- DESCRIPTION -->
-                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;"
-                                            contenteditable="true" #descContent [ngStyle]="{
+                                        <!-- Description -->
+                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;" contenteditable="true" #descContent
+                                        [ngStyle]="{
                                             'color': selectedTextColor,                                       
                                         }">
                                             {{ descText }}
@@ -421,7 +417,7 @@
 
                 <c-modal-footer>
                     <button (click)="toggleAddTemplateDemo()" cButton color="secondary">Close</button>
-                    <button (click)="saveTemplateToDb()" cButton color="primary">Save</button>
+                    <button (click)="saveTemplate()" cButton color="primary">Save</button>
                 </c-modal-footer>
             </c-modal>
 

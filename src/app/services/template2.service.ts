@@ -10,8 +10,8 @@ export class Template2Service {
 
   http = inject(HttpClient);
 
-  createTemplateService(payload: any): Observable<any> {
-    return this.http.post(`${apiUrls.template2Apis}add`, payload);
+  createTemplateService(formData: FormData): Observable<any> {
+    return this.http.post(`${apiUrls.template2Apis}add-template`, formData);
   };
 
   getAllTemplatesService():Observable<any> {
