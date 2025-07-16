@@ -29,9 +29,11 @@ export class MarketingComponent {
   public visibleShareTemp = false;
   activeTab: string = 'group';
   shareTab: ShareTab = 'group';
+  logoFile: File | null = null;
+  logoPreviewUrl: string | null = null;
 
 
-  isBold = false;
+  isBold = true;
   isItalic = false;
   fontSize = 18;
 
@@ -166,13 +168,14 @@ export class MarketingComponent {
   // Handle image upload
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
+    if (input.files && input.files.length > 0) {
+      this.logoFile = input.files[0];
+  
       const reader = new FileReader();
       reader.onload = () => {
         this.logoDataUrl = reader.result as string;
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(this.logoFile);
     }
   }
 
@@ -208,19 +211,32 @@ export class MarketingComponent {
     })
   }
 
+  // getAllTemplates(): void {
+  //   this.templateService.getAllTemplatesService().subscribe({
+  //     next: (res) => {
+  //       this.allTemplates = res.data || [];
+
+  //       // Split fetched templates into carousel chunks
+  //       this.templateCarouselSlideChunks = this.chunkArray(this.allTemplates, 3);
+  //       console.log("All Templates::", this.allTemplates);        
+  //     },
+  //     error: (err) => {
+  //       console.error("Error fetching templates:", err);
+  //     }
+  //   });
+  // }
+
   getAllTemplates(): void {
     this.templateService.getAllTemplatesService().subscribe({
       next: (res) => {
-        this.allTemplates = res.data || [];
-
-        // Split fetched templates into carousel chunks
-        this.templateCarouselSlideChunks = this.chunkArray(this.allTemplates, 3);
+        this.allTemplates = Array.isArray(res.data?.templates) ? res.data.templates : [];
+        console.log("Fetched templates:", this.allTemplates);
       },
       error: (err) => {
         console.error("Error fetching templates:", err);
       }
     });
-  }
+  }  
 
   // Custom Slider Methods
   getVisibleCards(): any[] {
@@ -269,30 +285,77 @@ export class MarketingComponent {
   }
 
 
-  saveTemplateToDb() {
+  // saveTemplate() {
+  //   setTimeout(() => {
+  //     if (!this.titleContent || !this.descContent) {
+  //       console.error('Missing DOM references');
+  //       return;
+  //     }
+
+  //     const titleHtml = this.titleContent.nativeElement.innerHTML;
+  //     const descHtml = this.descContent.nativeElement.innerHTML;
+
+  //     const payload = {
+  //       logo: this.logoDataUrl,
+  //       titleHtml,
+  //       descHtml,
+  //       fontFamily: this.selectedFont,
+  //       fontSize: this.fontSize,
+  //       fontColor: this.selectedFontColor,
+  //       fontWeight: this.isBold ? 'bold' : 'normal',
+  //       fontStyle: this.isItalic ? 'italic' : 'normal',
+  //       backgroundColor: this.backgroundColor,
+  //       textColor: this.selectedTextColor,
+  //     };
+
+  //     this.templateService.createTemplateService(payload).subscribe({
+  //       next: (res) => {
+  //         this.getAllTemplates();
+  //         this.toggleAddTemplateDemo();
+  //         alert('Template added successfully!');
+  //       },
+  //       error: (err) => {
+  //         console.error('Save error:', err);
+  //         alert('Failed to save template!');
+  //       }
+  //     });
+  //   }, 0);
+  // }
+
+
+  saveTemplate() {
     setTimeout(() => {
       if (!this.titleContent || !this.descContent) {
         console.error('Missing DOM references');
         return;
       }
-
+  
       const titleHtml = this.titleContent.nativeElement.innerHTML;
       const descHtml = this.descContent.nativeElement.innerHTML;
-
-      const payload = {
-        logo: this.logoDataUrl,
-        titleHtml,
-        descHtml,
-        fontFamily: this.selectedFont,
-        fontSize: this.fontSize,
-        fontColor: this.selectedFontColor,
-        fontWeight: this.isBold ? 'bold' : 'normal',
-        fontStyle: this.isItalic ? 'italic' : 'normal',
-        backgroundColor: this.backgroundColor,
-        textColor: this.selectedTextColor,
-      };
-
-      this.templateService.createTemplateService(payload).subscribe({
+  
+      const formData = new FormData();
+  
+      // Append file if selected
+      if (this.logoFile) {
+        formData.append('logo', this.logoFile);
+      }
+  
+      // Append form fields (with proper type conversion)
+      formData.append('titleHtml', titleHtml);
+      formData.append('descHtml', descHtml);
+      formData.append('titleFontFamily', this.selectedFont);
+      formData.append('titleFontSize', this.fontSize.toString());
+      formData.append('titleFontColor', this.selectedFontColor);
+      formData.append('titleisBold', this.isBold.toString());
+      formData.append('titleisItalic', this.isItalic.toString());
+      formData.append('desFontColor', this.selectedTextColor);
+      formData.append('backgroundColor', this.backgroundColor);
+  
+      if (this.selectedCategoryId) {
+        formData.append('categoryId', this.selectedCategoryId);
+      }
+  
+      this.templateService.createTemplateService(formData).subscribe({
         next: (res) => {
           this.getAllTemplates();
           this.toggleAddTemplateDemo();
@@ -305,6 +368,7 @@ export class MarketingComponent {
       });
     }, 0);
   }
+  
 
   deleteTemplate(templateId: string): void {
     this.deletingTemplateId = templateId;
@@ -350,16 +414,22 @@ export class MarketingComponent {
   }
 
   // Get All Clients
-  getAllClients(): void {
-    this.clientService.getAllCRM().subscribe({
-      next: (res) => {
-        this.allClients = res.data?.crms || [];
-      },
-      error: (err) => {
-        console.error("Error fetching all clients", err);
+ getAllClients(): void {
+  this.clientService.getAllCRM().subscribe({
+    next: (res) => {
+      console.log("All Clients Response:", res);
+      if (Array.isArray(res.data?.crms)) {
+        this.allClients = res.data.crms;
+      } else {
+        console.warn("Expected array but got:", res.data?.crms);
+        this.allClients = [];
       }
-    });
-  }  
+    },
+    error: (err) => {
+      console.error("Error fetching all clients", err);
+    }
+  });
+}
 
   filteredClients(): any[] {
     if (!this.searchClientText) return this.allClients;
