@@ -196,8 +196,8 @@
 
                                                         <!-- Logo Section -->
                                                         <div class="d-flex justify-content-center">
-                                                            <div style="width: 50px; height: 60px; background-color: white;">
-                                                                <img *ngIf="temp.logo && temp.logo.length" [src]="temp.logo[0].url" style="width: 100%; height: 100%; object-fit: cover;" />
+                                                            <div style="width: 50px; height: 60px; background-color: white; border-radius: 5px;">
+                                                                <img *ngIf="temp.logo && temp.logo.length" [src]="temp.logo[0].url" style="width: 100%; height: 100%; object-fit: cover; border: 1px solid white; " />
                                                             </div>
                                                         </div>
 
@@ -420,7 +420,6 @@
                     <button (click)="saveTemplate()" cButton color="primary">Save</button>
                 </c-modal-footer>
             </c-modal>
-
 
             <!-- Body section -->
             <c-card-body class="py-3 px-2">

@@ -170,7 +170,7 @@ export class MarketingComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.logoFile = input.files[0];
-  
+
       const reader = new FileReader();
       reader.onload = () => {
         this.logoDataUrl = reader.result as string;
@@ -189,12 +189,12 @@ export class MarketingComponent {
 
   toggleShareTempDemo(): void {
     this.visibleShareTemp = !this.visibleShareTemp;
-  
+
     if (this.visibleShareTemp) {
       this.getAllClients();
       this.getAllGroups();
     }
-  }  
+  }
 
   handleShareTempDemoChange(event: any) {
     this.visibleShareTemp = event;
@@ -211,32 +211,16 @@ export class MarketingComponent {
     })
   }
 
-  // getAllTemplates(): void {
-  //   this.templateService.getAllTemplatesService().subscribe({
-  //     next: (res) => {
-  //       this.allTemplates = res.data || [];
-
-  //       // Split fetched templates into carousel chunks
-  //       this.templateCarouselSlideChunks = this.chunkArray(this.allTemplates, 3);
-  //       console.log("All Templates::", this.allTemplates);        
-  //     },
-  //     error: (err) => {
-  //       console.error("Error fetching templates:", err);
-  //     }
-  //   });
-  // }
-
   getAllTemplates(): void {
     this.templateService.getAllTemplatesService().subscribe({
       next: (res) => {
         this.allTemplates = Array.isArray(res.data?.templates) ? res.data.templates : [];
-        console.log("Fetched templates:", this.allTemplates);
       },
       error: (err) => {
         console.error("Error fetching templates:", err);
       }
     });
-  }  
+  }
 
   // Custom Slider Methods
   getVisibleCards(): any[] {
@@ -284,62 +268,23 @@ export class MarketingComponent {
     this.textColorInput.nativeElement.click();
   }
 
-
-  // saveTemplate() {
-  //   setTimeout(() => {
-  //     if (!this.titleContent || !this.descContent) {
-  //       console.error('Missing DOM references');
-  //       return;
-  //     }
-
-  //     const titleHtml = this.titleContent.nativeElement.innerHTML;
-  //     const descHtml = this.descContent.nativeElement.innerHTML;
-
-  //     const payload = {
-  //       logo: this.logoDataUrl,
-  //       titleHtml,
-  //       descHtml,
-  //       fontFamily: this.selectedFont,
-  //       fontSize: this.fontSize,
-  //       fontColor: this.selectedFontColor,
-  //       fontWeight: this.isBold ? 'bold' : 'normal',
-  //       fontStyle: this.isItalic ? 'italic' : 'normal',
-  //       backgroundColor: this.backgroundColor,
-  //       textColor: this.selectedTextColor,
-  //     };
-
-  //     this.templateService.createTemplateService(payload).subscribe({
-  //       next: (res) => {
-  //         this.getAllTemplates();
-  //         this.toggleAddTemplateDemo();
-  //         alert('Template added successfully!');
-  //       },
-  //       error: (err) => {
-  //         console.error('Save error:', err);
-  //         alert('Failed to save template!');
-  //       }
-  //     });
-  //   }, 0);
-  // }
-
-
   saveTemplate() {
     setTimeout(() => {
       if (!this.titleContent || !this.descContent) {
         console.error('Missing DOM references');
         return;
       }
-  
+
       const titleHtml = this.titleContent.nativeElement.innerHTML;
       const descHtml = this.descContent.nativeElement.innerHTML;
-  
+
       const formData = new FormData();
-  
+
       // Append file if selected
       if (this.logoFile) {
         formData.append('logo', this.logoFile);
       }
-  
+
       // Append form fields (with proper type conversion)
       formData.append('titleHtml', titleHtml);
       formData.append('descHtml', descHtml);
@@ -350,11 +295,11 @@ export class MarketingComponent {
       formData.append('titleisItalic', this.isItalic.toString());
       formData.append('desFontColor', this.selectedTextColor);
       formData.append('backgroundColor', this.backgroundColor);
-  
+
       if (this.selectedCategoryId) {
         formData.append('categoryId', this.selectedCategoryId);
       }
-  
+
       this.templateService.createTemplateService(formData).subscribe({
         next: (res) => {
           this.getAllTemplates();
@@ -368,7 +313,6 @@ export class MarketingComponent {
       });
     }, 0);
   }
-  
 
   deleteTemplate(templateId: string): void {
     this.deletingTemplateId = templateId;
@@ -391,10 +335,9 @@ export class MarketingComponent {
     this.groupsService.getAllGroupsService().subscribe({
       next: (res) => {
         this.allGroups = res.data || [];
-        console.log("All groups: ", this.allGroups );
       },
       error: (err) => {
-        console.error("Error fetch get all groups", err );
+        console.error("Error fetch get all groups", err);
       }
     })
   };
@@ -404,7 +347,7 @@ export class MarketingComponent {
     const lower = this.groupSearchText.toLowerCase();
     return this.allGroups.filter(group => group.groupName.toLowerCase().includes(lower));
   }
-  
+
   onGroupCheckboxChange(event: any, group: any): void {
     if (event.target.checked) {
       this.selectedGroupIds.push(group._id);
@@ -414,22 +357,21 @@ export class MarketingComponent {
   }
 
   // Get All Clients
- getAllClients(): void {
-  this.clientService.getAllCRM().subscribe({
-    next: (res) => {
-      console.log("All Clients Response:", res);
-      if (Array.isArray(res.data?.crms)) {
-        this.allClients = res.data.crms;
-      } else {
-        console.warn("Expected array but got:", res.data?.crms);
-        this.allClients = [];
+  getAllClients(): void {
+    this.clientService.getAllCRM().subscribe({
+      next: (res) => {
+        if (Array.isArray(res.data?.crms)) {
+          this.allClients = res.data.crms;
+        } else {
+          console.warn("Expected array but got:", res.data?.crms);
+          this.allClients = [];
+        }
+      },
+      error: (err) => {
+        console.error("Error fetching all clients", err);
       }
-    },
-    error: (err) => {
-      console.error("Error fetching all clients", err);
-    }
-  });
-}
+    });
+  }
 
   filteredClients(): any[] {
     if (!this.searchClientText) return this.allClients;
@@ -446,7 +388,6 @@ export class MarketingComponent {
     const text = div.textContent || div.innerText || '';
     return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
   }
-  
 
   // Description Truncation
   stripAndTruncateHtml(html: string, wordLimit: number = 2): string {
@@ -455,8 +396,6 @@ export class MarketingComponent {
     const text = div.textContent || div.innerText || '';
     return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
   }
-  
-  
 
 
 }
