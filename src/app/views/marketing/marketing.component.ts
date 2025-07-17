@@ -32,10 +32,38 @@ export class MarketingComponent {
   logoFile: File | null = null;
   logoPreviewUrl: string | null = null;
 
-
   isBold = true;
   isItalic = false;
   fontSize = 18;
+
+  allCategories: any[] = [];
+  selectedCategoryId: string = '';
+  public visibleAddTemplate = false;
+
+  layoutTemplateSlides: any[] = [];
+  templateCarouselSlides: any[] = [];
+  templateCarouselSlideChunks: any[][] = [];
+  allGroups: any[] = [];
+  groupSearchText: string = '';
+  selectedGroupIds: string[] = [];
+  allClients: any[] = [];
+  searchClientText: string = '';
+
+
+  // Custom slider state
+  currentSlideIndex = 0;
+  cardsPerSlide = 2;
+
+  selectedFontColor: string = '#000000';
+  selectedTextColor = '#000000';
+  selectedColor = '#1c1c1c';
+  backgroundColor = '#5f00ba';
+
+  selectedTemplateId: string | null = null;
+  selectedClientIds: string[] = [];
+  isSharing: boolean = false;
+
+
 
   googleFonts: { name: string; css: string }[] = [
     { name: 'Arial', css: "'Arial', sans-serif" },
@@ -77,30 +105,6 @@ export class MarketingComponent {
   decreaseFontSize() {
     if (this.fontSize > 6) this.fontSize -= 1;
   }
-
-  allCategories: any[] = [];
-  selectedCategoryId: string = '';
-  public visibleAddTemplate = false;
-
-  layoutTemplateSlides: any[] = [];
-  templateCarouselSlides: any[] = [];
-  templateCarouselSlideChunks: any[][] = [];
-  allGroups: any[] = [];
-  groupSearchText: string = '';
-  selectedGroupIds: string[] = [];
-  allClients: any[] = [];
-  searchClientText: string = '';
-
-
-  // Custom slider state
-  currentSlideIndex = 0;
-  cardsPerSlide = 2;
-
-  selectedFontColor: string = '#000000';
-  selectedTextColor = '#000000';
-  selectedColor = '#1c1c1c';
-  backgroundColor = '#5f00ba';
-
 
   constructor(
     private categoriesService: MarketingCategoriesService,
@@ -319,7 +323,7 @@ export class MarketingComponent {
 
     this.templateService.deleteTemplateService(templateId).subscribe({
       next: (res) => {
-        console.log('Template deleted successfully:', res);
+        alert(res.message || "Template deleted successfully.");
         this.getAllTemplates();
         this.deletingTemplateId = null;
       },
@@ -396,6 +400,55 @@ export class MarketingComponent {
     const text = div.textContent || div.innerText || '';
     return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
   }
+  
+  onClientCheckboxChange(event: any, clientId: string): void {
+    if (event.target.checked) {
+      this.selectedClientIds.push(clientId);
+    } else {
+      this.selectedClientIds = this.selectedClientIds.filter(id => id !== clientId);
+    }
+  }
+
+  shareTemplateToSelectedClients(): void {
+    if (!this.selectedTemplateId) {
+      alert("Please select a template to share.");
+      return;
+    }
+  
+    if (this.selectedClientIds.length === 0) {
+      alert("Please select at least one client.");
+      return;
+    }
+
+    this.isSharing = true;
+  
+    this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds)
+      .subscribe({
+        next: (res) => {
+          alert(res.message || "Template shared successfully.");
+          this.selectedClientIds = []; 
+          this.visibleShareTemp = false; 
+          this.isSharing = false;
+        },
+        error: (err) => {
+          console.error("Error sharing template:", err);
+          alert("Failed to share template.");
+          this.isSharing = false;
+        }
+      });
+  }
+
+  openShareTemplateModal(templateId: string): void {
+    this.selectedTemplateId = templateId;
+    this.selectedClientIds = [];
+    this.toggleShareTempDemo();  
+  }
+  
+  
+  
+
+
+  
 
 
 }
