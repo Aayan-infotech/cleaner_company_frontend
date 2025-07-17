@@ -26,5 +26,10 @@ export class Template2Service {
     return this.http.delete(`${apiUrls.template2Apis}${id}`);
   }   
 
+  shareTemplateClitesService(templateId: string, clientIds: string[]): Observable<any> {
+    return this.http.post(`${apiUrls.template2Apis}${templateId}/share-to-clients`, { clientIds: clientIds } );
+  }
+  
+
   
 }

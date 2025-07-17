@@ -71,10 +71,7 @@
 
 
                                                         <!-- New Share Template Button -->
-                                                        <button (click)="toggleShareTempDemo()"
-                                                            class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center"
-                                                            *ngIf="hoveredTemplateId === temp._id"
-                                                            title="Share Template">
+                                                        <button *ngIf="hoveredTemplateId === temp._id" (click)="openShareTemplateModal(temp._id)" class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center"  title="Share Template">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                 height="16" fill="currentColor" class="bi bi-share"
                                                                 viewBox="0 0 16 16">
@@ -103,9 +100,7 @@
                                                                     </li>
 
                                                                     <li class="nav-item">
-                                                                        <button class="nav-link"
-                                                                            [ngClass]="{ active: shareTab === 'client' }"
-                                                                            (click)="shareTab = 'client'">Clients</button>
+                                                                        <button class="nav-link" [ngClass]="{ active: shareTab === 'client' }" (click)="shareTab = 'client'">Clients</button>
                                                                     </li>
                                                                 </ul>
 
@@ -153,31 +148,22 @@
                                                                     <div *ngIf="shareTab === 'client'">
 
                                                                         <div class="mb-3">
-                                                                            <input type="text" class="form-control"
-                                                                                placeholder="Search Clients..."
-                                                                                [(ngModel)]="searchClientText" />
+                                                                            <input type="text" class="form-control" placeholder="Search Clients..." [(ngModel)]="searchClientText" />
                                                                         </div>
 
-                                                                        <div class="border rounded p-2"
-                                                                            style="max-height: 250px; overflow-y: auto;">
+                                                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
 
                                                                             <!-- Client List -->
-                                                                            <div class="form-check"
-                                                                                *ngFor="let client of filteredClients()">
-                                                                                <input class="form-check-input"
-                                                                                    type="checkbox" [id]="client._id" />
-                                                                                <label class="form-check-label"
-                                                                                    [for]="client._id">{{ client.name ?
-                                                                                    (client.name.charAt(0).toUpperCase()
-                                                                                    + client.name.slice(1)) : 'Unnamed
-                                                                                    Client' }} - {{ client.email
-                                                                                    }}</label>
+                                                                            <div class="form-check" *ngFor="let client of filteredClients()">
+                                                                                <input class="form-check-input" type="checkbox" [id]="client._id" [checked]="selectedClientIds.includes(client._id)" (change)="onClientCheckboxChange($event, client._id)" />
+                                                                                <label class="form-check-label" [for]="client._id">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : 'Unnamed Client' }} - {{ client.email }}</label>
                                                                             </div>
 
                                                                             <!-- No Clients Available -->
-                                                                            <div *ngIf="allClients.length === 0"
-                                                                                class="text-danger text-center">No
-                                                                                clients found</div>
+                                                                            <div *ngIf="allClients.length === 0" class="text-danger text-center">
+                                                                                No clients found
+                                                                            </div>
+                                                                            
                                                                         </div>
 
                                                                     </div>
@@ -186,9 +172,16 @@
                                                             </c-modal-body>
 
                                                             <c-modal-footer>
-                                                                <button (click)="toggleShareTempDemo()" cButton
-                                                                    color="secondary">Close</button>
-                                                                <button cButton color="primary">Share Temlate</button>
+                                                                <button (click)="toggleShareTempDemo()" cButton color="secondary">Close</button>
+                                                                
+                                                                <!-- Share Button -->
+                                                                <button (click)="shareTemplateToSelectedClients()" [disabled]="isSharing" cButton color="primary">
+                                                                    <span *ngIf="!isSharing">Share Template</span>
+                                                                    <span *ngIf="isSharing">
+                                                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sharing...
+                                                                    </span>
+                                                                </button>
+
                                                             </c-modal-footer>
 
                                                         </c-modal>
