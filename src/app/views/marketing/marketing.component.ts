@@ -409,46 +409,62 @@ export class MarketingComponent {
     }
   }
 
-  shareTemplateToSelectedClients(): void {
-    if (!this.selectedTemplateId) {
-      alert("Please select a template to share.");
-      return;
-    }
-  
-    if (this.selectedClientIds.length === 0) {
-      alert("Please select at least one client.");
-      return;
-    }
-
-    this.isSharing = true;
-  
-    this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds)
-      .subscribe({
-        next: (res) => {
-          alert(res.message || "Template shared successfully.");
-          this.selectedClientIds = []; 
-          this.visibleShareTemp = false; 
-          this.isSharing = false;
-        },
-        error: (err) => {
-          console.error("Error sharing template:", err);
-          alert("Failed to share template.");
-          this.isSharing = false;
-        }
-      });
-  }
-
   openShareTemplateModal(templateId: string): void {
     this.selectedTemplateId = templateId;
     this.selectedClientIds = [];
     this.toggleShareTempDemo();  
   }
-  
-  
-  
 
+  shareTemplateToSelectedClients(): void {
+    if (!this.selectedTemplateId) {
+      alert("Please select a template to share.");
+      return;
+    }
 
-  
+    this.isSharing = true;
 
+    if (this.shareTab === 'client') {
+      if (this.selectedClientIds.length === 0) {
+        alert("Please select at least one client.");
+        this.isSharing = false;
+        return;
+      }
+
+      this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds).subscribe({
+        next: (res) => {
+          alert(res.message || "Template shared to clients successfully.");
+          this.selectedClientIds = [];
+          this.visibleShareTemp = false;
+          this.isSharing = false;
+        },
+        error: (err) => {
+          console.error("Error sharing template to clients:", err);
+          alert("Failed to share template to clients.");
+          this.isSharing = false;
+        }
+      });
+
+    } else if (this.shareTab === 'group') {
+      if (this.selectedGroupIds.length === 0) {
+        alert("Please select at least one group.");
+        this.isSharing = false;
+        return;
+      }
+
+      this.templateService.shareTemplateGroupsService(this.selectedTemplateId, this.selectedGroupIds).subscribe({
+        next: (res) => {
+          alert(res.message || "Template shared to group clients successfully.");
+          this.selectedGroupIds = [];
+          this.visibleShareTemp = false;
+          this.isSharing = false;
+        },
+        error: (err) => {
+          console.error("Error sharing template to groups:", err);
+          alert("Failed to share template to groups.");
+          this.isSharing = false;
+        }
+      });
+    }
+  }
 
 }

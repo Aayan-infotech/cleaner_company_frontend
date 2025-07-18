@@ -71,7 +71,10 @@
 
 
                                                         <!-- New Share Template Button -->
-                                                        <button *ngIf="hoveredTemplateId === temp._id" (click)="openShareTemplateModal(temp._id)" class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center"  title="Share Template">
+                                                        <button *ngIf="hoveredTemplateId === temp._id"
+                                                            (click)="openShareTemplateModal(temp._id)"
+                                                            class="btn btn-sm btn-primary position-absolute top-0 end-0 mt-5 me-1 d-flex align-items-center justify-content-center"
+                                                            title="Share Template">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                 height="16" fill="currentColor" class="bi bi-share"
                                                                 viewBox="0 0 16 16">
@@ -100,7 +103,9 @@
                                                                     </li>
 
                                                                     <li class="nav-item">
-                                                                        <button class="nav-link" [ngClass]="{ active: shareTab === 'client' }" (click)="shareTab = 'client'">Clients</button>
+                                                                        <button class="nav-link"
+                                                                            [ngClass]="{ active: shareTab === 'client' }"
+                                                                            (click)="shareTab = 'client'">Clients</button>
                                                                     </li>
                                                                 </ul>
 
@@ -119,24 +124,13 @@
                                                                             style="max-height: 250px; overflow-y: auto;">
 
                                                                             <!-- Group List -->
-                                                                            <div class="form-check"
-                                                                                *ngFor="let group of filteredGroups()">
-                                                                                <input class="form-check-input"
-                                                                                    type="checkbox" [id]="group._id"
-                                                                                    [value]="group._id"
-                                                                                    (change)="onGroupCheckboxChange($event, group)">
-                                                                                <label class="form-check-label"
-                                                                                    [for]="group._id"> {{
-                                                                                    group.groupName ?
-                                                                                    (group.groupName.charAt(0).toUpperCase()
-                                                                                    + group.groupName.slice(1)) : '' }}
-                                                                                    ({{ group.clients?.length || 0 }}
-                                                                                    clients)</label>
+                                                                            <div class="form-check" *ngFor="let group of filteredGroups()">
+                                                                                <input class="form-check-input" type="checkbox" [id]="group._id"  [checked]="selectedGroupIds.includes(group._id)" (change)="onGroupCheckboxChange($event, group)">
+                                                                                <label class="form-check-label" [for]="group._id"> {{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }} ({{ group.clients?.length || 0 }} clients)</label>
                                                                             </div>
 
                                                                             <!-- No Groups Founds -->
-                                                                            <div *ngIf="filteredGroups().length === 0"
-                                                                                class="text-danger text-center mt-2">
+                                                                            <div *ngIf="filteredGroups().length === 0" class="text-danger text-center mt-2">
                                                                                 No groups found.
                                                                             </div>
 
@@ -148,22 +142,35 @@
                                                                     <div *ngIf="shareTab === 'client'">
 
                                                                         <div class="mb-3">
-                                                                            <input type="text" class="form-control" placeholder="Search Clients..." [(ngModel)]="searchClientText" />
+                                                                            <input type="text" class="form-control"
+                                                                                placeholder="Search Clients..."
+                                                                                [(ngModel)]="searchClientText" />
                                                                         </div>
 
-                                                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
+                                                                        <div class="border rounded p-2"
+                                                                            style="max-height: 250px; overflow-y: auto;">
 
                                                                             <!-- Client List -->
-                                                                            <div class="form-check" *ngFor="let client of filteredClients()">
-                                                                                <input class="form-check-input" type="checkbox" [id]="client._id" [checked]="selectedClientIds.includes(client._id)" (change)="onClientCheckboxChange($event, client._id)" />
-                                                                                <label class="form-check-label" [for]="client._id">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : 'Unnamed Client' }} - {{ client.email }}</label>
+                                                                            <div class="form-check"
+                                                                                *ngFor="let client of filteredClients()">
+                                                                                <input class="form-check-input"
+                                                                                    type="checkbox" [id]="client._id"
+                                                                                    [checked]="selectedClientIds.includes(client._id)"
+                                                                                    (change)="onClientCheckboxChange($event, client._id)" />
+                                                                                <label class="form-check-label"
+                                                                                    [for]="client._id">{{ client.name ?
+                                                                                    (client.name.charAt(0).toUpperCase()
+                                                                                    + client.name.slice(1)) : 'Unnamed
+                                                                                    Client' }} - {{ client.email
+                                                                                    }}</label>
                                                                             </div>
 
                                                                             <!-- No Clients Available -->
-                                                                            <div *ngIf="allClients.length === 0" class="text-danger text-center">
+                                                                            <div *ngIf="allClients.length === 0"
+                                                                                class="text-danger text-center">
                                                                                 No clients found
                                                                             </div>
-                                                                            
+
                                                                         </div>
 
                                                                     </div>
@@ -172,13 +179,18 @@
                                                             </c-modal-body>
 
                                                             <c-modal-footer>
-                                                                <button (click)="toggleShareTempDemo()" cButton color="secondary">Close</button>
-                                                                
+                                                                <button (click)="toggleShareTempDemo()" cButton
+                                                                    color="secondary">Close</button>
+
                                                                 <!-- Share Button -->
-                                                                <button (click)="shareTemplateToSelectedClients()" [disabled]="isSharing" cButton color="primary">
+                                                                <button (click)="shareTemplateToSelectedClients()"
+                                                                    [disabled]="isSharing" cButton color="primary">
                                                                     <span *ngIf="!isSharing">Share Template</span>
                                                                     <span *ngIf="isSharing">
-                                                                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sharing...
+                                                                        <span
+                                                                            class="spinner-border spinner-border-sm me-2"
+                                                                            role="status"
+                                                                            aria-hidden="true"></span>Sharing...
                                                                     </span>
                                                                 </button>
 
@@ -189,8 +201,11 @@
 
                                                         <!-- Logo Section -->
                                                         <div class="d-flex justify-content-center">
-                                                            <div style="width: 50px; height: 60px; background-color: white; border-radius: 5px;">
-                                                                <img *ngIf="temp.logo && temp.logo.length" [src]="temp.logo[0].url" style="width: 100%; height: 100%; object-fit: cover; border: 1px solid white; " />
+                                                            <div
+                                                                style="width: 50px; height: 60px; background-color: white; border-radius: 5px;">
+                                                                <img *ngIf="temp.logo && temp.logo.length"
+                                                                    [src]="temp.logo[0].url"
+                                                                    style="width: 100%; height: 100%; object-fit: cover; border: 1px solid white; " />
                                                             </div>
                                                         </div>
 
@@ -206,7 +221,9 @@
                                                         </div>
 
                                                         <!-- Description Section -->
-                                                        <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;" [ngStyle]="{ 'color': temp.desFontColor, 'font-size.px': 14 }">
+                                                        <div class="bg-white text-center mt-2 p-3"
+                                                            style="min-height: 80px;"
+                                                            [ngStyle]="{ 'color': temp.desFontColor, 'font-size.px': 14 }">
                                                             {{ stripAndTruncateHtml(temp.descHtml) }}
                                                         </div>
 
@@ -217,7 +234,8 @@
 
 
                                                 <!-- No Templates Message -->
-                                                <div *ngIf="allTemplates?.length === 0" class="text-danger text-center my-2">
+                                                <div *ngIf="allTemplates?.length === 0"
+                                                    class="text-danger text-center my-2">
                                                     No Templates Added
                                                 </div>
 
@@ -237,7 +255,9 @@
                                             <c-card class="w-100 mb-3">
                                                 <c-card-body class="text-center">
                                                     <label for="file" class="form-label fw-semibold">Upload Logo</label>
-                                                    <input type="file" id="file" class="form-control w-auto d-inline-block ms-2" (change)="onLogoSelected($event)" accept="image/*" />
+                                                    <input type="file" id="file"
+                                                        class="form-control w-auto d-inline-block ms-2"
+                                                        (change)="onLogoSelected($event)" accept="image/*" />
                                                 </c-card-body>
                                             </c-card>
 
@@ -371,8 +391,10 @@
                                     <div #previewContainer>
 
                                         <!-- Logo live Preview -->
-                                        <div class="mx-auto mb-3 top-white-box" style="width: 150px; height: 180px; background-color: white;">
-                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo" style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
+                                        <div class="mx-auto mb-3 top-white-box"
+                                            style="width: 150px; height: 180px; background-color: white;">
+                                            <img *ngIf="logoDataUrl" [src]="logoDataUrl" alt="Logo"
+                                                style="border: 1px solid white; width: 100%; height: 100%; object-fit: cover;" />
                                         </div>
 
                                         <!-- Title -->
@@ -388,8 +410,8 @@
 
 
                                         <!-- Description -->
-                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;" contenteditable="true" #descContent
-                                        [ngStyle]="{
+                                        <div class="bg-white py-3 px-2 mb-3" style="min-height: 345px;"
+                                            contenteditable="true" #descContent [ngStyle]="{
                                             'color': selectedTextColor,                                       
                                         }">
                                             {{ descText }}
