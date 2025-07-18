@@ -29,7 +29,12 @@ export class Template2Service {
   shareTemplateClitesService(templateId: string, clientIds: string[]): Observable<any> {
     return this.http.post(`${apiUrls.template2Apis}${templateId}/share-to-clients`, { clientIds: clientIds } );
   }
+
+  shareTemplateGroupsService(templateId: string, groupIds: string[]): Observable<any> {
+    return this.http.post(`${apiUrls.template2Apis}${templateId}/share-to-groups`, { groupIds: groupIds } );
+  }
   
+
 
   
 }
