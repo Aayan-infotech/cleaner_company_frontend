@@ -32,7 +32,7 @@ export class MarketingComponent {
   logoFile: File | null = null;
   logoPreviewUrl: string | null = null;
 
-  isBold = true;
+  isBold = false;
   isItalic = false;
   fontSize = 18;
 
@@ -272,6 +272,15 @@ export class MarketingComponent {
     this.textColorInput.nativeElement.click();
   }
 
+  ngAfterViewInit(): void {
+    if (this.titleContent?.nativeElement) {
+      this.titleContent.nativeElement.innerHTML = 'Title';
+    }
+    if (this.descContent?.nativeElement) {
+      this.descContent.nativeElement.innerHTML = 'Description';
+    }
+  }
+
   saveTemplate() {
     setTimeout(() => {
       if (!this.titleContent || !this.descContent) {
@@ -309,6 +318,30 @@ export class MarketingComponent {
           this.getAllTemplates();
           this.toggleAddTemplateDemo();
           alert('Template added successfully!');
+
+          // Reset all formatting and content
+          this.logoFile = null;
+          this.logoDataUrl = '';
+          this.selectedFont = 'Arial';
+          this.selectedFontColor = '#000000';
+          this.selectedTextColor = '#000000';
+          this.fontSize = 16;
+          this.isBold = false;
+          this.isItalic = false;
+          this.backgroundColor = '#5f00ba';
+          this.selectedCategoryId = '';
+          this.titleText = 'Title';
+          this.descText = 'Description';
+
+          // Reset contenteditable content with plain text
+          setTimeout(() => {
+            if (this.titleContent?.nativeElement) {
+              this.titleContent.nativeElement.innerHTML = 'Title';
+            }
+            if (this.descContent?.nativeElement) {
+              this.descContent.nativeElement.innerHTML = 'Description';
+            }
+          });
         },
         error: (err) => {
           console.error('Save error:', err);
