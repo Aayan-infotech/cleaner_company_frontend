@@ -108,7 +108,7 @@
                       <tr *ngFor="let client of assignedClients; let i = index">
                         <td>{{ i + 1 }}</td>
                         <td>
-                          <img *ngIf="client.images?.length" [src]="'http://98.82.228.18:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
+                          <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
                         </td>
                         <td>{{ client.name }}</td>
                         <td>{{ client.email }}</td>
@@ -178,7 +178,7 @@
                     <tr *ngFor="let client of selectedGroupClients; let i = index">
                       <td>{{ i + 1 }}</td>
                       <td>
-                        <img *ngIf="client.images?.length" [src]="'http://98.82.228.18:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
+                        <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
                       </td>
                       <td>{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</td>
                       <td>{{ client.email }}</td>
