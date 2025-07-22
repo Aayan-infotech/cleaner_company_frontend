@@ -21,14 +21,14 @@ export class UsersService {
   //   return this.http.get(`${apiUrls.userServiceApi}id`)
   // }
   updateUserService(userId: any, formData: FormData): Observable<any> {
-    return this.http.put(`http://98.85.246.54:5966/api/user/${userId}`,formData)
+    return this.http.put(`http://98.82.228.18:5966/api/user/${userId}`,formData)
   }
   deleteUserService(id: any): Observable<any> {
-    return this.http.delete(`http://98.85.246.54:5966/api/user/${id}`)
+    return this.http.delete(`http://98.82.228.18:5966/api/user/${id}`)
   }
    
   getUserByIdService(id:any): Observable<any>{
-    return this.http.get(`http://98.85.246.54:5966/api/user/${id}`)
+    return this.http.get(`http://98.82.228.18:5966/api/user/${id}`)
   }
 
 }

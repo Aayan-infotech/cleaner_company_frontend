@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class TimetrackService {
 
-  private baseUrl = 'http://98.85.246.54:5966/api/timeTrack'; // Replace with your backend URL
+  private baseUrl = 'http://98.82.228.18:5966/api/timeTrack'; // Replace with your backend URL
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +20,7 @@ export class TimetrackService {
 
   applyLeave(employeeId: string, startDate: string, endDate: string): Observable<any> {
     const body = { employeeId, startDate, endDate };
-    return this.http.post(`http://98.85.246.54:5966/api/leave/apply`, body);
+    return this.http.post(`http://98.82.228.18:5966/api/leave/apply`, body);
   }
 
 }
