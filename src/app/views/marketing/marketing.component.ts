@@ -433,7 +433,7 @@ export class MarketingComponent {
     const text = div.textContent || div.innerText || '';
     return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
   }
-  
+
   onClientCheckboxChange(event: any, clientId: string): void {
     if (event.target.checked) {
       this.selectedClientIds.push(clientId);
@@ -445,7 +445,7 @@ export class MarketingComponent {
   openShareTemplateModal(templateId: string): void {
     this.selectedTemplateId = templateId;
     this.selectedClientIds = [];
-    this.toggleShareTempDemo();  
+    this.toggleShareTempDemo();
   }
 
   shareTemplateToSelectedClients(): void {
@@ -499,5 +499,59 @@ export class MarketingComponent {
       });
     }
   }
+
+  // For select all Group Functionality
+
+  // Check if all filtered groups are selected
+  areAllGroupsSelected(): boolean {
+    const filtered = this.filteredGroups();
+    return filtered.length > 0 && filtered.every(group => this.selectedGroupIds.includes(group._id));
+  }
+
+  // Toggle all selection
+  toggleSelectAllGroups(event: any): void {
+    const isChecked = event.target.checked;
+    const filtered = this.filteredGroups();
+
+    if (isChecked) {
+      // Add all filtered group IDs (avoid duplicates)
+      filtered.forEach(group => {
+        if (!this.selectedGroupIds.includes(group._id)) {
+          this.selectedGroupIds.push(group._id);
+        }
+      });
+    } else {
+      // Remove only filtered group IDs
+      this.selectedGroupIds = this.selectedGroupIds.filter(id =>
+        !filtered.some(group => group._id === id)
+      );
+    }
+  }
+
+  // Select all Clients Functionality
+
+  areAllClientsSelected(): boolean {
+    const filtered = this.filteredClients();
+    return filtered.length > 0 && filtered.every(client => this.selectedClientIds.includes(client._id));
+  }
+
+  toggleSelectAllClients(event: any): void {
+    const isChecked = event.target.checked;
+    const filtered = this.filteredClients();
+  
+    if (isChecked) {
+      filtered.forEach(client => {
+        if (!this.selectedClientIds.includes(client._id)) {
+          this.selectedClientIds.push(client._id);
+        }
+      });
+    } else {
+      this.selectedClientIds = this.selectedClientIds.filter(id =>
+        !filtered.some(client => client._id === id)
+      );
+    }
+  }
+  
+
 
 }
