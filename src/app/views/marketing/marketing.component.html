@@ -21,7 +21,14 @@
 
                             <!-- Main card -->
                             <c-card>
-                                <c-card-header class="text-center">By Additional Themes</c-card-header>
+                                <c-card-header class="d-flex justify-content-between">
+                                    <div>
+                                        Buy Additional Themes
+                                    </div>
+                                    <span class="ms-4 typewriter">
+                                        <strong>Coming soon...</strong>
+                                    </span>
+                                </c-card-header>
                                 <!-- Main card Body -->
                                 <c-card-body>
 
@@ -92,6 +99,12 @@
 
                                                                         <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
 
+                                                                            <!-- Select All Checkbox -->
+                                                                            <div class="form-check mb-2">
+                                                                                <input class="form-check-input" type="checkbox" id="selectAllGroups" [checked]="areAllGroupsSelected()" (change)="toggleSelectAllGroups($event)" />
+                                                                                <label class="form-check-label" for="selectAllGroups">Select All</label>
+                                                                            </div>
+
                                                                             <!-- Group List -->
                                                                             <div class="form-check" *ngFor="let group of filteredGroups()">
                                                                                 <input class="form-check-input" type="checkbox" [id]="group._id"  [checked]="selectedGroupIds.includes(group._id)" (change)="onGroupCheckboxChange($event, group)">
@@ -114,8 +127,22 @@
                                                                             <input type="text" class="form-control" placeholder="Search Clients..." [(ngModel)]="searchClientText" />
                                                                         </div>
 
-                                                                        <div class="border rounded p-2"
-                                                                            style="max-height: 250px; overflow-y: auto;">
+                                                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
+
+                                                                            <!-- Select All Checkbox -->
+                                                                            <div class="form-check mb-2">
+                                                                                <input
+                                                                                class="form-check-input"
+                                                                                type="checkbox"
+                                                                                id="selectAllClients"
+                                                                                [checked]="areAllClientsSelected()"
+                                                                                (change)="toggleSelectAllClients($event)"
+                                                                                />
+                                                                                <label class="form-check-label" for="selectAllClients">
+                                                                                Select All
+                                                                                </label>
+                                                                            </div>
+                                                                            
 
                                                                             <!-- Client List -->
                                                                             <div class="form-check" *ngFor="let client of filteredClients()">
