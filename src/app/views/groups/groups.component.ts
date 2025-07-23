@@ -1,10 +1,5 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
-import {
-  FormGroup,
-  FormControl,
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { GroupsService } from '../../services/groups.service';
 
 @Component({
@@ -27,6 +22,7 @@ export class GroupsComponent {
   filteredClients: any[] = [];
   selectedGroup: any = null;
   loadingGroups: boolean = false;
+  selectedClientsToAdd: any[] = [];
 
   // client
   addClientForm!: FormGroup;
@@ -42,6 +38,8 @@ export class GroupsComponent {
   selectedGroupName: string = '';
   loadingGroupId: string | null = null;
   isSubmittingGroup = false;
+  groupSearchText: string = '';
+
 
   currentPage = 1;
   pageSize = 10;
@@ -220,7 +218,7 @@ export class GroupsComponent {
   getAllClients(): void {
     this.groupsService.getAllClientsService().subscribe({
       next: (res) => {
-        this.clientList = res.data?.crms || [];
+        this.clientList = res.data?.crms || [];        
       },
       error: (err) => {
         console.error('Failed to load clients:', err);
@@ -248,28 +246,28 @@ export class GroupsComponent {
   }
 
   addClientToGroup(): void {
-    if (!this.selectedGroup || !this.selectedClientToAdd) return;
+    if (!this.selectedGroup || this.selectedClientsToAdd.length === 0) return;
 
     const groupId = this.selectedGroup._id;
-    const clientId = this.selectedClientToAdd._id;
+    const selectedClientIds = this.selectedClientsToAdd.map(client => client._id);
 
-    // Check for duplicate
-    const alreadyAssigned = this.assignedClients.some(
-      (client) => client._id === clientId
-    );
-    if (alreadyAssigned) {
-      this.duplicateClientMsg = 'This client is already assigned to the group.';
+    // Filter out duplicates
+    const alreadyAssignedIds = this.assignedClients.map(c => c._id);
+    const newClientIds = selectedClientIds.filter(id => !alreadyAssignedIds.includes(id));
+
+    if (newClientIds.length === 0) {
+      this.duplicateClientMsg = 'Selected client(s) are already assigned to the group.';
       return;
     }
 
     this.isAddingClient = true;
     this.duplicateClientMsg = null;
 
-    this.groupsService.addClientsToGroup(groupId, [clientId]).subscribe({
+    this.groupsService.addClientsToGroup(groupId, newClientIds).subscribe({
       next: (res) => {
         if (res.success) {
           this.assignedClients = res.data?.clients || [];
-          this.selectedClientToAdd = null;
+          this.selectedClientsToAdd = []; 
         }
         this.isAddingClient = false;
       },
@@ -279,6 +277,7 @@ export class GroupsComponent {
       },
     });
   }
+
 
   removeClientFromGroup(clientId: string): void {
     const groupId = this.selectedGroup?._id;
@@ -305,7 +304,7 @@ export class GroupsComponent {
     if (!this.searchTerm.trim()) {
       return this.groupList;
     }
-    
+
     const term = this.searchTerm.trim().toLowerCase();
 
     return this.groupList.filter(
@@ -317,4 +316,50 @@ export class GroupsComponent {
         )
     );
   }
+
+  isClientSelected(client: any): boolean {
+    return this.selectedClientsToAdd.some(c => c._id === client._id);
+  }
+
+  onClientCheckboxChange(event: any, client: any): void {
+    if (event.target.checked) {
+      if (!this.isClientSelected(client)) {
+        this.selectedClientsToAdd.push(client);
+      }
+    } else {
+      this.selectedClientsToAdd = this.selectedClientsToAdd.filter(c => c._id !== client._id);
+    }
+  }
+
+  // Check if all clients are already selected
+  areAllClientsSelected(): boolean {
+    return this.clientList.length > 0 && this.clientList.every(client =>
+      this.selectedClientsToAdd.some(selected => selected._id === client._id)
+    );
+  }
+
+  // Toggle select/deselect all clients
+  toggleSelectAllClients(event: any): void {
+    if (event.target.checked) {
+      this.selectedClientsToAdd = [...this.clientList];
+    } else {
+      this.selectedClientsToAdd = [];
+    }
+  }
+
+  // Search Clients
+  get filteredClientList(): any[] {
+    if (!this.groupSearchText.trim()) {
+      return this.clientList;
+    }
+  
+    const term = this.groupSearchText.trim().toLowerCase();
+  
+    return this.clientList.filter(client =>
+      (client.name && client.name.toLowerCase().includes(term)) ||
+      (client.email && client.email.toLowerCase().includes(term))
+    );
+  }
+  
+
 }

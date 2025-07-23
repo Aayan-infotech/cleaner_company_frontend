@@ -11,7 +11,7 @@
                 </div>
             </c-card-header>
               
-
+            
             <!-- Add Group Modal -->
             <c-modal id="liveDemoModal" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
                 
@@ -59,6 +59,7 @@
 
                   <!-- Add Existing Clients -->                   
                   <div class="row g-3 mb-5">
+                    
                     <div class="col-md-10">
 
                       <!-- Warning Messgae For Add Duplicate Client To Group -->
@@ -66,17 +67,39 @@
                         {{ duplicateClientMsg }}
                       </div>
 
-                      <!-- Select Client From Dropdown -->
-                      <select class="form-select" [(ngModel)]="selectedClientToAdd" name="selectClient" (change)="onClientSelectChange()">
-                        <option [ngValue]="null" disabled selected>Select a client below to assign to this group</option>
-                        <option *ngFor="let client of clientList" [ngValue]="client"> {{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}    ({{ client.email }})</option>
-                      </select>                        
+                      <div class="mb-3">
+                        <input type="text" class="form-control" placeholder="Search Client..." [(ngModel)]="groupSearchText" />
+                      </div>
+
+                      <c-card class="p-3">
+
+                        <!-- Sticky Select All Clients -->
+                        <div class="bg-white position-sticky top-0 py-2 border-bottom" style="z-index: 1;">
+                          <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" id="selectAllClients" [checked]="areAllClientsSelected()" (change)="toggleSelectAllClients($event)" />
+                            <label class="form-check-label fw-semibold" for="selectAllClients">Select All Clients</label>
+                          </div>
+                        </div>
+                      
+                        <!-- Scrollable Client List -->
+                        <div class="overflow-auto" style="max-height: 300px;">
+                          <div *ngFor="let client of filteredClientList" class="form-check my-1">
+                            <input class="form-check-input" type="checkbox" [value]="client" [checked]="isClientSelected(client)" (change)="onClientCheckboxChange($event, client)" id="clientCheckbox{{ client._id }}" />
+                            <label class="form-check-label" [for]="'clientCheckbox' + client._id">
+                              {{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }} ({{ client.email }})
+                            </label>
+                          </div>
+                        </div>
+                      
+                      </c-card>
 
                     </div>
+                    
+                    <!-- Add Button section -->
                     <div class="col-md-2">
 
                       <!-- Add Client to Group Button -->
-                      <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center" (click)="addClientToGroup()" [disabled]="!selectedClientToAdd || isAddingClient" style="min-height: 38px;">
+                      <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center" (click)="addClientToGroup()" [disabled]="selectedClientsToAdd.length === 0 || isAddingClient" style="min-height: 38px;">
                         <ng-container *ngIf="!isAddingClient; else loading">Add</ng-container>
                         <ng-template #loading>
                           <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
@@ -87,64 +110,79 @@
 
 
                     </div>
+
                   </div>
               
                   <!-- Assigned Clients Table -->
-                  <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
-                    <thead>
-                      <tr style="background-color: #9da5b1;">
-                        <th>#</th>
-                        <th>Photo</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Payment</th>
-                        <th>Phones</th>
-                        <th>Address</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
+                  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table mb-0 border">
+                      <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                        <tr style="background-color: #9da5b1;">
+                          <th>#</th>
+                          <th>Photo</th>
+                          <th>Name</th>
+                          <th>Email</th>
+                          <th>Payment</th>
+                          <th>Phones</th>
+                          <th>Address</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
 
-                    <tbody>
-                      <tr *ngFor="let client of assignedClients; let i = index">
-                        <td>{{ i + 1 }}</td>
-                        <td>
-                          <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
-                        </td>
-                        <td>{{ client.name }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.paymentOptions }}</td>
-                        <td>
-                          <div *ngFor="let phone of client.phones">
-                            <strong>{{ phone.type }}:</strong> {{ phone.number }}
-                          </div>
-                        </td>
-                        <td>{{ client.address }}</td>
-                        <td>
+                      <tbody>
+                        <!-- Show message when no clients are assigned -->
+                        <tr *ngIf="assignedClients.length === 0">
+                          <td colspan="8" class="text-center text-muted py-3">
+                            No clients have been added yet.
+                          </td>
+                        </tr>
 
-                          <!-- Remove Client Button -->
-                          <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
-                            <ng-container *ngIf="removingClientId !== client._id">
-                              <svg cIcon name="cil-trash" size="sm"></svg>
-                            </ng-container>
-                            <ng-container *ngIf="removingClientId === client._id">
-                              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            </ng-container>
-                          </button>
-                  
-                        </td>
-                      </tr>
-                    </tbody>
+                        <!-- Show clients when available -->
+                        <tr *ngFor="let client of assignedClients; let i = index">
+                          <td>{{ i + 1 }}</td>
+                        
+                          <td>
+                            <div class="rounded-circle border border-dark overflow-hidden" style="width: 40px; height: 40px;">
+                              <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="Profile Pic" class="w-100 h-100" style="object-fit: cover;" />
+                            </div>
+                          </td>                        
 
+                          <td>{{ client.name }}</td>
+                          <td>{{ client.email }}</td>
+                          <td>{{ client.paymentOptions }}</td>
+                          <td>
+                            <div *ngFor="let phone of client.phones">
+                              <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                            </div>
+                          </td>
+                          <td>{{ client.address }}</td>
+                          <td>
 
+                            <!-- Remove Client Button -->
+                            <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
+                              <ng-container *ngIf="removingClientId !== client._id">
+                                <svg cIcon name="cil-trash" size="sm"></svg>
+                              </ng-container>
+                              <ng-container *ngIf="removingClientId === client._id">
+                                <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                              </ng-container>
+                            </button>
+                    
+                          </td>
+                        </tr>
+                      </tbody>
 
+                    </table>
 
-                  </table>
+                  </div>
+
                 </c-modal-body>
               
                 <c-modal-footer>
                   <button (click)="closeClientModal()" cButton color="secondary">Close</button>
                 </c-modal-footer>
             </c-modal>
+
 
             <!-- View Group Details Modal -->
             <c-modal size="xl" id="liveDemoModal" [visible]="visibleGroupDetails" (visibleChange)="handleLiveGroupDetailsChange($event)">
