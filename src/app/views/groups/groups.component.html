@@ -200,37 +200,41 @@
 
                 <!-- Group's Clients -->
                 <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
-                  <thead>
-                    <tr style="background-color: #9da5b1;">
-                      <th>#</th>
-                      <th>Photo</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Payment</th>
-                      <th>Phones</th>
-                      <th>Address</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let client of selectedGroupClients; let i = index">
-                      <td>{{ i + 1 }}</td>
-                      <td>
-                        <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="profile_Pic" width="40" height="40" style="object-fit: cover; border-radius: 25px; border: 1px solid blue;" />
-                      </td>
-                      <td>{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</td>
-                      <td>{{ client.email }}</td>
-                      <td>{{ client.paymentOptions }}</td>
-                      <td>
-                        <div *ngFor="let phone of client.phones">
-                          <strong>{{ phone.type }}:</strong> {{ phone.number }}
-                        </div>
-                      </td>
-                      <td>{{ client.address }}</td>
+                  <table class="table mb-0 border">
+                    <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                      <tr style="background-color: #9da5b1;">
+                        <th>#</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Payment</th>
+                        <th>Phones</th>
+                        <th>Address</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let client of selectedGroupClients; let i = index">
+                        <td>{{ i + 1 }}</td>
 
-                    </tr>
-                  </tbody>
-                </table>
+                        <td>
+                          <div class="rounded-circle border border-dark overflow-hidden" style="width: 40px; height: 40px;">
+                            <img *ngIf="client.images?.length" [src]="'http://98.85.246.54:5966/uploads/' + client.images[0].filename" alt="Profile Pic" class="w-100 h-100" style="object-fit: cover;" />
+                          </div>
+                        </td>
+
+                        <td>{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.paymentOptions }}</td>
+                        <td>
+                          <div *ngFor="let phone of client.phones">
+                            <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                          </div>
+                        </td>
+                        <td>{{ client.address }}</td>
+
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
               </c-modal-body>
