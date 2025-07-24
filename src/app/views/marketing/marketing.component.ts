@@ -199,17 +199,6 @@ export class MarketingComponent {
     })
   }
 
-  // getAllTemplates(): void {
-  //   this.templateService.getAllTemplatesService().subscribe({
-  //     next: (res) => {
-  //       this.allTemplates = Array.isArray(res.data?.templates) ? res.data.templates : [];
-  //     },
-  //     error: (err) => {
-  //       console.error("Error fetching templates:", err);
-  //     }
-  //   });
-  // }
-
   getAllTemplates(): void {
     this.templateService.getAllTemplatesService().subscribe({
       next: (res) => {

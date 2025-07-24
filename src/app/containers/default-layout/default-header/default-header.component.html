@@ -20,10 +20,19 @@
 
 <ng-template #userDropdown>
   <c-dropdown alignment="end" variant="nav-item">
+    
+    <!-- Profile's Picture with Success status -->
     <button cButton color="" [caret]="false" cDropdownToggle class="py-0">
-      <c-avatar *ngIf="userData2" cTextColor="primary" shape="rounded-1" size="md" [src]="proImage" status="success">
-      </c-avatar>
+      
+      <div *ngIf="userData2" class="position-relative d-inline-block rounded-circle border border-secondary overflow-hidden" style="width:41px; height:41px;">
+        <img [src]="proImage" alt="User Avatar" class="w-100 h-100" style="object-fit: cover;">
+        
+        <!-- Status Badge (status="success") -->
+        <span class="position-absolute bottom-0 end-0 translate-middle p-1 bg-success border border-white rounded-circle"></span>
+      </div>
+
     </button>
+
     <ul cDropdownMenu class="pt-0 pr-5 w-auto">
       <!-- <li>
         <h6 cDropdownHeader class="bg-light fw-semibold py-2">Account</h6>
@@ -161,5 +170,6 @@
       </li>
       <li></li>
     </ul>
+
   </c-dropdown>
 </ng-template>
