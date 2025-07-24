@@ -25,6 +25,7 @@ import {
   CarouselControlComponent,
   CarouselInnerComponent,
   CarouselItemComponent,
+  SpinnerModule
 } from '@coreui/angular';
 import { WidgetsModule } from '../widgets/widgets.module';
 import { IconModule } from '@coreui/icons-angular';
@@ -62,7 +63,8 @@ import { ChartjsModule } from '@coreui/angular-chartjs';
     CarouselControlComponent,
     CarouselInnerComponent,
     CarouselItemComponent,
-    ChartjsModule
+    ChartjsModule,
+    SpinnerModule
   ]
 })
 export class MarketingModule { }
