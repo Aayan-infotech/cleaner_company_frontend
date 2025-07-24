@@ -63,6 +63,10 @@ export class MarketingComponent {
   selectedClientIds: string[] = [];
   isSharing: boolean = false;
 
+  carouselTemplates: any[] = [];
+  isTemplatesLoaded: boolean = false;
+  carouselVisible: boolean = true;
+
 
 
   googleFonts: { name: string; css: string }[] = [
@@ -135,26 +139,6 @@ export class MarketingComponent {
       subtitle: 'Praesent commodo cursus magna, vel scelerisque nisl consectetur.'
     };
 
-
-    this.layoutTemplateSlides[0] = {
-      id: 0,
-      src: './assets/img/slide.jpg',
-      title: 'Template 1',
-      subtitle: 'Template'
-    };
-    this.layoutTemplateSlides[1] = {
-      id: 1,
-      src: './assets/img/slide.jpg',
-      title: 'Template 2',
-      subtitle: 'Template'
-    };
-    this.layoutTemplateSlides[2] = {
-      id: 2,
-      src: './assets/img/slide.jpg',
-      title: 'Template 3',
-      subtitle: 'Template'
-    };
-
     this.getAllCategories();
     this.getAllTemplates();
     this.getAllGroups();
@@ -215,16 +199,41 @@ export class MarketingComponent {
     })
   }
 
+  // getAllTemplates(): void {
+  //   this.templateService.getAllTemplatesService().subscribe({
+  //     next: (res) => {
+  //       this.allTemplates = Array.isArray(res.data?.templates) ? res.data.templates : [];
+  //     },
+  //     error: (err) => {
+  //       console.error("Error fetching templates:", err);
+  //     }
+  //   });
+  // }
+
   getAllTemplates(): void {
     this.templateService.getAllTemplatesService().subscribe({
       next: (res) => {
         this.allTemplates = Array.isArray(res.data?.templates) ? res.data.templates : [];
+        this.isTemplatesLoaded = true;
+        this.refreshCarousel();
       },
       error: (err) => {
         console.error("Error fetching templates:", err);
+        this.isTemplatesLoaded = true; 
       }
     });
   }
+
+  refreshCarousel(): void {
+    this.carouselVisible = false;
+    setTimeout(() => {
+      this.carouselVisible = true;
+    }, 0);
+  }
+
+  onTemplateAdded() {
+    this.getAllTemplates(); 
+  }  
 
   // Custom Slider Methods
   getVisibleCards(): any[] {
@@ -426,8 +435,16 @@ export class MarketingComponent {
     return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
   }
 
-  // Description Truncation
+  // Description Truncation 1
   stripAndTruncateHtml(html: string, wordLimit: number = 2): string {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    const text = div.textContent || div.innerText || '';
+    return text.split(/\s+/).slice(0, wordLimit).join(' ') + '...';
+  }
+
+  // Description Truncation 2
+  stripAndTruncateHtml2(html: string, wordLimit: number = 25): string {
     const div = document.createElement('div');
     div.innerHTML = html;
     const text = div.textContent || div.innerText || '';
