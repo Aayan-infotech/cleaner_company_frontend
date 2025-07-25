@@ -16,8 +16,13 @@ export class CrmService {
   }
 
   // Get all CRM entries
-  getAllCRM(): Observable<any> {
-    return this.http.get(`${apiUrls.crmMgmtApi}get-all`);
+  getAllCRM(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all`, {
+      params: {
+        page: page.toString(),
+        limit: limit.toString(),  
+      }
+    });
   }
 
   // Get a CRM entry by ID
