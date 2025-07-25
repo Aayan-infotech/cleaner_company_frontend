@@ -22,6 +22,11 @@ export class CrmComponent implements OnInit {
   isViewCrmVisible = false;
   loading: boolean = true;
   images: File[] = [];
+
+  crms: any[] = [];
+  currentPage = 1;
+  pageSize = 10;
+  totalCrms: number = 0;
   
   constructor(
     private fb: FormBuilder,
@@ -98,19 +103,37 @@ export class CrmComponent implements OnInit {
     this.visible = event;
   }
 
-  fetchAllCRM(): void {
+  fetchAllCRM(page: number = 1): void {
     this.loading = true;
-
-    this.crmService.getAllCRM().subscribe({
+  
+    this.crmService.getAllCRM(page, this.pageSize).subscribe({
       next: (response) => {
-        this.crmList = response.data.crms || [];
-        this.loading = false;       
+        this.crmList = response.data || [];
+        this.totalCrms = response.pagination?.total || 0;
+        this.currentPage = response.pagination?.page || 1;
+        this.loading = false;
       },
       error: (error) => {
         console.error('Error fetching CRM records:', error);
         this.loading = false;
       },
     });
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalCrms / this.pageSize);
+  }
+
+  totalPagesArray(): number[] {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((_, i) => i + 1);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.fetchAllCRM(page);
+    }
   }
 
   onFileSelected(event: any): void {
