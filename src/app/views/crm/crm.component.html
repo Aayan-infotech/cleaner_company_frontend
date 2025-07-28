@@ -2,6 +2,7 @@
   <c-col xs>
     <c-card class="mb-4">
       
+      <!-- Header Section -->
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span>Manage CRM</span>
         <div  class="d-flex align-items-center gap-2">
@@ -302,7 +303,7 @@
       <!-- End View Client Details Modal -->
 
 
-      <!-- Populating all Data -->
+      <!-- Body Section -->
       <c-card-body>
         <table cTable [hover]="true" [responsive]="true" [striped]="true" class="mb-0 border">
           <thead>
@@ -320,6 +321,7 @@
           </thead>
           
           <tbody>
+            
             <!-- Show Spinner While Loading -->
             <tr *ngIf="loading">
               <td colspan="7" class="text-center py-4">
@@ -341,11 +343,7 @@
               
               <td class="text-center" (click)="viewCrm(client._id)" style="cursor: pointer;">
                 <div class="rounded-circle border border-primary d-inline-block overflow-hidden" style="width: 48px; height: 48px;">
-                  <img 
-                    [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" 
-                    alt="avatar" 
-                    class="w-100 h-100 object-fit-cover hover-avatar"
-                  >
+                  <img [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" alt="avatar" class="w-100 h-100 object-fit-cover hover-avatar" />
                 </div>
               </td>
               
