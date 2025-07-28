@@ -72,14 +72,8 @@ export class MarketingComponent {
   public visibleDesPreTemp = false;
   public selectedTemplateTitle: string = '';
   public selectedTemplateContent: string = '';
-
   selectedTemplate: any = null;
-
   
-
-
-
-
 
   googleFonts: { name: string; css: string }[] = [
     { name: 'Arial', css: "'Arial', sans-serif" },

@@ -176,7 +176,6 @@ export class GroupsComponent {
 
     this.groupsService.getGroupByIdService(id).subscribe({
       next: (res) => {
-        console.log('Group data:', res);
         this.groupData = res.data;
         this.selectedGroupName = res.data.groupName || '';
         this.selectedGroupClients = res.data.clients || [];
@@ -195,7 +194,6 @@ export class GroupsComponent {
     if (confirm('Are you sure you want to delete this group?')) {
       this.groupsService.deleteGroupByIdService(id).subscribe({
         next: (res) => {
-          console.log('Group deleted:', res);
           this.getAllGroups();
         },
         error: (err) => {
@@ -218,7 +216,7 @@ export class GroupsComponent {
   getAllClients(): void {
     this.groupsService.getAllClientsService().subscribe({
       next: (res) => {
-        this.clientList = res.data?.crms || [];        
+        this.clientList = res.data || [];
       },
       error: (err) => {
         console.error('Failed to load clients:', err);

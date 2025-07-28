@@ -68,6 +68,7 @@
                                                             </svg>
                                                         </button>
 
+
                                                         <!-- Mobile Preview Template Modal Trigger -->
                                                         <button *ngIf="hoveredTemplateId === temp._id" (click)="togglePreTempDemo(temp._id, temp.titleHtml, temp.contentHtml)" class="btn btn-sm btn-dark position-absolute end-0 me-1 d-flex align-items-center justify-content-center" style="top: 90px;"  title="Mobile Preview Template">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-phone" viewBox="0 0 16 16">
@@ -75,6 +76,7 @@
                                                                 <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
                                                             </svg>
                                                         </button>
+
 
                                                         <!-- Desktop Preview Template Modal Trigger -->
                                                         <button *ngIf="hoveredTemplateId === temp._id" (click)="toggleDesPreTempDemo(temp._id, temp.titleHtml, temp.contentHtml)" class="btn btn-sm btn-dark position-absolute end-0 me-1 d-flex align-items-center justify-content-center" style="top: 130px;" title="Desktop Preview Template">
@@ -113,7 +115,7 @@
                                                                             <input type="text" class="form-control" placeholder="Search Groups..." [(ngModel)]="groupSearchText" />
                                                                         </div>
 
-                                                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto;">
+                                                                        <div class="border rounded p-2" style="max-height: 250px; overflow-y: auto; position: relative;">
 
                                                                             <!-- Select All Checkbox -->
                                                                             <div class="form-check mb-2">
@@ -327,6 +329,7 @@
                                                             </c-modal-footer>
                                                         </c-modal>
 
+
                                                         <!-- Desktop Preview Template -->
                                                         <c-modal size="xl" id="desTemplateModal" [visible]="visibleDesPreTemp" (visibleChange)="handleDesPreTempChange($event)">
                                                             <c-modal-header>
@@ -474,45 +477,13 @@
                                                         </c-modal>
 
 
-
-                                                        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                                                         <!-- Logo Section -->
                                                         <div class="d-flex justify-content-center">
                                                             <div style="width: 50px; height: 60px; background-color: white; border-radius: 5px;">
                                                                 <img *ngIf="temp.logo && temp.logo.length" [src]="temp.logo[0].url" style="width: 100%; height: 100%; object-fit: cover; border: 1px solid white; " />
                                                             </div>
                                                         </div>
+
 
                                                         <!-- Title Section -->
                                                         <div class="bg-white text-center mt-3 p-2" [ngStyle]="{
@@ -525,14 +496,13 @@
                                                             {{ stripAndTruncateHtml(temp.titleHtml) }}
                                                         </div>
 
+
                                                         <!-- Description Section -->
                                                         <div class="bg-white text-center mt-2 p-3" style="min-height: 80px;" [ngStyle]="{ 'color': temp.desFontColor, 'font-size.px': 14 }">{{ stripAndTruncateHtml(temp.descHtml) }}</div>
-
 
                                                     </div>
 
                                                 </div>
-
 
                                                 <!-- No Templates Message -->
                                                 <div *ngIf="allTemplates?.length === 0" class="text-danger text-center my-2">
