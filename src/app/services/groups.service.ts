@@ -47,7 +47,7 @@ export class GroupsService {
 
   // Get All Clienst
   getAllClientsService(): Observable<any> {
-    return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all`);
+    return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all-clients`);
   }
 
   // Add Client By Passing GroupId in Params
