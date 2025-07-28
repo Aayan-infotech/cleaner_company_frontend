@@ -75,6 +75,8 @@ export class MarketingComponent {
 
   selectedTemplate: any = null;
 
+  
+
 
 
 
@@ -199,10 +201,6 @@ export class MarketingComponent {
   }
 
   // Preview Template section
-  // togglePreTempDemo(templateId?: string) {
-  //   console.log('Preview Template ID:', templateId); 
-  //   this.visiblePreTemp = !this.visiblePreTemp;
-  // }
 
   // Mobile
   togglePreTempDemo(templateId?: string, titleHtml?: string, contentHtml?: string) {
@@ -211,7 +209,6 @@ export class MarketingComponent {
       this.selectedTemplateTitle = this.stripAndTruncateHtml(titleHtml || '');
       this.visiblePreTemp = true;
     } else {
-      // Close modal
       this.visiblePreTemp = false;
       this.selectedTemplate = null;
     }
@@ -224,18 +221,32 @@ export class MarketingComponent {
   // Desktop
   toggleDesPreTempDemo(templateId?: string, templateTitleHtml?: string, templateContentHtml?: string) {
     this.visibleDesPreTemp = !this.visibleDesPreTemp;
-
+  
+    if (this.visibleDesPreTemp && templateId) {
+      const foundTemplate = this.allTemplates.find(t => t._id === templateId);
+      if (foundTemplate) {
+        this.selectedTemplate = foundTemplate;
+      }
+    }
+  
     if (templateTitleHtml) {
       const div = document.createElement('div');
       div.innerHTML = templateTitleHtml;
       this.selectedTemplateTitle = div.innerText || div.textContent || '';
     }
-
+  
     if (templateContentHtml) {
       this.selectedTemplateContent = templateContentHtml;
     }
+  
+    // Reset values if modal is closing
+    if (!this.visibleDesPreTemp) {
+      this.selectedTemplate = null;
+      this.selectedTemplateTitle = '';
+      this.selectedTemplateContent = '';
+    }
   }
-
+  
   handleDesPreTempChange(event: any) {
     this.visibleDesPreTemp = event;
   }
