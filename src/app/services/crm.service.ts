@@ -25,6 +25,10 @@ export class CrmService {
     });
   }
 
+  getAllClientsService(): Observable<any> {
+    return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all-clients`);
+  }
+
   // Get a CRM entry by ID
   getCRMById(id: string): Observable<any> {
     return this.http.get(`${apiUrls.crmMgmtApi}get/${id}`);

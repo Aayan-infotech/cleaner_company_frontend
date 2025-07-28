@@ -67,6 +67,16 @@ export class MarketingComponent {
   isTemplatesLoaded: boolean = false;
   carouselVisible: boolean = true;
 
+  // template preview section
+  public visiblePreTemp = false;
+  public visibleDesPreTemp = false;
+  public selectedTemplateTitle: string = '';
+  public selectedTemplateContent: string = '';
+
+  selectedTemplate: any = null;
+
+
+
 
 
   googleFonts: { name: string; css: string }[] = [
@@ -188,6 +198,48 @@ export class MarketingComponent {
     this.visibleShareTemp = event;
   }
 
+  // Preview Template section
+  // togglePreTempDemo(templateId?: string) {
+  //   console.log('Preview Template ID:', templateId); 
+  //   this.visiblePreTemp = !this.visiblePreTemp;
+  // }
+
+  // Mobile
+  togglePreTempDemo(templateId?: string, titleHtml?: string, contentHtml?: string) {
+    if (templateId) {
+      this.selectedTemplate = this.allTemplates.find(t => t._id === templateId);
+      this.selectedTemplateTitle = this.stripAndTruncateHtml(titleHtml || '');
+      this.visiblePreTemp = true;
+    } else {
+      // Close modal
+      this.visiblePreTemp = false;
+      this.selectedTemplate = null;
+    }
+  }
+
+  handlePreTempChange(event: any) {
+    this.visiblePreTemp = event;
+  }
+
+  // Desktop
+  toggleDesPreTempDemo(templateId?: string, templateTitleHtml?: string, templateContentHtml?: string) {
+    this.visibleDesPreTemp = !this.visibleDesPreTemp;
+
+    if (templateTitleHtml) {
+      const div = document.createElement('div');
+      div.innerHTML = templateTitleHtml;
+      this.selectedTemplateTitle = div.innerText || div.textContent || '';
+    }
+
+    if (templateContentHtml) {
+      this.selectedTemplateContent = templateContentHtml;
+    }
+  }
+
+  handleDesPreTempChange(event: any) {
+    this.visibleDesPreTemp = event;
+  }
+
   getAllCategories(): void {
     this.categoriesService.getAllCategoryService().subscribe({
       next: (res) => {
@@ -208,7 +260,7 @@ export class MarketingComponent {
       },
       error: (err) => {
         console.error("Error fetching templates:", err);
-        this.isTemplatesLoaded = true; 
+        this.isTemplatesLoaded = true;
       }
     });
   }
@@ -221,8 +273,8 @@ export class MarketingComponent {
   }
 
   onTemplateAdded() {
-    this.getAllTemplates(); 
-  }  
+    this.getAllTemplates();
+  }
 
   // Custom Slider Methods
   getVisibleCards(): any[] {
@@ -393,12 +445,12 @@ export class MarketingComponent {
 
   // Get All Clients
   getAllClients(): void {
-    this.clientService.getAllCRM().subscribe({
+    this.clientService.getAllClientsService().subscribe({
       next: (res) => {
-        if (Array.isArray(res.data?.crms)) {
-          this.allClients = res.data.crms;
+        if (Array.isArray(res.data)) {
+          this.allClients = res.data;
         } else {
-          console.warn("Expected array but got:", res.data?.crms);
+          console.warn("Expected array but got:", res.data);
           this.allClients = [];
         }
       },
@@ -406,7 +458,7 @@ export class MarketingComponent {
         console.error("Error fetching all clients", err);
       }
     });
-  }
+  }  
 
   filteredClients(): any[] {
     if (!this.searchClientText) return this.allClients;
@@ -544,7 +596,7 @@ export class MarketingComponent {
   toggleSelectAllClients(event: any): void {
     const isChecked = event.target.checked;
     const filtered = this.filteredClients();
-  
+
     if (isChecked) {
       filtered.forEach(client => {
         if (!this.selectedClientIds.includes(client._id)) {
@@ -557,7 +609,5 @@ export class MarketingComponent {
       );
     }
   }
-  
-
 
 }
