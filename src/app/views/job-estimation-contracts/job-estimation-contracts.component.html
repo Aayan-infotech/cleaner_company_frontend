@@ -200,8 +200,8 @@
 
       <!-- Body Section -->
       <c-card-body>
-        <table class="table table-responsive-sm table-bordered table-striped">
-          <thead>
+        <table [hover]="true" [responsive]="true" [striped]="true" cTable class="mb-0 border">
+          <thead cTableColor="light">
 
             <tr>
               <th>SNo</th>
@@ -214,7 +214,10 @@
 
             </tr>
           </thead>
+
           <tbody>
+
+            <!-- When Data Exists -->
             <tr *ngFor="let estimate of estArray; let i = index">
 
               <td>{{ i + 1}}</td>
@@ -268,7 +271,16 @@
               </td>
 
             </tr>
+
+            <!-- No Data Available Message -->
+            <tr *ngIf="estArray.length === 0">
+              <td colspan="100%" class="text-center text-muted py-3">
+                No Data Available
+              </td>
+            </tr>
+            
           </tbody>
+
         </table>
       </c-card-body>
       

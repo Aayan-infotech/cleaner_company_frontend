@@ -1,10 +1,13 @@
 <c-modal size="lg" id="liveDemoModal" [(visible)]="visible" (visibleChange)="handleLiveDemoChange3($event)">
-    <c-modal-header>
+   
+  <c-modal-header>
       <!-- <h5 cModalTitle>Add Event</h5> -->
       <h5 cModalTitle>{{ editData ? 'Edit Event' : 'Add Event' }}</h5>
       <button (click)="toggleLiveDemo3()" cButtonClose></button>
     </c-modal-header>
+
     <c-modal-body>
+
       <form [formGroup]="eventForm">
         <c-row>
           <c-col md>
@@ -103,7 +106,9 @@
         </c-row>
         
       </form>
+
     </c-modal-body>
+
     <c-modal-footer>
       <button (click)="toggleLiveDemo3()" cButton color="secondary">Close</button>
       <!-- <button (click)="submit()" cButton color="primary">Save</button> -->
@@ -113,10 +118,9 @@
   
   <c-col xs>
     <c-card>
-      <c-card-header>
-        Job Events
-      </c-card-header>
-      <c-card-body style="padding: 5px;">
+      <c-card-header>Job Events</c-card-header>
+
+      <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
           <thead cTableColor="light">
             <tr class="fsize1">
@@ -167,5 +171,6 @@
           </tbody>
         </table>
       </c-card-body>
+      
     </c-card>
   </c-col>

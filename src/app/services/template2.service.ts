@@ -34,7 +34,4 @@ export class Template2Service {
     return this.http.post(`${apiUrls.template2Apis}${templateId}/share-to-groups`, { groupIds: groupIds } );
   }
   
-
-
-  
 }
