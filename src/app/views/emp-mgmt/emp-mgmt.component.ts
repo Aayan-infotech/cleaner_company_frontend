@@ -161,7 +161,7 @@ export class EmpMgmtComponent implements OnInit {
   totalEmployees: number = 0;
   currentPage1: number = 1;
   totalPages1: number = 0;
-  limit: number = 5;
+  limit: number = 10;
   statusFilter: string = '';
   searchQuery: string = '';
   isExpanded = false;
@@ -381,14 +381,24 @@ export class EmpMgmtComponent implements OnInit {
       this.limit,
       this.statusFilter,
       this.searchQuery
-    ).subscribe((res: any) => {
-      this.empMgmtData = res.data.employees;
-      this.totalEmployees = res.data.totalEmployees;
-      this.totalPages1 = res.data.totalPages;
+    ).subscribe({
+      next: (res) => {
+        this.empMgmtData = res.data || [];
+        this.totalEmployees = res.pagination?.total || 0;
+        this.totalPages1 = res.pagination?.totalPages || 1;
+        console.log("all Empss::", this.empMgmtData);        
+      },
+      error: (err) => {
+        console.error('Error fetching Employees:', err);
+        this.empMgmtData = [];
+        this.totalEmployees = 0;
+        this.totalPages1 = 1;
+      }
     });
   }
+  
   onSearch(): void {
-    this.currentPage1 = 1; // Reset to the first page on new search
+    this.currentPage1 = 1; 
     this.getAllEmpMgmts();
   }
 

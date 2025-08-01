@@ -16,14 +16,34 @@ export class EmpMgmtService {
   }
 
   // Get all users
-  getAllEmpMgmtsService(page: number, limit: number, status?: string, search?: string): Observable<any> {
+  getAllEmpMgmtsService1(page: number, limit: number, status?: string, search?: string): Observable<any> {
     let params: any = { page, limit };
     if (status) params.status = status;
     if (search) params.search = search;
-  
+
     return this.http.get<any[]>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
   }
-  
+
+  getAllEmpMgmtsService(page: number, limit: number, status?: string, search?: string ): Observable<{ success: boolean; status: number; message: string; data: any[]; pagination: { total: number; page: number; limit: number; totalPages: number; }; }> {
+    let params: any = { page, limit };
+    if (status) params.status = status;
+    if (search) params.search = search;
+
+    return this.http.get<{
+      success: boolean;
+      status: number;
+      message: string;
+      data: any[];
+      pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      };
+    }>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
+  }
+
+
 
   // Get a user by ID
   getEmpMgmtByIdService(id: any): Observable<any> {
@@ -43,7 +63,7 @@ export class EmpMgmtService {
 
   toggleEmpStatus(empId: string): Observable<any> {
     return this.http.put<any>(`${apiUrls.empMgmtApi}updateEmployeeStatus/${empId}`, {});
-}
+  }
 
 
 
