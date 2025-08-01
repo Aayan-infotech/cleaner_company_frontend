@@ -1,37 +1,30 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { apiUrls } from '../api.urls';
-
-
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 
-
 export class ProfilesService {
 
-  http = inject(HttpClient);
+  constructor(private http: HttpClient) { }
 
-  //get All Profiles
-  getAllProfileService() {
-    return this.http.get(`${apiUrls.profileManage}getAll`);
+  getAllProfileService(): Observable<any> {
+    return this.http.get(`${apiUrls.profileManageApi}getAll`);
   };
 
-
-  //get profile by id
-  getProfileByIdService(id: any) {
-    return this.http.get(`http://98.85.246.54:5966/api/profile${id}`);
+  getProfileByIdService(id: any): Observable<any> {
+    return this.http.get(`${apiUrls.profileManageApi}${id}`);
   };
 
-  //update profile details by id
-  updateProfileService(data: any, id: number) {
-    return this.http.put(`${apiUrls.profileManage}id`, data);
+  updateProfileService(data: any, id: number): Observable<any> {
+    return this.http.put(`${apiUrls.profileManageApi}id`, data);
   };
 
-  //delete profile by id
-  deleteProfileService(id: any) {
-    return this.http.delete(`http://98.85.246.54:5966/api/profile${id}`);
+  deleteProfileService(id: any): Observable<any> {
+    return this.http.delete(`${apiUrls.profileManageApi}${id}`);
   };
 
 }

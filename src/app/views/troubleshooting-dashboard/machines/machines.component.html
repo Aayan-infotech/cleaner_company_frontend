@@ -123,6 +123,8 @@
             </tr>
           </thead>
           <tbody>
+
+            <!-- Data Available -->
             <tr *ngFor="let items of itemsArray">
               <td></td>
               <td>{{ items.name }}</td>
@@ -328,6 +330,12 @@
                 </button>
               </td>
             </tr>
+
+            <!-- No Data Found Row -->
+            <tr *ngIf="itemsArray?.length === 0">
+              <td colspan="12" class="text-center">No Items Found</td>
+            </tr>
+
           </tbody>
         </table>
 

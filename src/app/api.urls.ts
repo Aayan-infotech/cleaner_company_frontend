@@ -6,7 +6,7 @@ export const apiUrls = {
     troubleCategory: 'http://98.85.246.54:5966/api/category/',
     contentVersion: 'http://98.85.246.54:5966/api/version/',
     contentLibrary: 'http://98.85.246.54:5966/api/library/',
-    profileManage: 'http://98.85.246.54:5966/api/profile/',
+    profileManageApi: 'http://98.85.246.54:5966/api/profile/',
     dropdownDataApi: 'http://98.85.246.54:5966/api/dropdown/',
     estimateAPI: 'http://98.85.246.54:5966/api/estimates/',
     JobsApi: 'http://98.85.246.54:5966/api/event/',
@@ -21,6 +21,9 @@ export const apiUrls = {
     crmMgmtApi: 'http://98.85.246.54:5966/api/manage-crm/',
     groupsManageApi: 'http://98.85.246.54:5966/api/group/',
     marketingCategoriesApi: 'http://98.85.246.54:5966/api/categories/',
+    timetrackerApi: 'http://98.85.246.54:5966/api/timeTrack/',
+    leaveApi: 'http://98.85.246.54:5966/api/leave/',
+    notificationApi: 'http://98.85.246.54:5966/api/notification/',
     templateApis: 'http://98.85.246.54:5966/api/template/',
     template2Apis: 'http://98.85.246.54:5966/api/template2/',
 

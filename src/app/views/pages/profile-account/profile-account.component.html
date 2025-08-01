@@ -5,84 +5,89 @@
 
         <c-card class="mb-3" [ngStyle]="{'max-width.px': 540}">
           <c-row class="g-0">
+
             <c-col [md]="4">
-              <img [cCardImg] src="../../../../assets//images/default-image.jpg"
-                style="margin-left: 6px; margin-top: 10px;">
+              <img [cCardImg] src="../../../../assets//images/default-image.jpg" style="margin-left: 6px; margin-top: 10px;">
             </c-col>
+
             <c-card-body cCol [md]="8">
               <h4 cCardTitle>Company Name</h4>
-              <p cCardText style="visibility: hidden;">
-                This is a wider card with supporting text below as a natural lead-in to
+              <p cCardText style="visibility: hidden;">This is a wider card with supporting text below as a natural lead-in to</p>
+
+              <p cCardText style="display: flex; justify-content: space-between;">
+                <small class="text-medium-emphasis">Username</small>
+                <small class="text-medium-emphasis">Password</small>
+                <small class="text-medium-emphasis">Update</small>
               </p>
-                <p cCardText style="display: flex;
-                justify-content: space-between;">
-                  <small class="text-medium-emphasis">Username</small>
-                  <small class="text-medium-emphasis">Password</small>
-                  <small class="text-medium-emphasis">Update</small>
-                </p>
+
             </c-card-body>
+
           </c-row>
         </c-card>
+
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button cButton size="sm" color="primary" class="me-md-2">Update</button>
         </div>
 
       </c-card-header>
-      <c-row>
-        <c-col xs>
-       
-            <!-- <c-card-body style="display: block;">
-              <input formControlName="firstName" type="text" class="form-control" id="First" name="First"
-              required>
-              <h6 formControlName="firstName">licensed To : First Last</h6>
-              <h6 formControlName="email"> Email: xyzgmail.com </h6>
-              <h6 formControlName="contactNumber">Phone Number: 1</h6>
 
-            </c-card-body> -->
-            <form cForm [formGroup]="profileForm">
-              <c-row [gutter]="3" class="align-items-center">
-                <c-col xs="auto">
-                  <label cLabel="col" for="inputPassword-3"> First Name :</label>
-                </c-col>
-                <c-col xs="auto">
-                  <input style="border: transparent;"
-                    aria-describedby="passwordHelpInline-3"
-                    cFormControl
-                    id="inputPassword-3"
-                    type="text"
-                    formControlName="firstName">
-                </c-col>
-              </c-row>
-              <c-row [gutter]="3" class="align-items-center">
-                <c-col xs="auto">
-                  <label cLabel="col" for="inputPassword-3"> Email :</label>
-                </c-col>
-                <c-col xs="auto">
-                  <input style="border: transparent;"
-                    aria-describedby="passwordHelpInline-3"
-                    cFormControl
-                    id="inputPassword-3"
-                    type="text"
-                    formControlName="email">
-                </c-col>
-              </c-row>
-              <c-row [gutter]="3" class="align-items-center">
-                <c-col xs="auto">
-                  <label cLabel="col" for="inputPassword-3"> Phone Number :</label>
-                </c-col>
-                <c-col xs="auto">
-                  <input style="border: transparent;"
-                    aria-describedby="passwordHelpInline-3"
-                    cFormControl
-                    id="inputPassword-3"
-                    type="text"
-                    formControlName="contactNumber">
-                </c-col>
-              </c-row>
-            </form>
-        
+      <c-row class="m-3">
+        <c-col [md]="6">
+          <form cForm [formGroup]="profileForm" class="p-4 bg-white rounded shadow-sm border">
+      
+            <!-- First Name -->
+            <div class="row align-items-center mb-3">
+              <div class="col-4 text-end">
+                <label for="inputFirstName" class="fw-semibold mb-0">First Name :</label>
+              </div>
+              <div class="col-8">
+                <input 
+                  id="inputFirstName" 
+                  type="text" 
+                  formControlName="firstName" 
+                  class="form-control form-control-sm"
+                  placeholder="Enter First Name"
+                />
+              </div>
+            </div>
+      
+            <!-- Email -->
+            <div class="row align-items-center mb-3">
+              <div class="col-4 text-end">
+                <label for="inputEmail" class="fw-semibold mb-0">Email :</label>
+              </div>
+              <div class="col-8">
+                <input 
+                  id="inputEmail" 
+                  type="email" 
+                  formControlName="email" 
+                  class="form-control form-control-sm"
+                  placeholder="Enter Email"
+                />
+              </div>
+            </div>
+      
+            <!-- Phone Number -->
+            <div class="row align-items-center mb-3">
+              <div class="col-4 text-end">
+                <label for="inputPhoneNumber" class="fw-semibold mb-0">Phone Number :</label>
+              </div>
+              <div class="col-8">
+                <input 
+                  id="inputPhoneNumber" 
+                  type="text" 
+                  formControlName="contactNumber" 
+                  class="form-control form-control-sm"
+                  placeholder="Enter Phone Number"
+                />
+              </div>
+            </div>
+      
+          </form>
         </c-col>
       </c-row>
+      
+      
     </c-card>
   </c-col>
 </c-row>
