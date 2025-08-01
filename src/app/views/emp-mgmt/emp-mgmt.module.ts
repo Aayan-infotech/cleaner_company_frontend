@@ -19,7 +19,10 @@ import {
   NavModule,
   ProgressModule,
   TableModule,
-  TabsModule
+  TabsModule,
+  PageItemDirective,
+  PageLinkDirective,
+  PaginationComponent,
 } from '@coreui/angular';
 import { WidgetsModule } from '../widgets/widgets.module';
 import { IconModule } from '@coreui/icons-angular';
@@ -50,7 +53,10 @@ import { FormsModule } from '@angular/forms';
     TableModule,
     TabsModule,
     WidgetsModule,
-    FormsModule
+    FormsModule,
+    PageItemDirective,
+    PageLinkDirective,
+    PaginationComponent,
   ]
 })
 export class EmpMgmtModule { }
