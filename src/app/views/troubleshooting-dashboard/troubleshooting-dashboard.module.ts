@@ -37,6 +37,7 @@ import { ToolsComponent } from './tools/tools.component'
 import { CleanTechComponent } from './clean-tech/clean-tech.component'
 import { ManualsComponent } from './manuals/manuals.component'
 import { MachinesComponent } from './machines/machines.component'
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [TroubleshootingDashboardComponent, ToolsComponent, CleanTechComponent, ManualsComponent, MachinesComponent],
@@ -73,6 +74,7 @@ import { MachinesComponent } from './machines/machines.component'
     ModalBodyComponent,
     ModalFooterComponent,
     ModalHeaderComponent,
+    FormsModule
   ]
 })
 export class TroubleshootingDashboardModule { }

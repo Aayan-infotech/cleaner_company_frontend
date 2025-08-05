@@ -19,7 +19,10 @@ import {
   NavModule,
   ProgressModule,
   TableModule,
-  TabsModule
+  TabsModule,
+  PageItemDirective,
+  PageLinkDirective,
+  PaginationComponent
 } from '@coreui/angular';
 import { IconModule } from '@coreui/icons-angular';
 import { ChartjsModule } from '@coreui/angular-chartjs';
@@ -48,6 +51,9 @@ import { ChartjsModule } from '@coreui/angular-chartjs';
     DropdownItemDirective,
     DropdownMenuDirective,
     DropdownToggleDirective,
+    PageItemDirective,
+    PageLinkDirective,
+    PaginationComponent
   ]
 })
 export class JobEstimationContractsModule { }

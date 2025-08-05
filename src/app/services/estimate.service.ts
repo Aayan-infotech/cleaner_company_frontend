@@ -34,6 +34,15 @@ export class EstimateService {
     return this.http.get<any[]>(`${apiUrls.estimateAPI}getAll`)
   }
 
+  getAllEstimatesService(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get(`${apiUrls.estimateAPI}getAllPagination`, {
+      params: {
+        page: page.toString(),
+        limit: limit.toString()
+      }
+    });
+  };  
+
   getEstimateByIdService(id: any): Observable <any> {
     return this.http.get<any>(`${apiUrls.estimateAPI}getById/${id}`);
   }

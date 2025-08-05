@@ -12,12 +12,12 @@ export class MarketingCategoriesService {
 
   // Create new category
   createCategoryService(data: any): Observable<any> {
-    return this.http.post(`${apiUrls.marketingCategoriesApi}createCategory`, data);
+    return this.http.post(`${apiUrls.marketingCategoriesApi}create-marketing-category`, data);
   }
 
   // Get All Categories With Pagination
   getAllCategoriesService(page: number = 1, limit: number = 10): Observable<any> {
-    return this.http.get(`${apiUrls.marketingCategoriesApi}getAllCategories`, {
+    return this.http.get(`${apiUrls.marketingCategoriesApi}get-all-marketing-categories`, {
       params: {
         page: page.toString(),
         limit: limit.toString(),
@@ -27,22 +27,22 @@ export class MarketingCategoriesService {
 
   // Get All Categories Without Pagination
   getAllCategoryService(): Observable <any> {
-    return this.http.get(`${apiUrls.marketingCategoriesApi}getAll`);
+    return this.http.get(`${apiUrls.marketingCategoriesApi}get-all-marketingCategories`);
   }
 
   // Get Category By ID
   getCategoryByIdService(id: any): Observable<any> {
-    return this.http.get(`${apiUrls.marketingCategoriesApi}getCategoryById/${id}`);
+    return this.http.get(`${apiUrls.marketingCategoriesApi}get-marketing-category/${id}`);
   }
 
   // Update category Details By Id
   updateCategoryByIdService(id: any, data: any): Observable <any> {
-    return this.http.put(`${apiUrls.marketingCategoriesApi}updateCategory/${id}`, data);
+    return this.http.put(`${apiUrls.marketingCategoriesApi}update-marketing-category/${id}`, data);
   }
 
   // Delete Category By Id
   deleteCategoryById(id: any): Observable<any> {
-    return this.http.delete(`${apiUrls.marketingCategoriesApi}deleteCategory/${id}`);
+    return this.http.delete(`${apiUrls.marketingCategoriesApi}delete-marketing-category/${id}`);
   }
 
 }

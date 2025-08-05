@@ -1,13 +1,14 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+
+      <!-- Header Section -->
       <c-card-header class="d-flex justify-content-between">
-        <div>
-          Manage {{ categoryName }}
-        </div>
-        <div>
-          <button (click)="toggleLiveDemo()" cButton color="primary" shape="rounded-1" size="sm"
-            class="px-3">Add</button>
+        <div>Manage <strong>{{ categoryName }}</strong></div>
+
+        <div class="d-flex align-items-center ms-auto">
+          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search Items" style="min-width: 200px;" />
+          <button (click)="toggleLiveDemo()" cButton color="primary" shape="rounded-1" size="sm" class="ms-3">Add Item</button>
         </div>
       </c-card-header>
 
@@ -19,6 +20,7 @@
           </h5>
           <button (click)="toggleLiveDemo()" cButtonClose size="sm"></button>
         </c-modal-header>
+
         <c-modal-body>
           <form cForm [formGroup]="itemsForm">
             <c-row>
@@ -98,19 +100,20 @@
               </c-col>
             </c-row>
 
-          </form>
-
-          
+          </form>         
         </c-modal-body>
+
         <c-modal-footer>
-          <button (click)="toggleLiveDemo()" cButton color="secondary" class="me-3" size="sm">Cancel</button>
-          <button (click)="submit()" (click)="toggleLiveDemo()" *ngIf="showSaveChanges" cButton color="success" size="sm">Save</button>
+          <button (click)="toggleLiveDemo()" cButton color="secondary">Cancel</button>
+          <button (click)="submit()" (click)="toggleLiveDemo()" *ngIf="showSaveChanges" cButton color="success">Save</button>
         </c-modal-footer>
       </c-modal>
       <!-- New Model End -->
       
-      <c-card-body>
 
+
+      <!-- Body Section -->
+      <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
           <thead cTableColor="light">
             <tr>
@@ -118,22 +121,17 @@
               <th>Name</th>
               <th>Part No</th>
               <th>Short Desc</th>
-              <!-- <th>Pictures</th> -->
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
 
             <!-- Data Available -->
-            <tr *ngFor="let items of itemsArray">
+            <tr *ngFor="let items of filteredItemsArray">
               <td></td>
               <td>{{ items.name }}</td>
               <td>{{ items.partNumber }}</td>
-              <td>
-                <span *ngIf="!items.expandedShort">{{ items.shortDescription | slice:0:20 }}... </span>
-                <span *ngIf="items.expandedShort">{{ items.shortDescription }}</span>
-                <a (click)="toggleExpand('short', items)" class="toggle-link">{{ items.expandedShort ? 'show less' : 'show more' }}</a>
-              </td>
+              <td>{{ items.shortDescription | slice:0:20 }}... </td>
               
               <td>
 
@@ -332,9 +330,11 @@
             </tr>
 
             <!-- No Data Found Row -->
-            <tr *ngIf="itemsArray?.length === 0">
+            <tr *ngIf="filteredItemsArray?.length === 0">
               <td colspan="12" class="text-center">No Items Found</td>
             </tr>
+
+            
 
           </tbody>
         </table>
@@ -343,20 +343,3 @@
     </c-card>
   </c-col>
 </c-row>
-
-
-<!-- <div class="carousel-container">
-  <h3>Pictures / Gallery</h3>
-  
-  <div class="carousel">
-    <button (click)="prevImage()" class="arrow left-arrow">&lt;</button>
-    
-    <div class="image-grid">
-      <div *ngFor="let image of visibleImages" class="image-box">
-        <img [src]="image" alt="Gallery Image">
-      </div>
-    </div>
-    
-    <button (click)="nextImage()" class="arrow right-arrow">&gt;</button>
-  </div>
-</div> -->
