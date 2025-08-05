@@ -23,22 +23,29 @@ export class JobEstimationContractsComponent implements OnInit {
   public visibleViewEstimate = false;
   totalSqFt: number = 0;
   showRoomSection: boolean = false;
-  loading: boolean = false;  
+  loading: boolean = false;
   estimateData: any;
   deletingEstimateId: string | null = null;
   public selectedEstimate: any = null;
   selectedServicePrice: number = 0;
   selectedMethodPrice: number = 0;
-  
+
+  estimates: any[] = [];
+  isFetchingEstimates: boolean = false;
+  totalEstimates: number = 0;
+  currentEstimatePage: number = 1;
+  pageSize: number = 10;
+
 
   constructor(
     private estimateService: EstimateService,
     private fb: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initEstimateForm();
-    this.getAllEstimatesData();
+    // this.getAllEstimatesData();
+    this.getAllEstimates();
     this.getAllJobs();
     this.getAllRooms();
     this.getAllServices();
@@ -116,11 +123,11 @@ export class JobEstimationContractsComponent implements OnInit {
       return;
     }
 
-    this.loading = true; 
+    this.loading = true;
 
     this.estimateService.submitEstimate(this.estimateForm.value).subscribe({
       next: (res) => {
-        this.getAllEstimatesData();
+        this.getAllEstimates();
         this.estimateForm.reset();
         this.selectedServices.clear();
         this.toggleLiveDemo();
@@ -135,16 +142,47 @@ export class JobEstimationContractsComponent implements OnInit {
     });
   }
 
-  getAllEstimatesData(): void {
-    this.estimateService.getAllEstimates().subscribe({
+  // getAllEstimatesData(): void {
+  //   this.estimateService.getAllEstimates().subscribe({
+  //     next: (res) => {
+  //       this.estData = res;
+  //       this.estArray = this.estData.data;
+  //     },
+  //     error: (err) => {
+  //       console.error("Error fetching All Estimates", err);
+  //     }
+  //   })
+  // }
+  
+  getAllEstimates(page: number = 1): void {
+    this.estimateService.getAllEstimatesService(page, this.pageSize).subscribe({
       next: (res) => {
-        this.estData = res;
-        this.estArray = this.estData.data;     
+        this.estimates = res.data || [];
+        this.totalEstimates = res.pagination?.total || 0;
+        this.currentEstimatePage = res.pagination?.page || 1;
+        this.isFetchingEstimates = false;
       },
       error: (err) => {
-        console.error("Error fetching All Estimates", err);        
+        console.error('Error fetching estimates:', err);
+        this.isFetchingEstimates = false;
       }
     })
+  };
+
+  get totalEstimatePages(): number {
+    return Math.ceil(this.totalEstimates / this.pageSize);
+  }
+
+  totalEstimatePagesArray(): number[] {
+    return Array(this.totalEstimatePages)
+      .fill(0)
+      .map((_, i) => i + 1);
+  }
+
+  changeEstimatePage(page: number): void {
+    if (page >= 1 && page <= this.totalEstimatePages) {
+      this.getAllEstimates(page);
+    }
   }
 
   // All Jobs
@@ -175,10 +213,10 @@ export class JobEstimationContractsComponent implements OnInit {
   getAllServices(): void {
     this.estimateService.getAllServicesService().subscribe({
       next: (res) => {
-        this.servicesList = res.data || [];       
+        this.servicesList = res.data || [];
       },
       error: (err) => {
-        console.error("Error fetching services and methods", err);        
+        console.error("Error fetching services and methods", err);
       }
     })
   }
@@ -189,11 +227,11 @@ export class JobEstimationContractsComponent implements OnInit {
   }
 
   deleteEstimate(id: any) {
-    this.deletingEstimateId = id; 
-  
+    this.deletingEstimateId = id;
+
     this.estimateService.deleteEstimateService(id).subscribe({
       next: (res) => {
-        this.getAllEstimatesData();
+        this.getAllEstimates();
         this.deletingEstimateId = null;
       },
       error: (err) => {
@@ -207,7 +245,6 @@ export class JobEstimationContractsComponent implements OnInit {
   getEstimateDetails(id: string): void {
     this.estimateService.getEstimateByIdService(id).subscribe({
       next: (response) => {
-        console.log('Estimate Data:', response); 
         this.estimateData = response.data;
         this.visibleViewEstimate = true;
       },
@@ -221,12 +258,12 @@ export class JobEstimationContractsComponent implements OnInit {
     const selectedService = this.servicesList.find(s => s._id === serviceId);
     this.selectedServicePrice = selectedService?.price || 0;
   }
-  
+
   onMethodChange(methodId: string, serviceId: string) {
     const methods = this.getMethodsForService(serviceId);
     const selectedMethod = methods.find(m => m.method._id === methodId);
     this.selectedMethodPrice = selectedMethod?.price || 0;
   }
-  
-  
+
+
 }

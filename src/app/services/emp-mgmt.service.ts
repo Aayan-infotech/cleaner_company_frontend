@@ -15,15 +15,7 @@ export class EmpMgmtService {
     return this.http.post<any>(`${apiUrls.empMgmtApi}addEmployee`, formData);
   }
 
-  // Get all users
-  getAllEmpMgmtsService1(page: number, limit: number, status?: string, search?: string): Observable<any> {
-    let params: any = { page, limit };
-    if (status) params.status = status;
-    if (search) params.search = search;
-
-    return this.http.get<any[]>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
-  }
-
+  // Get all Employees
   getAllEmpMgmtsService(page: number, limit: number, status?: string, search?: string ): Observable<{ success: boolean; status: number; message: string; data: any[]; pagination: { total: number; page: number; limit: number; totalPages: number; }; }> {
     let params: any = { page, limit };
     if (status) params.status = status;
@@ -42,8 +34,6 @@ export class EmpMgmtService {
       };
     }>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
   }
-
-
 
   // Get a user by ID
   getEmpMgmtByIdService(id: any): Observable<any> {

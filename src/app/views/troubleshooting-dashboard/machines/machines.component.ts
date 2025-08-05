@@ -41,6 +41,8 @@ export class MachinesComponent implements OnInit {
   itemsImage: any;
   showSaveChanges = true;
 
+  searchTerm: string = '';
+
   troubleCategoryService = inject(TroubleCategoryService);
 
   public visible = false;
@@ -337,6 +339,22 @@ export class MachinesComponent implements OnInit {
 
   getVideoName(url: string): string {
     return url.split('/').pop()?.split('?')[0] || 'Unknown Video';
+  }
+
+  // Getter to filter items based on search term
+  get filteredItemsArray(): any[] {
+    if (!this.searchTerm.trim()) {
+      return this.itemsArray || [];
+    }
+
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return (this.itemsArray || []).filter(item =>
+      (item.name ?? '').toLowerCase().includes(term) ||
+      (item.partNumber ?? '').toLowerCase().includes(term) ||
+      (item.shortDescription ?? '').toLowerCase().includes(term) ||
+      (item.partDescription ?? '').toLowerCase().includes(term)
+    );
   }
   
 

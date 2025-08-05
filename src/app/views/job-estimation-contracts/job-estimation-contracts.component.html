@@ -21,7 +21,7 @@
             <div class="card">
 
               <div class="card-header d-flex align-items-center">
-                
+
                 <!-- Select Job -->
                 <div class="w-25">
                   <label class="form-label fw-bold">Select Job: <span class="text-danger">*</span></label>
@@ -35,7 +35,8 @@
 
                 <!-- Add Rooms -->
                 <div class="mt-4 pt-1 ms-3">
-                  <button cButton color="primary" shape="rounded-pill" size="sm" (click)="showRoomSection = true">Add Room</button>
+                  <button cButton color="primary" shape="rounded-pill" size="sm" (click)="showRoomSection = true">Add
+                    Room</button>
                 </div>
 
               </div>
@@ -48,16 +49,16 @@
                       <th scope="col">Length (ft)</th>
                       <th scope="col">Width (ft)</th>
                       <th scope="col">Total SF</th>
-                      <th scope="col" class="px-3">Surface <strong>$</strong>({{ selectedServicePrice || 0 }})</th>                           
+                      <th scope="col" class="px-3">Surface <strong>$</strong>({{ selectedServicePrice || 0 }})</th>
                       <th scope="col" class="ps-2">Method <strong>$</strong>({{ selectedMethodPrice || 0 }})</th>
-                      <th scope="col" class="ps-4">Price</th>                
+                      <th scope="col" class="ps-4">Price</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngIf="showRoomSection">
                       <!-- Select Room -->
-                      <td class="pt-3" style="width: 15%;">                        
+                      <td class="pt-3" style="width: 15%;">
                         <div class="tooltip-container">
                           <select class="form-control" formControlName="room">
                             <option value="" disabled>Select Room</option>
@@ -80,23 +81,26 @@
                       <td class="pt-3" style="width: 19%;">
                         <div class="d-flex align-items-center">
                           <input type="number" class="form-control" [value]="totalSqFt" readonly />
-  
+
                           <div class="d-flex align-items-center">
-  
+
                             <!-- Add Button -->
-                            <button class="btn btn-primary btn-sm mx-2" style="margin-right: 5px;" (click)="addServiceMethod()">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/>
+                            <button class="btn btn-primary btn-sm mx-2" style="margin-right: 5px;"
+                              (click)="addServiceMethod()">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-plus-lg" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                  d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
                               </svg>
                             </button>
-  
+
                             <!-- Remove Button -->
-                            <button class="btn btn-danger btn-sm"(click)="showRoomSection = false">
+                            <button class="btn btn-danger btn-sm" (click)="showRoomSection = false">
                               <svg cIcon name="cil-trash" size="sm"></svg>
                             </button>
-  
+
                           </div>
-  
+
                         </div>
                       </td>
 
@@ -105,47 +109,52 @@
                         <table class="table table-borderless mb-0">
                           <tbody formArrayName="selectedServices">
                             <tr *ngFor="let item of selectedServices.controls; let i = index" [formGroupName]="i">
-                              
+
                               <!-- Surface -->
                               <td style="width: 33%;">
-                                <select class="form-control" formControlName="serviceId" (change)="onServiceChange(item.value.serviceId)">
+                                <select class="form-control" formControlName="serviceId"
+                                  (change)="onServiceChange(item.value.serviceId)">
                                   <option value="" selected disabled>Select Surface</option>
                                   <option *ngFor="let service of servicesList" [value]="service._id">
-                                    <span class="px-3">{{ service.name ? (service.name[0] | uppercase) + service.name.slice(1) : '' }}</span>
+                                    <span class="px-3">{{ service.name ? (service.name[0] | uppercase) +
+                                      service.name.slice(1) : '' }}</span>
                                   </option>
                                 </select>
                               </td>
-                          
+
                               <!-- Method -->
                               <td style="width: 33%;">
-                                <select class="form-control" formControlName="methodId" (change)="onMethodChange(item.value.methodId, item.value.serviceId)">
+                                <select class="form-control" formControlName="methodId"
+                                  (change)="onMethodChange(item.value.methodId, item.value.serviceId)">
                                   <option value="">Select Method</option>
-                                  <option *ngFor="let method of getMethodsForService(item.value.serviceId)" [value]="method.method._id">
-                                    {{ method.method.name ? (method.method.name[0] | uppercase) + method.method.name.slice(1) : '' }}
+                                  <option *ngFor="let method of getMethodsForService(item.value.serviceId)"
+                                    [value]="method.method._id">
+                                    {{ method.method.name ? (method.method.name[0] | uppercase) +
+                                    method.method.name.slice(1) : '' }}
                                   </option>
                                 </select>
                               </td>
-                          
+
                               <!-- Price -->
                               <td style="width: 20%; padding-top: 15px;">
                                 {{ calculateServiceMethodPrice(item.value) | currency }}
                               </td>
-                          
+
                               <!-- Remove -->
                               <td style="width: 12%;">
                                 <button type="button" class="btn btn-danger btn-sm" (click)="removeServiceMethod(i)">
                                   <svg cIcon name="cil-trash" size="sm"></svg>
                                 </button>
-                              </td>                          
+                              </td>
                             </tr>
                           </tbody>
-                          
+
                         </table>
                       </td>
                     </tr>
                   </tbody>
                 </table>
-              </div>   
+              </div>
 
             </div>
           </form>
@@ -156,12 +165,12 @@
           <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
           <button (click)="submitEstimate()" [disabled]="estimateForm.invalid || loading" cButton color="primary">
             <ng-container *ngIf="!loading; else loadingTpl">Save</ng-container>
-          
+
             <ng-template #loadingTpl>
               <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
               <span class="ms-2">Saving...</span>
             </ng-template>
-          </button>          
+          </button>
         </c-modal-footer>
       </c-modal>
       <!-- End Modal -->
@@ -174,7 +183,7 @@
           <button (click)="toggleViewEstimate()" cButtonClose></button>
         </c-modal-header>
 
-        <c-modal-body>          
+        <c-modal-body>
           <div *ngIf="estimateData">
             <p><strong>Job ID:</strong> {{ estimateData.jobId }}</p>
             <p><strong>Room:</strong> {{ estimateData.room?.name }}</p>
@@ -218,9 +227,9 @@
           <tbody>
 
             <!-- When Data Exists -->
-            <tr *ngFor="let estimate of estArray; let i = index">
+            <tr *ngFor="let estimate of estimates; let i = index">
 
-              <td>{{ i + 1}}</td>
+              <td>{{ i + 1 }}</td>
 
               <!-- Job ID -->
               <td>{{estimate.jobId}} </td>
@@ -232,15 +241,13 @@
               <td>
                 <div *ngFor="let service of estimate.selectedServices">
                   {{ service.service?.name ? (service.service.name[0] | uppercase) + service.service.name.slice(1) : '' }} - <strong>$</strong>{{ service.service?.price }}
-
                 </div>
               </td>
-              
+
               <!-- Methods -->
               <td>
                 <div *ngFor="let service of estimate.selectedServices">
                   {{ service.method?.name ? (service.method.name[0] | uppercase) + service.method.name.slice(1) : '' }} - <strong>$</strong>{{ service.method?.price }}
-
                 </div>
               </td>
 
@@ -250,40 +257,84 @@
               <!-- Actions -->
               <td>
 
-                <!-- View Button -->                
+                <!-- View Button -->
                 <button (click)="toggleViewEstimate()" (click)="getEstimateDetails(estimate._id)" class="me-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye"
+                    viewBox="0 0 16 16">
+                    <path
+                      d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
                     <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
                   </svg>
                 </button>
 
                 <!-- Delete Button -->
-                <button (click)="deleteEstimate(estimate._id)" [disabled]="deletingEstimateId === estimate._id" title="Delete Estimate">
+                <button (click)="deleteEstimate(estimate._id)" [disabled]="deletingEstimateId === estimate._id"
+                  title="Delete Estimate">
                   <ng-container *ngIf="deletingEstimateId === estimate._id; else deleteIcon">
                     <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
                   </ng-container>
-                
+
                   <ng-template #deleteIcon>
                     <svg cIcon name="cil-trash" size="sm"></svg>
                   </ng-template>
-                </button>                
+                </button>
               </td>
 
             </tr>
 
             <!-- No Data Available Message -->
-            <tr *ngIf="estArray.length === 0">
+            <tr *ngIf="estimates.length === 0">
               <td colspan="100%" class="text-center text-muted py-3">
                 No Data Available
               </td>
             </tr>
-            
+
           </tbody>
+
+
+          <!-- Footer -->
+          <tfoot>
+            <tr>
+              <td class="px-3" colspan="10">
+                <div class="d-flex justify-content-between align-items-center">
+
+                  <!-- Pagination -->
+                  <div class="mt-3">
+                    <c-pagination aria-label="Estimate pagination">
+
+                      <!-- Previous Button -->
+                      <li cPageItem [disabled]="currentEstimatePage === 1">
+                        <a cPageLink (click)="changeEstimatePage(currentEstimatePage - 1)" style="cursor:pointer;">Previous</a>
+                      </li>
+
+                      <!-- Page Numbers -->
+                      <li cPageItem *ngFor="let page of totalEstimatePagesArray()" [active]="page === currentEstimatePage">
+                        <a cPageLink (click)="changeEstimatePage(page)" style="cursor:pointer;">{{ page }}</a>
+                      </li>
+
+                      <!-- Next Button -->
+                      <li cPageItem [disabled]="currentEstimatePage === totalEstimatePages">
+                        <a cPageLink (click)="changeEstimatePage(currentEstimatePage + 1)" style="cursor:pointer;">Next</a>
+                      </li>
+
+                    </c-pagination>
+                  </div>
+
+                  <!-- Total Page -->
+                  <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
+                    Total Estimates: <span class="text-dark">{{ totalEstimates }}</span>
+                  </div>
+
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+
+
 
         </table>
       </c-card-body>
-      
+
     </c-card>
   </c-col>
 </c-row>

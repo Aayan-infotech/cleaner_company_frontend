@@ -20,6 +20,7 @@ export class TroubleshootingDashboardComponent {
   categoryArray!: any
   troubleCategoryService = inject(TroubleCategoryService);
   categoryForm!: FormGroup;
+  deletingCategoryId: string | null = null;
 
   ngOnInit(): void {
     this.categoryForm = this.fb.group({
@@ -50,6 +51,21 @@ export class TroubleshootingDashboardComponent {
         this.categoryData = this.categoryData.data
         console.log(this.categoryData)
       })
+  }
+
+  deleteTroubleShootingCategoryById(categoryId: any): void {
+    this.deletingCategoryId = categoryId;
+
+    this.troubleCategoryService.deleteCategoryService(categoryId).subscribe({
+      next: (res) => {
+        this.getAllCategories();
+        this.deletingCategoryId = null;
+      },
+      error: (err) => {
+        console.error("Error fetch Delete Trouble shooting Category", err );  
+        this.deletingCategoryId = null;      
+      }
+    })
   }
 
 }

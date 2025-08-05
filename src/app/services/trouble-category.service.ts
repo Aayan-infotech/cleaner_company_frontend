@@ -13,11 +13,11 @@ export class TroubleCategoryService {
 
   // Category Services
   createCategoryService(categoryObj: any): Observable<any> {
-    return this.http.post<any>(`${apiUrls.troubleCategory}add`, categoryObj);
+    return this.http.post<any>(`${apiUrls.troubleCategory}addTroubleCategory`, categoryObj);
   }
 
   getAllCategoryService(): Observable<any[]> {
-    return this.http.get<any[]>(`${apiUrls.troubleCategory}`);
+    return this.http.get<any[]>(`${apiUrls.troubleCategory}get-all-trouble-categories`);
   }
 
   getCategoryByID(categoryId: string): Observable<any> {
@@ -28,9 +28,9 @@ export class TroubleCategoryService {
   //   return this.http.put<any>(`${apiUrls.troubleCategory}/${categoryId}`, categoryObj);
   // }
 
-  // deleteCategoryService(categoryId: string): Observable<any> {
-  //   return this.http.delete<any>(`${apiUrls.troubleCategory}/${categoryId}`);
-  // }
+  deleteCategoryService(categoryId: string): Observable<any> {
+    return this.http.delete<any>(`${apiUrls.troubleCategory}/${categoryId}`);
+  }
 
   // File Services
   addFilesToCategoryService(categoryId: string, formData: FormData): Observable<any> {
@@ -73,3 +73,5 @@ export class TroubleCategoryService {
   }
 
 }
+
+

@@ -20,11 +20,12 @@ export const apiUrls = {
     empMgmtApi: 'http://98.85.246.54:5966/api/employee/',
     crmMgmtApi: 'http://98.85.246.54:5966/api/manage-crm/',
     groupsManageApi: 'http://98.85.246.54:5966/api/group/',
-    marketingCategoriesApi: 'http://98.85.246.54:5966/api/categories/',
+    marketingCategoriesApi: 'http://98.85.246.54:5966/api/manage-marketing-categories/',
     timetrackerApi: 'http://98.85.246.54:5966/api/timeTrack/',
     leaveApi: 'http://98.85.246.54:5966/api/leave/',
     notificationApi: 'http://98.85.246.54:5966/api/notification/',
     templateApis: 'http://98.85.246.54:5966/api/template/',
     template2Apis: 'http://98.85.246.54:5966/api/template2/',
+    
 
 }
