@@ -1,6 +1,8 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+
+      <!-- Header Section -->
       <c-card-header class="d-flex align-items-center justify-content-between">
         Add Inventory
         <div>
@@ -35,13 +37,18 @@
       </c-modal>
       <!-- end model -->
 
+
+      <!-- Body Section -->
       <c-card-body class="mt-2">
+
+        <!-- Form Section -->
         <form [formGroup]="itemForm" cForm class="row g-3">
           <c-row>
             <c-col [md]="6">
               <label cLabel for="inputItemName">Item Name</label>
               <input formControlName="itemName" cFormControl id="inputItemName" type="text" />
             </c-col>
+            
             <c-col [md]="3">
               <label cLabel for="inputItemID">Item ID</label>
               <input formControlName="itemID" cFormControl id="inputItemID" type="text" />
@@ -100,6 +107,7 @@
             </c-col>
           </c-row>
         </form>
+
       </c-card-body>
 
     </c-card>

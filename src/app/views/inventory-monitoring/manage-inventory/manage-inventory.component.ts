@@ -30,7 +30,7 @@ export interface Van {
 })
 
 export class ManageInventoryComponent implements OnInit {
-  
+
 
   transferQuantity: number = 0;
   selectedVanId: string | null = null;
@@ -432,7 +432,7 @@ export class ManageInventoryComponent implements OnInit {
           this.orderForm.reset();
         },
         error: (err) => {
-          console.log(err);
+          console.error("Error fetch item ordered", err);
         }
       });
   }
@@ -454,29 +454,30 @@ export class ManageInventoryComponent implements OnInit {
 
   // all inventory categories
   getAllCategories() {
-    this.inventoryCategoryService.getAllInventoryCategoryService()
-      .subscribe({
+    this.inventoryCategoryService.getAllInventoryCategoryService().subscribe({
         next: (res) => {
           this.categoryData = res;
-     
           this.categoriesArray = this.categoryData.data || [];
-        
         },
         error: (error) => {
           console.error("Error fetching categories:", error);
         }
       });
-  }
+  };
 
-  // all inventory items
-  getAllItems() {
-    this.itemInventoryService.getAllItemsService()
-      .subscribe((res) => {
+  // All inventory items
+  getAllItems(): void {
+    this.itemInventoryService.getAllItemsService().subscribe({
+      next: (res) => {
         this.itemData = res;
         this.itemArray = this.itemData.data;
- 
-      });
-  }
+        console.log("Get all Items:", this.itemData);         
+      },
+      error: (err) => {
+        console.error("Error fetch get all items", err);        
+      }
+    });
+  };
 
   // get all vans
   getAllVans() {
@@ -485,7 +486,7 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-         
+          console.log("All vans:", this.vanData);
         },
         error: (error) => {
           console.error("Error fetching Vans:", error);
@@ -536,30 +537,45 @@ export class ManageInventoryComponent implements OnInit {
 
   // all van item list 
   getAllVanItems() {
-    this.itemInventoryService.getAllItemsForVanService()
-      .subscribe({
+    this.itemInventoryService.getAllItemsForVanService().subscribe({
         next: (res) => {
           this.vanItemsData = res;
           this.filterItems();
+          console.log("All Van's Item data:", this.vanItemsData );          
         },
         error: (err) => {
           console.error("Error fetching van items:", err);
         }
       });
-  }
+  };
 
   // Fetch all items that have vanName populated
-  getAllItemsWithVanNames() {
-    this.itemInventoryService.getAllItemsForVansService()
-      .subscribe({
-        next: (res) => {
-          this.vanNameItemData = res;
-          // Only keep items where vanName is not null or empty
-          this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
-          this.filterItems();
-        }
-      });
-  }
+  // getAllItemsWithVanNames() {
+  //   this.itemInventoryService.getAllItemsForVansService()
+  //     .subscribe({
+  //       next: (res) => {
+  //         this.vanNameItemData = res;
+  //         // Only keep items where vanName is not null or empty
+  //         this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
+  //         this.filterItems();
+  //         console.log("Get all items with van namecvgdfgdffgdfdf:", this.vanNameItemData);  
+  //       }
+  //     });
+  // }
+
+  getAllItemsWithVanNames(): void {
+    this.itemInventoryService.getAllItemsForVansService().subscribe({
+      next: (res) => {
+        this.vanNameItemData = res;
+        this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
+        this.filterItems();
+        console.log("Get all items with van name:", this.vanNameItemData);        
+      },
+      error: (err) => {
+        console.error("Error fetch all items with van:", err);        
+      }
+    });
+  };
 
   // get item by id 
   getItemById(id: any) {
@@ -594,7 +610,7 @@ export class ManageInventoryComponent implements OnInit {
 
   // update item's details by ID 
   updateItem(itemId: string, updatedData: any): void {
- 
+
 
     if (!itemId) {
       console.error('Invalid itemId:', itemId);
@@ -607,7 +623,7 @@ export class ManageInventoryComponent implements OnInit {
     this.itemInventoryService.updateItemService(updatedData, itemId)
       .subscribe({
         next: (updatedItem) => {
-        
+
           alert('Item updated successfully');
           this.getAllItems();
           this.resetForm();
@@ -645,6 +661,7 @@ export class ManageInventoryComponent implements OnInit {
             this.getAllWarehouseItems();
             this.getAllVanItems();
             this.getAllItemsWithVanNames();
+            this.getAllItems();
           },
           error: (err) => {
             console.error(err);
@@ -688,7 +705,7 @@ export class ManageInventoryComponent implements OnInit {
     });
   }
 
-  // tyransfer from van
+  // transfer from van
   transferItemToVan(vanId: string, totalQuantity: number, minimumQuantity: number) {
     if (!this.selectedVanId || this.transferQuantity <= 0) {
       alert(!this.selectedVanId ? 'Please select a van to transfer to.' : 'Please enter a valid quantity to transfer.');
@@ -723,5 +740,5 @@ export class ManageInventoryComponent implements OnInit {
       });
   }
 
-  
+
 }

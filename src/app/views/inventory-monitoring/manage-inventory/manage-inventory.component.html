@@ -1,17 +1,18 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
+
+      <!-- Header -->
       <c-card-header class="mb-4 d-flex justify-content-between">
+        <div>Manage Inventory</div>
+
         <div>
-          Manage Inventory
-        </div>
-        <div>
-          <button (click)="toggleLiveDemoVan()" cButton color="primary" class="me-2" size="sm" shape="rounded-pill">Manage Van</button>      
-          <button (click)="toggleLiveDemoItem()" cButton color="primary" size="sm" shape="rounded-pill">Add Item</button>
+          <button (click)="toggleLiveDemoVan()" cButton color="primary" class="me-2" size="sm">Manage Van</button>      
+          <button (click)="toggleLiveDemoItem()" cButton color="primary" size="sm">Add Item</button>
 
 
-          <!-- <c-dropdown variant="btn-group">
-            <button cButton cDropdownToggle color="primary" size="sm" shape="rounded-pill">Add</button>
+          <!-- <c-dropdown variant="btn-group" class="ms-2">
+            <button cButton cDropdownToggle color="primary" size="sm">Add</button>
             <ul cDropdownMenu dark>
               <li><button (click)="toggleLiveDemoCategory()" cDropdownItem>Add Category</button></li>
               <li><button (click)="toggleLiveDemoVan()" cDropdownItem>Add Van</button></li>
@@ -22,12 +23,17 @@
         </div>
       </c-card-header>
 
+
       <!-- category start model -->
       <c-modal id="liveDemoModal" [visible]="visiblecategory" (visibleChange)="handleLiveDemoChangeCategory($event)">
+        
+        <!-- Header -->
         <c-modal-header>
           <h5 cModalTitle>Add New Inventory Category</h5>
           <button (click)="toggleLiveDemoCategory()" cButtonClose></button>
         </c-modal-header>
+
+        <!-- Body Section -->
         <c-modal-body>
           <form cForm [formGroup]="categoryForm">
 
@@ -38,12 +44,16 @@
 
           </form>
         </c-modal-body>
+
+        <!-- Footer -->
         <c-modal-footer>
           <button (click)="toggleLiveDemoCategory()" cButton color="secondary" size="sm">Close</button>
           <button (click)="submitCategory()" (click)="toggleLiveDemoCategory()" cButton color="success" size="sm">Add</button>
         </c-modal-footer>
+
       </c-modal>
       <!-- category end model -->
+
 
       <!-- item start model -->
       <c-modal size="lg" id="liveDemoModal" [visible]="visibleItem" (visibleChange)="handleLiveDemoChangeItem($event)">
@@ -249,6 +259,7 @@
       </c-modal>
       <!-- item end model -->
 
+
       <!-- van start model -->
       <c-modal id="liveDemoModal" [visible]="visibleVan" (visibleChange)="handleLiveDemoChangeVan($event)">
         <c-modal-header>
@@ -271,6 +282,7 @@
         </c-modal-footer>
       </c-modal>
       <!-- van end model -->
+
 
       <!-- notification start model -->
       <c-modal #withPopoverModal alignment="center" id="withPopoverModal">
@@ -309,36 +321,34 @@
 
       
 
-
-
       <!-- Toggle Tabs -->
       <c-nav variant="tabs">
         <a [active]="true" [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="0" cNavLink>Warehouse</a>
         <a [cTabContent]="tabContent" [routerLink] [tabPaneIdx]="1" cNavLink>Vans</a>
       </c-nav>
 
+
+      <!-- Toggle Nav Bar -->
       <c-navbar colorScheme="light">
         <c-container class="mt-2">
           <div class="d-flex align-items-center ">
 
+            <!-- Search Box -->
             <input aria-label="Search" cFormControl class="me-2" placeholder="Search" type="search" [(ngModel)]="searchText">
 
+            <!-- Category Dropdown -->
             <c-dropdown class="ms-3">
               <select id="categorySelect" aria-label="Default select example" cSelect (change)="onCategorySelect($event)" class="rounded-pill mx-2">
-                <option value="" selected disabled>Category</option>
+                <option value="" selected disabled>Select category</option>
                 <option *ngIf="categoriesArray.length === 0" style="color: #ff6666;">No Categories</option>
-                <option *ngFor="let category of categoriesArray" [value]="category.categoryName">
-                  {{ category.categoryName }}
-                  <span>
-                    
-                  </span>
-                </option>
+                <option *ngFor="let category of categoriesArray" [value]="category._id">{{ category.categoryName }}</option>
               </select>
             </c-dropdown>
 
           </div>
 
           <div class="d-flex align-items-center">
+
             <!-- Notifications -->
             <button [cModalToggle]="withPopoverModal.id" shape="rounded-pill" size="sm" cButton color="primary" class="position-relative mx-2">
               Notifications
@@ -361,7 +371,9 @@
       </c-navbar>
 
 
+      <!-- Body Section -->
       <c-tab-content #tabContent="cTabContent">
+
         <!-- for warehouse -->
         <c-tab-pane class="p-3">
           <c-card-body>            
@@ -369,6 +381,7 @@
               <thead cTableColor="light">
                 <tr>
                   <th></th>
+                  <th>SNo.</th>
                   <th>Name</th>
                   <th>Category name</th>
                   <th>Min Qty</th>
@@ -378,19 +391,23 @@
                   <th>Action</th>
                 </tr>
               </thead>
+
               <tbody>
-                <tr *ngFor="let warehouse of itemArray | filter:searchText">
+
+                <!-- Data Available -->
+                <tr *ngFor="let warehouse of itemArray | filter:searchText; let i = index">
                   <td>
                     <div>
                       <input cFormCheckInput id="nolabelCheck" (click)="getItemById(warehouse._id)" name="nolabelCheck"
                         type="checkbox" />
                     </div>
                   </td>
+                  <td>{{ i + 1 }}</td>
                   <td>
                     <div>{{warehouse.itemName}}</div>
                   </td>
                   <td>
-                    <div>{{ warehouse.categoryId.categoryName }}</div>
+                    <div>{{ warehouse.categoryId?.categoryName }}</div>
                   </td>                 
                   <td>
                     <div>{{ warehouse.minQty }}</div>
@@ -457,10 +474,14 @@
                     </button>
                   </td>
                 </tr>
+
+                <!-- No Data Available -->
                 <tr *ngIf="!warehouseItemsArray || warehouseItemsArray.length === 0">
-                  <td colspan="10" class="text-center" style="color: red;">-- No Data Available For Warehouse --</td>
+                  <td colspan="10" class="text-center text-muted">No Data Available For Warehouse</td>
                 </tr>
+
               </tbody>
+
             </table>
           </c-card-body>
         </c-tab-pane>
@@ -482,6 +503,7 @@
                   <th>Action</th>
                 </tr>
               </thead>
+
               <tbody>
                 <tr *ngFor="let van of vanNameItemArray | filter:searchText">
                   <td>
@@ -492,18 +514,14 @@
                   <td>{{ van.itemName }}</td>
                   <td>{{ van.vanName }}</td>
                   <td>{{ van.categoryName }}</td>
-                  <!-- <td>{{ van.minimumQuantity }}</td> -->
+                  <td>{{ van.minimumQuantity }}</td>
                   <td>{{ van.totalQuantity }}
                   </td>                  
                   <td>
                     <form [formGroup]="orderForm">
                       <c-input-group sizing="sm" style="width: 50% !important;">
-                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl
-                          placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
-                        <button cButton color="danger" id="button-addon2" type="button" variant="outline"
-                          (click)="addToOrder()">
-                          Order
-                        </button>
+                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
+                        <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder()">Order</button>
                       </c-input-group>
                     </form>                    
                   </td>
@@ -513,10 +531,12 @@
                     
                     <!-- Transfer Modal -->
                     <c-modal id="liveDemoModal{{van._id}}" [visible]="visibleVan2[van._id]" (visibleChange)="handleLiveDemoChange2Van2($event, van._id)">
+                     
                       <c-modal-header>
                         <h5 cModalTitle>Item From Van</h5>
                         <button (click)="toggleLiveDemoVan2(van._id)" cButtonClose size="sm"></button>
                       </c-modal-header>
+
                       <c-modal-body>
                         <c-row>
                           <c-col [md]="4">
@@ -537,12 +557,14 @@
                           </c-col>
                         </c-row>
                       </c-modal-body>
+
                       <c-modal-footer class="py-1">
                         <button (click)="toggleLiveDemoVan2(van._id)" cButton color="secondary" size="sm">Cancel</button>
                         <button (click)="transferItemToVan(van._id, van.totalQuantity, van.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
                       </c-modal-footer>
                     </c-modal>
                     <!-- End Transfer Modal -->
+
                   </td>
                   <td>
                     <button (click)="getItemById(van._id)" (click)="toggleLiveDemoItem()" (click)="clickAddMember()" class="me-1">
@@ -554,7 +576,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="!vanNameItemArray || vanNameItemArray.length === 0">
-                  <td colspan="10" class="text-center" style="color: red;">-- No Data Available For Van --</td>
+                  <td colspan="10" class="text-center text-muted">No Data Available For Van</td>
                 </tr>
               </tbody>
             </table>
