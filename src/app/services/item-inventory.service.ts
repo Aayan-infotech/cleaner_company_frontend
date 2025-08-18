@@ -12,52 +12,54 @@ export class ItemInventoryService {
   http = inject(HttpClient);
 
   createItemService(formData: FormData):Observable<any> {
-    return this.http.post<any>(`${apiUrls.itemInventoryApi}addItem`, formData);
+    return this.http.post<any>(`${apiUrls.itemInventoryApi}add-item`, formData);
   }
 
   getAllItemsService() {
-    return this.http.get(`${apiUrls.itemInventoryApi}getAllItems`)
+    return this.http.get(`${apiUrls.itemInventoryApi}get-all-items`)
   }
+
+  getAllItemsWithPaginatedService(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get<any>(`${apiUrls.itemInventoryApi}get-all-items-with-pagination`, {
+      params: {
+        page: page.toString(),
+        limit: limit.toString(),
+      }
+    });
+  };  
 
   getItemByIdService(id: any) {
-    return this.http.get(`${apiUrls.itemInventoryApi}get/${id}`);
+    return this.http.get(`${apiUrls.itemInventoryApi}get-item/${id}`);
   }
 
-  // updateItemService(data: any, id: string) {
-  //   return this.http.put(`${apiUrls.itemInventoryApi}update/${id}`, data);
-  // }
-
   updateItemService(formData: FormData, id: string): Observable<any> {
-    return this.http.put<any>(`${apiUrls.itemInventoryApi}update/${id}`, formData);
+    return this.http.put<any>(`${apiUrls.itemInventoryApi}update-item/${id}`, formData);
   }
 
   deleteItemService(id: any) {
-    return this.http.delete(`${apiUrls.itemInventoryApi}delete/${id}`);
+    return this.http.delete(`${apiUrls.itemInventoryApi}delete-item/${id}`);
   }
 
+  // Manage Items for Warehouse and Van
 
-  // New method to get all items for warehouse
   getAllItemsForWarehouseService() {
-    return this.http.get(`${apiUrls.itemInventoryApi}allWarehouseItems`);
+    return this.http.get(`${apiUrls.itemInventoryApi}get-all-warehouse-items`);
   }
 
-  // New method to get all items for van
   getAllItemsForVanService() {
-    return this.http.get(`${apiUrls.itemInventoryApi}allVanItems`);
+    return this.http.get(`${apiUrls.itemInventoryApi}get-all-van-items`);
   }
 
   getAllItemsForVansService() {
-    return this.http.get(`${apiUrls.itemInventoryApi}allVanName`);
+    return this.http.get(`${apiUrls.itemInventoryApi}get-all-van-name`);
   }
 
-  // New method to transfer items
   transferItemService(transferData: any) {
-    return this.http.post<any>(`${apiUrls.itemInventoryApi}transferItem`, transferData);
+    return this.http.post<any>(`${apiUrls.itemInventoryApi}transfer-item`, transferData);
   }
 
-  // New method to transfer items from one van to another
   transferItemToVanService(transferItemData: any) {
-    return this.http.post<any>(`${apiUrls.itemInventoryApi}transferItemToVan`, transferItemData);
+    return this.http.post<any>(`${apiUrls.itemInventoryApi}transfer-item-to-van`, transferItemData);
   }
 
 }
