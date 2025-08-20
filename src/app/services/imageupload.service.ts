@@ -9,10 +9,10 @@ export class ImageuploadService {
   constructor(private http: HttpClient) { }
 
   uploadProduct(formData: FormData): Observable<any> {
-    return this.http.post<any>('http://localhost:5966/api/upload', formData);
+    return this.http.post<any>('http://44.198.242.234:5966/api/upload', formData);
   }
 
   getProducts(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:5966/api/products');
+    return this.http.get<any[]>('http://44.198.242.234:5966/api/products');
   }
 }

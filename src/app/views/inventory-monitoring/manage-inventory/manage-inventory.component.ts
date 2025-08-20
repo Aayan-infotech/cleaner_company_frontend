@@ -100,8 +100,9 @@ export class ManageInventoryComponent implements OnInit {
   selectedCategory: string = '';
 
   selectedCategoryId: string = '';
-  allItems: any[] = []; 
-  
+  allItems: any[] = [];
+
+  latestOrderStatuses: { [key: string]: string } = {};
 
   constructor(private cdr: ChangeDetectorRef) { }
 
@@ -204,7 +205,7 @@ export class ManageInventoryComponent implements OnInit {
       inStock: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       amtOrder: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       forWarehouse: [false, Validators.requiredTrue],
-      addOrder: [false, Validators.requiredTrue], 
+      addOrder: [false, Validators.requiredTrue],
       cost: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       comment: ['', [Validators.required, Validators.maxLength(80)]],
@@ -221,8 +222,7 @@ export class ManageInventoryComponent implements OnInit {
     });
 
     this.orderForm = this.fb.group({
-      orderQuantity: ['', Validators.required],
-      itemInfo: ['']
+      requestedQuantity: ['', Validators.required],
     });
 
     if (this.itemId) {
@@ -391,18 +391,33 @@ export class ManageInventoryComponent implements OnInit {
     }
   }
 
-  // add order item
-  addToOrder() {
-    this.orderService.createItemOrderService(this.orderForm.value)
-      .subscribe({
-        next: (res) => {
-          alert("Item Ordered");
-          this.orderForm.reset();
-        },
-        error: (err) => {
-          console.error("Error fetch item ordered", err);
-        }
-      });
+  // Add order item Requesti
+  addToOrder(itemId: string): void {
+    if (this.orderForm.invalid) {
+      alert("Please enter a valid quantity");
+      return;
+    }
+  
+    const requestedQuantity = this.orderForm.value.requestedQuantity;
+  
+    this.orderService.createOrderItemService(itemId, requestedQuantity).subscribe({
+      next: (res) => {
+        console.log("Order API Response:", res); 
+
+      if (res?.data) {
+        const order = res.data;
+        // store latest status for that item
+        this.latestOrderStatuses[order.itemId] = order.status; 
+      }
+      
+        alert("Item Ordered Successfully!");
+        this.orderForm.reset();
+
+      },
+      error: (err) => {
+        console.error("Error while ordering item", err);
+      }
+    });
   }
 
   clickAddMember() {
@@ -440,7 +455,7 @@ export class ManageInventoryComponent implements OnInit {
 
     this.itemInventoryService.getAllItemsWithPaginatedService(page, this.pageSize).subscribe({
       next: (res) => {
-        this.allItems = res.data || []; 
+        this.allItems = res.data || [];
         this.itemArray = [...this.allItems];
         this.totalItems = res.pagination?.total || 0;
         this.currentPage = res.pagination?.page || 1;
@@ -481,7 +496,7 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-          console.log("All vans:", this.vanData);
+          console.log("All vans:::", this.vanData);
         },
         error: (error) => {
           console.error("Error fetching Vans:", error);
@@ -514,7 +529,7 @@ export class ManageInventoryComponent implements OnInit {
   onCategorySelect(event: Event): void {
     const selectedId = (event.target as HTMLSelectElement).value;
     this.selectedCategoryId = selectedId;
-  
+
     if (selectedId === 'all') {
       // Show all items
       this.itemArray = [...this.allItems];
@@ -546,7 +561,7 @@ export class ManageInventoryComponent implements OnInit {
         this.vanItemsData = res;
         this.filterItems();
         this.getAllItems();
-        console.log("All Van's Item data:", this.vanItemsData);
+        console.log("All Van's Item data::::::::::", this.vanItemsData);
       },
       error: (err) => {
         console.error("Error fetching van items:", err);
@@ -609,7 +624,7 @@ export class ManageInventoryComponent implements OnInit {
     if (!itemId) {
       console.error('Invalid itemId:', itemId);
       alert('Invalid item ID. Please ensure you have selected a valid item to update.');
-      return; 
+      return;
     }
 
     this.itemInventoryService.updateItemService(updatedData, itemId)

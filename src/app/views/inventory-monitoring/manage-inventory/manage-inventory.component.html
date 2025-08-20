@@ -524,6 +524,7 @@
                   <th>Min Qty</th>
                   <th>Total WH Qty</th>               
                   <th>Quantity To Order</th>
+                  <!-- <th>Ord Status</th> -->
                   <th>Transfer To</th>
                   <th>Action</th>
                 </tr>
@@ -531,7 +532,7 @@
 
               <tbody>
 
-                <!-- Case 1: There are items in the warehouse -->
+                <!-- There are items in the warehouse -->
                 <ng-container *ngIf="itemArray && itemArray.length > 0; else noWarehouseData">
 
                   <!-- Filtered & Displayed Items -->
@@ -547,24 +548,26 @@
                       <div>{{warehouse.itemName}}</div>
                     </td>
                     <td>
-                      <div>{{ warehouse.categoryId?.categoryName }}</div>
+                      <div>{{ warehouse.categoryId?.categoryName || 'N/A' }}</div>
                     </td>                 
                     <td>
                       <div>{{ warehouse.minQty }}</div>
                     </td> 
                     <td>              
                       <div>{{warehouse.maxQty }}</div>
-                    </td>                 
+                    </td> 
+
                     <td>
-                      <form [formGroup]="orderForm">
+                      <form [formGroup]="orderForm" class="d-flex">
                         <c-input-group sizing="sm" style="width: 50% !important;">
-                          <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl
-                            placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
-                          <button cButton color="danger" id="button-addon2" type="button" variant="outline"
-                            (click)="addToOrder()">Order</button>
+                          <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl  type="number" formControlName="requestedQuantity" placeholder="Add Quantity" />
+                          <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder(warehouse._id)">Order</button>
                         </c-input-group>
+
+                        <button *ngIf="latestOrderStatuses[warehouse._id] === 'pending'" cButton size="sm" class="ms-1" color="warning" variant="outline">{{ latestOrderStatuses[warehouse._id]}}</button>
                       </form>
                     </td>
+
                     <td>
                       <button (click)="getItemById(warehouse._id); toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
 
@@ -658,7 +661,7 @@
                       </div>
               
                       <!-- Total Items Count -->
-                      <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body">
+                      <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
                         Total Items: <span class="text-dark">{{ totalItems }}</span>
                       </div>
               
@@ -705,8 +708,8 @@
                   <td>
                     <form [formGroup]="orderForm">
                       <c-input-group sizing="sm" style="width: 50% !important;">
-                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
-                        <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder()">Order</button>
+                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl type="number" formControlName="requestedQuantity" placeholder="Add Quantity" />
+                        <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder(van._id)">Order</button>
                       </c-input-group>
                     </form>                    
                   </td>

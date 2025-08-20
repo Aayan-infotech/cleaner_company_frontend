@@ -12,6 +12,6 @@ export class DropDownService {
  
 
   getAllDropDownService(){
-    return this.http.get(`http://localhost:5966/api/dropdown/getAll`)
+    return this.http.get(`http://44.198.242.234:5966/api/dropdown/getAll`)
   }
 }

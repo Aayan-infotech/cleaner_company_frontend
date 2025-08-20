@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CalendarEventService {
 
-  private apiUrl = 'http://localhost:5966/api/users';
+  private apiUrl = 'http://44.198.242.234:5966/api/users';
   
   constructor(private http: HttpClient) {}
 
