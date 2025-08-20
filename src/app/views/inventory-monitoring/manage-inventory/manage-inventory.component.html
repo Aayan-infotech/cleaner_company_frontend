@@ -7,8 +7,9 @@
         <div>Manage Inventory</div>
 
         <div>
-          <button (click)="toggleLiveDemoVan()" cButton color="primary" class="me-2" size="sm">Manage Van</button>      
-          <button (click)="toggleLiveDemoItem()" cButton color="primary" size="sm">Add Item</button>
+          <button (click)="toggleLiveDemoVan()" cButton color="primary" class="me-2" size="sm">Manage Van</button>   
+          <!-- <button (click)="toggleLiveDemoCategory()"cButton color="primary" size="sm" class="me-2">Add Category</button> -->
+          <button (click)="openAddItemModal()" cButton color="primary" size="sm">Add Item</button>
 
 
           <!-- <c-dropdown variant="btn-group" class="ms-2">
@@ -72,14 +73,28 @@
                   <c-col [md]="8">
                     <div cFormFloating>
                       <input cFormControl formControlName="itemName" id="itemName" type="text" placeholder="Enter..." />
-                      <label cLabel for="itemName">Enter Item Name</label>                                              
+                      <label cLabel for="itemName">Enter Item Name</label> 
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('itemName')?.invalid && itemForm.get('itemName')?.touched" class="text-danger">
+                        <small>Item name is required</small>
+                      </div>
+
                     </div>   
                   </c-col>
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="partNumber" id="partNumber" type="text" placeholder="Enter..."  />
-                      <label cLabel for="partNumber">Part Number</label>                                              
+                      <input cFormControl formControlName="partNumber" id="partNumber" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                      <label cLabel for="partNumber">Part Number</label> 
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('partNumber')?.invalid && itemForm.get('partNumber')?.touched" class="text-danger">
+                        <small>
+                          *required field only numbers allowed
+                        </small>
+                      </div>
+
                     </div> 
                   </c-col>
                 </c-row>
@@ -95,20 +110,38 @@
                         </option>
                       </select>
                       <label cLabel>Select Category</label>
-                    </div>                    
+                    </div>  
+                    
+                    <!-- Validation message -->
+                    <div *ngIf="itemForm.get('categoryId')?.invalid && itemForm.get('categoryId')?.touched" class="text-danger">
+                      <small>Category is required</small>
+                    </div>
+
                   </c-col>
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="maxQty" id="maxQty" type="text" placeholder="Enter..."  />
-                      <label cLabel for="maxQty">Max Qty</label>                                              
+                      <input cFormControl formControlName="maxQty" id="maxQty" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                      <label cLabel for="maxQty">Max Qty</label>  
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('maxQty')?.invalid && itemForm.get('maxQty')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>
+
                     </div> 
                   </c-col>
 
                   <c-col [md]="3">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="minQty" id="minQty" type="text" placeholder="Enter..."  />
-                      <label cLabel for="minQty">Min Qty</label>                                              
+                      <input cFormControl formControlName="minQty" id="minQty" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  />
+                      <label cLabel for="minQty">Min Qty</label>  
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('minQty')?.invalid && itemForm.get('minQty')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>
+
                     </div> 
                   </c-col>
                 </c-row>
@@ -124,20 +157,38 @@
                         </option>
                       </select>
                       <label cLabel>Select Van</label>
-                    </div>                       
+                    </div>      
+                    
+                    <!-- Validation message -->
+                    <div *ngIf="itemForm.get('vanId')?.invalid && itemForm.get('vanId')?.touched" class="text-danger">
+                      <small>Van is required</small>
+                    </div>
+
                   </c-col>
 
                   <c-col [md]="3">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="inStock" id="inStock" type="text" placeholder="Enter..."  />
-                      <label cLabel for="inStock">In Stock</label>                                              
+                      <input cFormControl formControlName="inStock" id="inStock" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                      <label cLabel for="inStock">In Stock</label>   
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('inStock')?.invalid && itemForm.get('inStock')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>
+
                     </div> 
                   </c-col>
 
                   <c-col [md]="4">                    
                     <div cFormFloating>
-                      <input cFormControl formControlName="amtOrder" id="amtOrder" type="text" placeholder="Enter..."  />
-                      <label cLabel for="amtOrder">Amt to Order</label>                                              
+                      <input cFormControl formControlName="amtOrder" id="amtOrder" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')"  />
+                      <label cLabel for="amtOrder">Amt to Order</label>  
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('amtOrder')?.invalid && itemForm.get('amtOrder')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>
+
                     </div> 
                   </c-col>
 
@@ -149,6 +200,12 @@
                     <c-form-check>
                       <input cFormCheckInput formControlName="forWarehouse" id="forWarehouse" type="checkbox" />
                       <label cFormCheckLabel for="forWarehouse">For Warehouse</label>
+
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('forWarehouse')?.invalid && itemForm.get('forWarehouse')?.touched" class="text-danger">
+                        <small>You must check this box</small>
+                      </div>
+
                     </c-form-check>
                   </c-col>
 
@@ -156,33 +213,62 @@
                     <c-form-check>
                       <input cFormCheckInput formControlName="addOrder" id="addOrder" type="checkbox" />
                       <label cFormCheckLabel for="addOrder">Add to Order</label>
+
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('addOrder')?.invalid && itemForm.get('addOrder')?.touched" class="text-danger">
+                        <small>You must check this box</small>
+                      </div>
+
                     </c-form-check>
                   </c-col>
                 </c-row>
 
-                <c-row>                   
+                <c-row class="my-3">  
+
                   <c-col>
                     <div cFormFloating>
-                      <input cFormControl formControlName="cost" id="cost" type="text" placeholder="Enter..."/>
-                      <label cLabel for="cost">Enter Cost</label>                                              
+                      <input cFormControl formControlName="cost" id="cost" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                      <label cLabel for="cost">Enter Cost</label>  
+
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('cost')?.invalid && itemForm.get('cost')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>                       
+                      
                     </div>
                   </c-col>
-                </c-row>
 
-                <c-row class="my-3">
                   <c-col>
                     <div cFormFloating> 
-                      <input cFormControl formControlName="price" id="price" type="text" placeholder="Enter..." />
-                      <label cLabel for="price">Enter Price</label>                                              
+                      <input cFormControl formControlName="price" id="price" type="text" placeholder="Enter..." maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                      <label cLabel for="price">Enter Price</label>
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('price')?.invalid && itemForm.get('price')?.touched" class="text-danger">
+                        <small>*required field Only number allowed</small>
+                      </div>
+
                     </div>    
                   </c-col>
+
                 </c-row>
 
                 <c-row> 
                   <c-col>
                     <div cFormFloating>
-                      <input cFormControl formControlName="comment" id="comment" type="text" placeholder="Enter..." />
-                      <label cLabel for="comment">Enter Comment...</label>                                              
+                      <textarea cFormControl formControlName="comment" id="comment" type="text" placeholder="Enter..." maxlength="80" style="height: 150px;"></textarea>
+                      <label cLabel for="comment">Enter Comment...</label>   
+                      
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('comment')?.invalid && itemForm.get('comment')?.touched" class="text-danger">
+                        <small>Comment is required</small>
+                      </div>
+
+                       <!-- Live counter -->
+                       <div class="text-muted small">
+                        {{ itemForm.get('comment')?.value?.length || 0 }}/80
+                      </div>
+
                     </div>    
                   </c-col>
                 </c-row>
@@ -194,8 +280,24 @@
                 <c-row>
                   <c-col>
                     <div cFormFloating>
-                      <textarea cFormControl formControlName="shortDes" id="shortDes" type="text" placeholder="Enter..." style="height: 100px;"></textarea>
-                      <label cLabel for="shortDes">Enter Short Description</label>                                              
+                      <textarea cFormControl formControlName="shortDes" id="shortDes" type="text" placeholder="Enter..." maxlength="60" style="height: 100px;"></textarea>
+                      <label cLabel for="shortDes">Enter Short Description</label>  
+                      
+                      <!-- Validation messages -->
+                      <div *ngIf="itemForm.get('shortDes')?.invalid && itemForm.get('shortDes')?.touched" class="text-danger">
+                        <small *ngIf="itemForm.get('shortDes')?.errors?.['required']">
+                          Short description is required
+                        </small>
+                        <small *ngIf="itemForm.get('shortDes')?.errors?.['maxlength']">
+                          Maximum 60 characters allowed
+                        </small>
+                      </div>
+
+                       <!-- Live counter -->
+                       <div class="text-muted small">
+                        {{ itemForm.get('shortDes')?.value?.length || 0 }}/60
+                      </div>
+
                     </div>
                   </c-col>
                 </c-row>
@@ -203,8 +305,24 @@
                 <c-row class="my-3">
                   <c-col>
                     <div cFormFloating>
-                      <textarea cFormControl formControlName="partDes" id="partDes" type="text" placeholder="Enter..." style="height: 130px;"></textarea>
-                      <label cLabel for="partDes">Enter Part Description</label>                                              
+                      <textarea cFormControl formControlName="partDes" id="partDes" type="text" placeholder="Enter..." maxlength="50" style="height: 130px;"></textarea>
+                      <label cLabel for="partDes">Enter Part Description</label>  
+                      
+                      <!-- Validation messages -->
+                      <div *ngIf="itemForm.get('partDes')?.invalid && itemForm.get('partDes')?.touched" class="text-danger">
+                        <small *ngIf="itemForm.get('partDes')?.errors?.['required']">
+                          Part description is required
+                        </small>
+                        <small *ngIf="itemForm.get('partDes')?.errors?.['maxlength']">
+                          Maximum 50 characters allowed
+                        </small>
+                      </div>
+
+                      <!-- Live counter -->
+                      <div class="text-muted small">
+                        {{ itemForm.get('partDes')?.value?.length || 0 }}/50
+                      </div>
+
                     </div>
                   </c-col>
                 </c-row>
@@ -218,6 +336,12 @@
                     <div cFormFloating>
                       <input cFormControl (change)="onFileChanged($event, 'Images')" id="Images" type="file" placeholder="Add Image" multiple />
                       <label cLabel for="Images">Add Image (max 9 Images)</label>
+
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('Images')?.invalid && itemForm.get('Images')?.touched" class="text-danger">
+                        <small>Please upload at least one valid image (JPG/PNG, max 2MB each, max 9 files)</small>
+                      </div>                      
+
                     </div>
                   </c-col>
                 </c-row>
@@ -231,6 +355,12 @@
                     <div cFormFloating>
                       <input cFormControl (change)="onFileChanged($event, 'pdfs')" id="pdfs" type="file" placeholder="Add PDF" multiple />
                       <label cLabel for="pdfs">Add PDF (max 9 PDF)</label>
+
+                      <!-- Validation message -->
+                      <div *ngIf="itemForm.get('pdfs')?.invalid && itemForm.get('pdfs')?.touched" class="text-danger">
+                        <small>Please upload at least one valid PDF (PDF max 2MB each, max 9 files)</small>
+                      </div>
+
                     </div>
                   </c-col>
                 </c-row>
@@ -244,6 +374,12 @@
                     <div cFormFloating>
                       <input cFormControl (change)="onFileChanged($event, 'videos')" id="videos" type="file" placeholder="Add Videos" multiple />
                       <label cLabel for="videos">Add Videos (max 9 Videos)</label>
+
+                       <!-- Validation message -->
+                       <div *ngIf="itemForm.get('videos')?.invalid && itemForm.get('videos')?.touched" class="text-danger">
+                        <small>Please upload at least one valid Video (Video max 5MB each ,max 9 files)</small>
+                      </div>
+
                     </div>
                   </c-col>
                 </c-row>
@@ -254,7 +390,7 @@
         </c-modal-body>
         <c-modal-footer>
           <button (click)="toggleLiveDemoItem()" cButton color="secondary" size="sm">Close</button>
-          <button (click)="submitItem()" (click)="toggleLiveDemoItem()" *ngIf="showSaveChanges" cButton color="success" size="sm">Save Item</button>
+          <button (click)="submitItem()" (click)="toggleLiveDemoItem()" *ngIf="showSaveChanges" cButton [disabled]="itemForm.invalid" color="success" size="sm">Save Item</button>
         </c-modal-footer>
       </c-modal>
       <!-- item end model -->
@@ -339,7 +475,7 @@
             <!-- Category Dropdown -->
             <c-dropdown class="ms-3">
               <select id="categorySelect" aria-label="Default select example" cSelect (change)="onCategorySelect($event)" class="rounded-pill mx-2">
-                <option value="" selected disabled>Select category</option>
+                <option value="all" selected>All Categories</option>
                 <option *ngIf="categoriesArray.length === 0" style="color: #ff6666;">No Categories</option>
                 <option *ngFor="let category of categoriesArray" [value]="category._id">{{ category.categoryName }}</option>
               </select>
@@ -350,11 +486,11 @@
           <div class="d-flex align-items-center">
 
             <!-- Notifications -->
-            <button [cModalToggle]="withPopoverModal.id" shape="rounded-pill" size="sm" cButton color="primary" class="position-relative mx-2">
+            <!-- <button [cModalToggle]="withPopoverModal.id" shape="rounded-pill" size="sm" cButton color="primary" class="position-relative mx-2">
               Notifications
               <c-badge color="danger" position="top-end" shape="rounded-pill">99+</c-badge>
               <span class="visually-hidden">unread messages</span>
-            </button>
+            </button> -->
 
             <!-- Export -->
             <c-dropdown class="ms-3">
@@ -378,6 +514,7 @@
         <c-tab-pane class="p-3">
           <c-card-body>            
             <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
+              
               <thead cTableColor="light">
                 <tr>
                   <th></th>
@@ -387,6 +524,7 @@
                   <th>Min Qty</th>
                   <th>Total WH Qty</th>               
                   <th>Quantity To Order</th>
+                  <!-- <th>Ord Status</th> -->
                   <th>Transfer To</th>
                   <th>Action</th>
                 </tr>
@@ -394,94 +532,144 @@
 
               <tbody>
 
-                <!-- Data Available -->
-                <tr *ngFor="let warehouse of itemArray | filter:searchText; let i = index">
-                  <td>
-                    <div>
-                      <input cFormCheckInput id="nolabelCheck" (click)="getItemById(warehouse._id)" name="nolabelCheck"
-                        type="checkbox" />
-                    </div>
-                  </td>
-                  <td>{{ i + 1 }}</td>
-                  <td>
-                    <div>{{warehouse.itemName}}</div>
-                  </td>
-                  <td>
-                    <div>{{ warehouse.categoryId?.categoryName }}</div>
-                  </td>                 
-                  <td>
-                    <div>{{ warehouse.minQty }}</div>
-                  </td> 
-                  <td>              
-                    <div>{{warehouse.maxQty }}</div>
-                  </td>                 
-                  <td>
-                    <form [formGroup]="orderForm">
-                      <c-input-group sizing="sm" style="width: 50% !important;">
-                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl
-                          placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
-                        <button cButton color="danger" id="button-addon2" type="button" variant="outline"
-                          (click)="addToOrder()">Order</button>
-                      </c-input-group>
-                    </form>
-                  </td>
-                  <td>
-                    <button (click)="getItemById(warehouse._id); toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
+                <!-- There are items in the warehouse -->
+                <ng-container *ngIf="itemArray && itemArray.length > 0; else noWarehouseData">
 
-                    <!-- transfer start model -->
-                    <c-modal id="liveDemoModal{{warehouse._id}}" [visible]="visible2[warehouse._id]" (visibleChange)="handleLiveDemoChange2($event, warehouse._id)">
-                      <c-modal-header>
-                        <h5 cModalTitle>Item From Warehouse</h5>
-                        <button (click)="toggleLiveDemo2(warehouse._id)" cButtonClose size="sm"></button>
-                      </c-modal-header>
-                      <c-modal-body>
-                        <c-row>
+                  <!-- Filtered & Displayed Items -->
+                  <tr *ngFor="let warehouse of itemArray | filter:searchText; let i = index">
+                    <td>
+                      <div>
+                        <input cFormCheckInput id="nolabelCheck" (click)="getItemById(warehouse._id)" name="nolabelCheck"
+                          type="checkbox" />
+                      </div>
+                    </td>
+                    <td>{{ i + 1 }}</td>
+                    <td>
+                      <div>{{warehouse.itemName}}</div>
+                    </td>
+                    <td>
+                      <div>{{ warehouse.categoryId?.categoryName || 'N/A' }}</div>
+                    </td>                 
+                    <td>
+                      <div>{{ warehouse.minQty }}</div>
+                    </td> 
+                    <td>              
+                      <div>{{warehouse.maxQty }}</div>
+                    </td> 
 
-                          <c-col [md]="4">
-                            <input cFormControl id="" type="text" [value]="warehouse.itemName" disabled />
-                          </c-col>
+                    <td>
+                      <form [formGroup]="orderForm" class="d-flex">
+                        <c-input-group sizing="sm" style="width: 50% !important;">
+                          <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl  type="number" formControlName="requestedQuantity" placeholder="Add Quantity" />
+                          <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder(warehouse._id)">Order</button>
+                        </c-input-group>
 
-                          <c-col [md]="4">
-                            <input cFormControl id="transferQuantity" type="number" [(ngModel)]="transferQuantity" placeholder="Qty" />
-                          </c-col>
+                        <button *ngIf="latestOrderStatuses[warehouse._id] === 'pending'" cButton size="sm" class="ms-1" color="warning" variant="outline">{{ latestOrderStatuses[warehouse._id]}}</button>
+                      </form>
+                    </td>
 
-                          <c-col [md]="4">
-                            <div>
-                              <select cSelect id="vanSelect" [(ngModel)]="selectedVanId">
-                                <option disabled selected>Select a van</option>
-                                <option *ngFor="let van of vanArray" [value]="van._id">{{ van.vanName }}</option>
-                              </select>
-                            </div>
-                          </c-col>
+                    <td>
+                      <button (click)="getItemById(warehouse._id); toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
 
-                        </c-row>
-                      </c-modal-body>
-                      <c-modal-footer class="py-1">
-                        <button (click)="toggleLiveDemo2(warehouse._id)" cButton color="secondary" size="sm">Cancel</button>
-                        <button (click)="transferItem(warehouse._id, warehouse.totalQuantity, warehouse.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
+                      <!-- transfer start model -->
+                      <c-modal id="liveDemoModal{{warehouse._id}}" [visible]="visible2[warehouse._id]" (visibleChange)="handleLiveDemoChange2($event, warehouse._id)">
+                        <c-modal-header>
+                          <h5 cModalTitle>Item From Warehouse</h5>
+                          <button (click)="toggleLiveDemo2(warehouse._id)" cButtonClose size="sm"></button>
+                        </c-modal-header>
+                        <c-modal-body>
+                          <c-row>
 
-                      </c-modal-footer>
-                    </c-modal>
-                    <!-- transfer end model -->
+                            <c-col [md]="4">
+                              <input cFormControl id="" type="text" [value]="warehouse.itemName" disabled />
+                            </c-col>
 
-                  </td>
-                  <td>
-                    <button (click)="getItemById(warehouse._id)" (click)="toggleLiveDemoItem()" class="me-1">
-                      <svg cIcon name="cil-pencil" size="sm"></svg>
-                    </button>
-                    <button (click)="deleteItem(warehouse._id)">
-                      <svg cIcon name="cil-trash" size="sm"></svg>
-                    </button>
-                  </td>
-                </tr>
+                            <c-col [md]="4">
+                              <input cFormControl id="transferQuantity" type="number" [(ngModel)]="transferQuantity" placeholder="Qty" />
+                            </c-col>
 
-                <!-- No Data Available -->
-                <tr *ngIf="!warehouseItemsArray || warehouseItemsArray.length === 0">
-                  <td colspan="10" class="text-center text-muted">No Data Available For Warehouse</td>
-                </tr>
+                            <c-col [md]="4">
+                              <div>
+                                <select cSelect id="vanSelect" [(ngModel)]="selectedVanId">
+                                  <option disabled selected>Select a van</option>
+                                  <option *ngFor="let van of vanArray" [value]="van._id">{{ van.vanName }}</option>
+                                </select>
+                              </div>
+                            </c-col>
+
+                          </c-row>
+                        </c-modal-body>
+                        <c-modal-footer class="py-1">
+                          <button (click)="toggleLiveDemo2(warehouse._id)" cButton color="secondary" size="sm">Cancel</button>
+                          <button (click)="transferItem(warehouse._id, warehouse.totalQuantity, warehouse.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
+
+                        </c-modal-footer>
+                      </c-modal>
+                      <!-- transfer end model -->
+
+                    </td>
+                    
+                    <td>
+                      <button (click)="getItemById(warehouse._id)" (click)="toggleLiveDemoItem()" class="me-1">
+                        <svg cIcon name="cil-pencil" size="sm"></svg>
+                      </button>
+                      <button (click)="deleteItem(warehouse._id)">
+                        <svg cIcon name="cil-trash" size="sm"></svg>
+                      </button>
+                    </td>
+                  </tr>
+
+                </ng-container>
+
+                 <!-- No items exist -->
+                <ng-template #noWarehouseData>
+                  <tr>
+                    <td colspan="12" class="text-center text-muted">
+                      No Item Available
+                    </td>
+                  </tr>
+                </ng-template>
+
 
               </tbody>
 
+              <tfoot>
+                <tr>
+                  <td class="px-3" colspan="12">
+                    <div class="d-flex justify-content-between align-items-center">
+              
+                      <!-- Pagination Section -->
+                      <div class="mt-3">
+                        <c-pagination aria-label="Page navigation example" class="mb-0">
+              
+                          <!-- Previous Button -->
+                          <li cPageItem [class.disabled]="currentPage === 1">
+                            <a class="py-2" cPageLink style="cursor:pointer;" (click)="changePage(currentPage - 1)">Previous</a>
+                          </li>
+              
+                          <!-- Dynamic Page Numbers -->
+                          <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
+                            <a class="py-2" cPageLink style="cursor:pointer;" (click)="changePage(page)">{{ page }}</a>
+                          </li>
+              
+                          <!-- Next Button -->
+                          <li cPageItem [class.disabled]="currentPage === totalPages">
+                            <a class="py-2" cPageLink style="cursor:pointer;" (click)="changePage(currentPage + 1)">Next</a>
+                          </li>
+              
+                        </c-pagination>
+                      </div>
+              
+                      <!-- Total Items Count -->
+                      <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
+                        Total Items: <span class="text-dark">{{ totalItems }}</span>
+                      </div>
+              
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+              
             </table>
           </c-card-body>
         </c-tab-pane>
@@ -520,8 +708,8 @@
                   <td>
                     <form [formGroup]="orderForm">
                       <c-input-group sizing="sm" style="width: 50% !important;">
-                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl placeholder="Add Quantity" type="number" formControlName="orderQuantity" />
-                        <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder()">Order</button>
+                        <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl type="number" formControlName="requestedQuantity" placeholder="Add Quantity" />
+                        <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder(van._id)">Order</button>
                       </c-input-group>
                     </form>                    
                   </td>

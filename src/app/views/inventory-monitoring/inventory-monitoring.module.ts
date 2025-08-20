@@ -22,6 +22,9 @@ import {
   DropdownItemDirective,
   DropdownMenuDirective,
   DropdownToggleDirective,
+  PageItemDirective,
+  PageLinkDirective,
+  PaginationComponent,
 } from '@coreui/angular';
 
 import { WidgetsModule } from '../widgets/widgets.module';
@@ -59,7 +62,10 @@ import { NavbarModule } from '@coreui/angular';
     WidgetsModule,
     InventoryMonitoringRoutingModule,
     BadgeModule,
-    DropdownComponent, ButtonDirective, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective
+    DropdownComponent, ButtonDirective, DropdownToggleDirective, DropdownMenuDirective, DropdownItemDirective,
+    PageItemDirective,
+    PageLinkDirective,
+    PaginationComponent,
   ]
 })
 export class InventoryMonitoringModule { }

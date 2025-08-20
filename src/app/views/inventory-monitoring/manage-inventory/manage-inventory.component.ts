@@ -6,6 +6,9 @@ import { ItemInventoryService } from '../../../services/item-inventory.service';
 import { OrderService } from '../../../services/order.service';
 import { VanService } from '../../../services/van.service';
 
+// new import
+import { TroubleCategoryService } from '../../../services/trouble-category.service';
+
 export interface Item {
   categoryName: string;
   itemName: string;
@@ -38,7 +41,8 @@ export class ManageInventoryComponent implements OnInit {
   @Input() itemId: string | null = null;
 
   categoryfb = inject(FormBuilder);
-  inventoryCategoryService = inject(InventoryCategoryService);
+  inventoryCategoryService = inject(InventoryCategoryService);  // not in Use
+  categoryService = inject(TroubleCategoryService);
   categoryForm!: FormGroup;
   categoryData!: any;
   categoriesArray: any[] = [];
@@ -86,8 +90,19 @@ export class ManageInventoryComponent implements OnInit {
   isViewClicked = false;
   showSaveChanges = true;
 
+  pageSize: number = 5;
+  totalItems: number = 0;
+  currentPage: number = 1;
+  isFetching: boolean = false;
+  items: any[] = [];
+
   // filter by category
   selectedCategory: string = '';
+
+  selectedCategoryId: string = '';
+  allItems: any[] = [];
+
+  latestOrderStatuses: { [key: string]: string } = {};
 
   constructor(private cdr: ChangeDetectorRef) { }
 
@@ -111,6 +126,23 @@ export class ManageInventoryComponent implements OnInit {
 
   handleLiveDemoChangeItem(event: any) {
     this.visibleItem = event;
+  }
+
+  openAddItemModal() {
+    this.isEditMode = false;
+    this.itemId = null;
+    this.isViewClicked = false;
+
+    // Reset form fields
+    this.itemForm.reset();
+
+    // Reset file arrays
+    this.selectedImages = [];
+    this.selectedPdfs = [];
+    this.selectedVideos = [];
+
+    // Finally, open modal
+    this.toggleLiveDemoItem();
   }
 
   //  start van
@@ -165,20 +197,20 @@ export class ManageInventoryComponent implements OnInit {
 
     this.itemForm = this.fb.group({
       itemName: ['', Validators.required],
-      partNumber: ['', Validators.required],
+      partNumber: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       categoryId: ['', Validators.required],
-      maxQty: ['', Validators.required],
-      minQty: ['', Validators.required],
+      maxQty: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      minQty: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       vanId: ['', Validators.required],
-      inStock: ['', Validators.required],
-      amtOrder: ['', Validators.required],
-      forWarehouse: ['', Validators.required],
-      addOrder: ['', Validators.required],
-      cost: ['', Validators.required],
-      price: ['', Validators.required],
-      comment: ['', Validators.required],
-      shortDes: ['', Validators.required],
-      partDes: ['', Validators.required],
+      inStock: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      amtOrder: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      forWarehouse: [false, Validators.requiredTrue],
+      addOrder: [false, Validators.requiredTrue],
+      cost: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      comment: ['', [Validators.required, Validators.maxLength(80)]],
+      shortDes: ['', [Validators.required, Validators.maxLength(60)]],
+      partDes: ['', [Validators.required, Validators.maxLength(50)]],
       Images: [''],
       pdfs: [''],
       videos: ['']
@@ -190,8 +222,7 @@ export class ManageInventoryComponent implements OnInit {
     });
 
     this.orderForm = this.fb.group({
-      orderQuantity: ['', Validators.required],
-      itemInfo: ['']
+      requestedQuantity: ['', Validators.required],
     });
 
     if (this.itemId) {
@@ -230,92 +261,29 @@ export class ManageInventoryComponent implements OnInit {
     if (type === 'Images') {
       if (files.length > 9) {
         alert('You can only select up to 9 images.');
+        event.target.value = '';
         return;
       }
       this.selectedImages = files as File[];
+      this.itemForm.patchValue({
+        Images: this.selectedImages
+      });
+
     } else if (type === 'pdfs') {
       this.selectedPdfs = files as File[];
+      this.itemForm.patchValue({ pdfs: this.selectedPdfs });
     } else if (type === 'videos') {
       this.selectedVideos = files as File[];
+      this.itemForm.patchValue({ videos: this.selectedVideos });
     }
+
     this.itemForm.patchValue({
       images: this.selectedImages.length > 0 ? this.selectedImages : null
     });
   }
 
   // submit inventory Item
-  // submitItem() {
-  //   if (!this.itemForm.valid) {
-  //     alert('Please fill in all required fields and add at least one image.');
-  //     return;
-  //   }
-  //   const formData = new FormData();
-  //   formData.append('itemName', this.itemForm.get('itemName')?.value);
-  //   formData.append('partNumber', this.itemForm.get('partNumber')?.value);
-  //   formData.append('categoryId', this.itemForm.get('categoryId')?.value);
-  //   formData.append('maxQty', this.itemForm.get('maxQty')?.value);
-  //   formData.append('minQty', this.itemForm.get('minQty')?.value);
-  //   formData.append('vanId', this.itemForm.get('vanId')?.value);
-  //   formData.append('inStock', this.itemForm.get('inStock')?.value);
-  //   formData.append('amtOrder', this.itemForm.get('amtOrder')?.value);
-  //   formData.append('forWarehouse', this.itemForm.get('forWarehouse')?.value);
-  //   formData.append('addOrder', this.itemForm.get('addOrder')?.value);
-  //   formData.append('cost', this.itemForm.get('cost')?.value);
-  //   formData.append('price', this.itemForm.get('price')?.value);
-  //   formData.append('comment', this.itemForm.get('comment')?.value);
-  //   formData.append('shortDes', this.itemForm.get('shortDes')?.value);
-  //   formData.append('partDes', this.itemForm.get('partDes')?.value);
-
-  //    // Append images
-  //    this.selectedImages.forEach(file => {
-  //     formData.append('Images', file, file.name);
-  //   });
-
-  //   // Append pdfs
-  //   this.selectedPdfs.forEach(file => {
-  //     formData.append('pdfs', file, file.name);
-  //   });
-
-  //   // Append videos
-  //   this.selectedVideos.forEach(file => {
-  //     formData.append('videos', file, file.name);
-  //   });
-
-  //   if(this.isEditMode && this.itemId ) {
-  //     this.itemInventoryService.updateItemService(formData, this.itemId)
-  //     .subscribe({
-  //       next: () => {
-  //         alert('Item update Successfully');
-  //         this.resetForm();
-  //         this.getAllItems();
-  //       },
-  //       error(err) {
-  //         console.error('error updateing item:', err);
-  //         alert('Failed to update item. Please try again');
-  //       }
-  //     });
-  //   } else if (this.itemId) {
-  //     this.itemInventoryService.createItemService(formData)
-  //     .subscribe({
-  //       next: () => {
-  //         alert('Item added Successfully');
-  //         this.resetForm();
-  //         this.getAllItems();
-  //       },
-  //       error: (err) => {
-  //         console.error('Error Adding item:', err);
-  //         alert('Failed to adding item. Please try again.');
-  //       }
-  //     });
-  //   }
-
-  // }
-
   submitItem() {
-    if (!this.selectedImages.length) {
-      alert('Please add at least one image.');
-      return;
-    }
 
     const formData = new FormData();
     formData.append('itemName', this.itemForm.get('itemName')?.value);
@@ -370,6 +338,7 @@ export class ManageInventoryComponent implements OnInit {
           this.getAllWarehouseItems();
           this.getAllVanItems();
           this.getAllItemsWithVanNames();
+          this.getAllItems();
         },
         error: (err) => {
           console.error('Error adding item:', err);
@@ -378,7 +347,6 @@ export class ManageInventoryComponent implements OnInit {
       });
     }
   }
-
 
   // submit van 
   submitVan() {
@@ -423,18 +391,33 @@ export class ManageInventoryComponent implements OnInit {
     }
   }
 
-  // add order item
-  addToOrder() {
-    this.orderService.createItemOrderService(this.orderForm.value)
-      .subscribe({
-        next: (res) => {
-          alert("Item Ordered");
-          this.orderForm.reset();
-        },
-        error: (err) => {
-          console.error("Error fetch item ordered", err);
-        }
-      });
+  // Add order item Requesti
+  addToOrder(itemId: string): void {
+    if (this.orderForm.invalid) {
+      alert("Please enter a valid quantity");
+      return;
+    }
+  
+    const requestedQuantity = this.orderForm.value.requestedQuantity;
+  
+    this.orderService.createOrderItemService(itemId, requestedQuantity).subscribe({
+      next: (res) => {
+        console.log("Order API Response:", res); 
+
+      if (res?.data) {
+        const order = res.data;
+        // store latest status for that item
+        this.latestOrderStatuses[order.itemId] = order.status; 
+      }
+      
+        alert("Item Ordered Successfully!");
+        this.orderForm.reset();
+
+      },
+      error: (err) => {
+        console.error("Error while ordering item", err);
+      }
+    });
   }
 
   clickAddMember() {
@@ -454,30 +437,57 @@ export class ManageInventoryComponent implements OnInit {
 
   // all inventory categories
   getAllCategories() {
-    this.inventoryCategoryService.getAllInventoryCategoryService().subscribe({
-        next: (res) => {
-          this.categoryData = res;
-          this.categoriesArray = this.categoryData.data || [];
-        },
-        error: (error) => {
-          console.error("Error fetching categories:", error);
-        }
-      });
-  };
-
-  // All inventory items
-  getAllItems(): void {
-    this.itemInventoryService.getAllItemsService().subscribe({
+    this.categoryService.getAllCategoryService().subscribe({
       next: (res) => {
-        this.itemData = res;
-        this.itemArray = this.itemData.data;
-        console.log("Get all Items:", this.itemData);         
+        this.categoryData = res;
+        this.categoriesArray = this.categoryData.data || [];
       },
-      error: (err) => {
-        console.error("Error fetch get all items", err);        
+      error: (error) => {
+        console.error("Error fetching categories:", error);
       }
     });
   };
+
+
+  // All inventory items
+  getAllItems(page: number = 1): void {
+    this.isFetching = true;
+
+    this.itemInventoryService.getAllItemsWithPaginatedService(page, this.pageSize).subscribe({
+      next: (res) => {
+        this.allItems = res.data || [];
+        this.itemArray = [...this.allItems];
+        this.totalItems = res.pagination?.total || 0;
+        this.currentPage = res.pagination?.page || 1;
+        this.isFetching = false;
+        console.log("Paginated Items:", this.itemArray);
+      },
+      error: (err) => {
+        console.error("Error fetch get all items", err);
+        this.isFetching = false;
+      }
+    });
+  };
+
+  // Total number of pages
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  // Create an array for pagination buttons
+  totalPagesArray(): number[] {
+    return Array(this.totalPages)
+      .fill(0)
+      .map((_, i) => i + 1);
+  }
+
+  // Change to a different page
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.getAllItems(page);
+    }
+  }
+
 
   // get all vans
   getAllVans() {
@@ -486,7 +496,7 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-          console.log("All vans:", this.vanData);
+          console.log("All vans:::", this.vanData);
         },
         error: (error) => {
           console.error("Error fetching Vans:", error);
@@ -515,10 +525,18 @@ export class ManageInventoryComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onCategorySelect(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    this.selectedCategory = target.value;
-    this.filterItems();
+
+  onCategorySelect(event: Event): void {
+    const selectedId = (event.target as HTMLSelectElement).value;
+    this.selectedCategoryId = selectedId;
+
+    if (selectedId === 'all') {
+      // Show all items
+      this.itemArray = [...this.allItems];
+    } else {
+      // Filter by category
+      this.itemArray = this.allItems.filter(item => item.categoryId?._id === selectedId);
+    }
   }
 
   // all warehouse item list
@@ -528,6 +546,7 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.warehouseItemsData = res;
           this.filterItems();
+          this.getAllItems();
         },
         error: (err) => {
           console.error("Error fetching warehouse items:", err);
@@ -538,41 +557,30 @@ export class ManageInventoryComponent implements OnInit {
   // all van item list 
   getAllVanItems() {
     this.itemInventoryService.getAllItemsForVanService().subscribe({
-        next: (res) => {
-          this.vanItemsData = res;
-          this.filterItems();
-          console.log("All Van's Item data:", this.vanItemsData );          
-        },
-        error: (err) => {
-          console.error("Error fetching van items:", err);
-        }
-      });
+      next: (res) => {
+        this.vanItemsData = res;
+        this.filterItems();
+        this.getAllItems();
+        console.log("All Van's Item data::::::::::", this.vanItemsData);
+      },
+      error: (err) => {
+        console.error("Error fetching van items:", err);
+      }
+    });
   };
 
   // Fetch all items that have vanName populated
-  // getAllItemsWithVanNames() {
-  //   this.itemInventoryService.getAllItemsForVansService()
-  //     .subscribe({
-  //       next: (res) => {
-  //         this.vanNameItemData = res;
-  //         // Only keep items where vanName is not null or empty
-  //         this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
-  //         this.filterItems();
-  //         console.log("Get all items with van namecvgdfgdffgdfdf:", this.vanNameItemData);  
-  //       }
-  //     });
-  // }
-
   getAllItemsWithVanNames(): void {
     this.itemInventoryService.getAllItemsForVansService().subscribe({
       next: (res) => {
         this.vanNameItemData = res;
         this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
         this.filterItems();
-        console.log("Get all items with van name:", this.vanNameItemData);        
+
+        console.log("Get all items with van name:", this.vanNameItemData);
       },
       error: (err) => {
-        console.error("Error fetch all items with van:", err);        
+        console.error("Error fetch all items with van:", err);
       }
     });
   };
@@ -605,20 +613,19 @@ export class ManageInventoryComponent implements OnInit {
 
         });
         this.isEditMode = true;
+        console.log("selected itemsss:", this.editData);
+
       });
   }
 
   // update item's details by ID 
   updateItem(itemId: string, updatedData: any): void {
 
-
     if (!itemId) {
       console.error('Invalid itemId:', itemId);
       alert('Invalid item ID. Please ensure you have selected a valid item to update.');
-      return; // Exit early if the ID is invalid
+      return;
     }
-
-
 
     this.itemInventoryService.updateItemService(updatedData, itemId)
       .subscribe({
@@ -703,7 +710,7 @@ export class ManageInventoryComponent implements OnInit {
         alert('Error transferring item. Please try again.');
       }
     });
-  }
+  };
 
   // transfer from van
   transferItemToVan(vanId: string, totalQuantity: number, minimumQuantity: number) {
