@@ -57,124 +57,203 @@
               
                 <c-modal-body>
 
-                  <!-- Add Existing Clients -->                   
-                  <div class="row g-3 mb-5">
-                    
-                    <div class="col-md-10">
 
-                      <!-- Warning Messgae For Add Duplicate Client To Group -->
-                      <div *ngIf="duplicateClientMsg" class="alert alert-warning py-2 mb-2" role="alert">
-                        {{ duplicateClientMsg }}
-                      </div>
+                  <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <button class="nav-link" [ngClass]="{ active: shareTab === 'groups' }" (click)="shareTab = 'groups'">Groups</button>
+                    </li>
 
-                      <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Search Client..." [(ngModel)]="groupSearchText" />
-                      </div>
+                    <li class="nav-item">
+                        <button class="nav-link" [ngClass]="{ active: shareTab === 'clients' }" (click)="shareTab = 'clients'">Clients</button>
+                    </li>
+                  </ul>
 
-                      <c-card class="p-3">
 
-                        <!-- Sticky Select All Clients -->
-                        <div class="bg-white position-sticky top-0 py-2 border-bottom" style="z-index: 1;">
-                          <div class="form-check mb-0">
-                            <input class="form-check-input" type="checkbox" id="selectAllClients" [checked]="areAllClientsSelected()" (change)="toggleSelectAllClients($event)" />
-                            <label class="form-check-label fw-semibold" for="selectAllClients">Select All Clients</label>
-                          </div>
-                        </div>
+                  <!-- Tab Content -->
+                  <div>
+
+                    <!-- Add Existing Clients -->                   
+                    <div *ngIf="shareTab === 'clients'" class="row g-3">
                       
-                        <!-- Scrollable Client List -->
-                        <div class="overflow-auto" style="max-height: 300px;">
-                          <div *ngFor="let client of filteredClientList" class="form-check my-1">
-                            <input class="form-check-input" type="checkbox" [value]="client" [checked]="isClientSelected(client)" (change)="onClientCheckboxChange($event, client)" id="clientCheckbox{{ client._id }}" />
-                            <label class="form-check-label" [for]="'clientCheckbox' + client._id">
-                              {{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }} ({{ client.email }})
-                            </label>
-                          </div>
+                      <div class="col-md-12 mb-5">
+
+                        <!-- Warning Messgae For Add Duplicate Client To Group -->
+                        <div *ngIf="duplicateClientMsg" class="alert alert-warning py-2 mb-2" role="alert">
+                          {{ duplicateClientMsg }}
                         </div>
-                      
-                      </c-card>
 
-                    </div>
-                    
-                    <!-- Add Button section -->
-                    <div class="col-md-2">
+                        <c-card class="px-3">
 
-                      <!-- Add Client to Group Button -->
-                      <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center" (click)="addClientToGroup()" [disabled]="selectedClientsToAdd.length === 0 || isAddingClient" style="min-height: 38px;">
-                        <ng-container *ngIf="!isAddingClient; else loading">Add</ng-container>
-                        <ng-template #loading>
-                          <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
-                            <span class="visually-hidden">Loading...</span>
+                          <!-- Sticky Select All Clients -->
+                          <div class="bg-white position-sticky py-2 border-bottom d-flex align-items-center justify-content-between" style="z-index: 1;">
+                            <div class="form-check mb-0">
+                              <input class="form-check-input" type="checkbox" id="selectAllClients" [checked]="areAllClientsSelected()" (change)="toggleSelectAllClients($event)" />
+                              <label class="form-check-label fw-semibold" for="selectAllClients">Select All Clients</label>
+                            </div>
+
+                            <div class="d-flex">
+
+                              <!-- Search Client -->
+                              <input type="text" class="form-control w-100 me-4" placeholder="Search Client..." [(ngModel)]="clientSearchTexts" />
+
+                              <!-- Add Client Button -->
+                              <button cButton color="primary" (click)="addClientToGroup()" [disabled]="selectedClientsToAdd.length === 0 || isAddingClient" class="w-50">
+                                <ng-container *ngIf="!isAddingClient; else loading">Add</ng-container>
+                                <ng-template #loading>
+                                  <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                  </div>
+                                </ng-template>
+                              </button>
+
+                            </div>
+
                           </div>
-                        </ng-template>
-                      </button>
-
-
-                    </div>
-
-                  </div>
-              
-                  <!-- Assigned Clients Table -->
-                  <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                    <table class="table mb-0 border">
-                      <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
-                        <tr style="background-color: #9da5b1;">
-                          <th>#</th>
-                          <th>Photo</th>
-                          <th>Name</th>
-                          <th>Email</th>
-                          <th>Payment</th>
-                          <th>Phones</th>
-                          <th>Address</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <!-- Show message when no clients are assigned -->
-                        <tr *ngIf="assignedClients.length === 0">
-                          <td colspan="8" class="text-center text-muted py-3">
-                            No clients have been added yet.
-                          </td>
-                        </tr>
-
-                        <!-- Show clients when available -->
-                        <tr *ngFor="let client of assignedClients; let i = index">
-                          <td>{{ i + 1 }}</td>
                         
-                          <td>
-                            <div class="rounded-circle border border-dark overflow-hidden" style="width: 40px; height: 40px;">
-                              <img *ngIf="client.images?.length" [src]="'http://44.198.242.234:5966/uploads/' + client.images[0].filename" alt="Profile Pic" class="w-100 h-100" style="object-fit: cover;" />
+                          <!-- Scrollable Client List -->
+                          <div class="overflow-auto my-2" style="max-height: 300px;">
+                            <div *ngFor="let client of filteredClientList" class="form-check my-1">
+                              <input class="form-check-input" type="checkbox" [value]="client" [checked]="isClientSelected(client)" (change)="onClientCheckboxChange($event, client)" id="clientCheckbox{{ client._id }}" />
+                              <label class="form-check-label" [for]="'clientCheckbox' + client._id">
+                                {{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }} ({{ client.email }})
+                              </label>
                             </div>
-                          </td>                        
+                          </div>
+                        
+                        </c-card>
 
-                          <td>{{ client.name }}</td>
-                          <td>{{ client.email }}</td>
-                          <td>{{ client.paymentOptions }}</td>
-                          <td>
-                            <div *ngFor="let phone of client.phones">
-                              <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                      </div>
+
+
+                      <!-- Assigned Clients Table -->
+                      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table mb-0 border">
+                          <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                            <tr style="background-color: #9da5b1;">
+                              <th>#</th>
+                              <th>Photo</th>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Payment</th>
+                              <th>Phones</th>
+                              <th>Address</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            <!-- Show message when no clients are assigned -->
+                            <tr *ngIf="assignedClients.length === 0">
+                              <td colspan="8" class="text-center text-muted py-3">
+                                No clients have been added yet.
+                              </td>
+                            </tr>
+
+                            <!-- Show clients when available -->
+                            <tr *ngFor="let client of assignedClients; let i = index">
+                              <td>{{ i + 1 }}</td>
+                            
+                              <td>
+                                <div class="rounded-circle border border-dark overflow-hidden" style="width: 40px; height: 40px;">
+                                  <img *ngIf="client.images?.length" [src]="'http://44.198.242.234:5966/uploads/' + client.images[0].filename" alt="Profile Pic" class="w-100 h-100" style="object-fit: cover;" />
+                                </div>
+                              </td>                        
+
+                              <td>{{ client.name }}</td>
+                              <td>{{ client.email }}</td>
+                              <td>{{ client.paymentOptions }}</td>
+                              <td>
+                                <div *ngFor="let phone of client.phones">
+                                  <strong>{{ phone.type }}:</strong> {{ phone.number }}
+                                </div>
+                              </td>
+                              <td>{{ client.address }}</td>
+                              <td>
+
+                                <!-- Remove Client Button -->
+                                <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
+                                  <ng-container *ngIf="removingClientId !== client._id">
+                                    <svg cIcon name="cil-trash" size="sm"></svg>
+                                  </ng-container>
+                                  <ng-container *ngIf="removingClientId === client._id">
+                                    <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                                  </ng-container>
+                                </button>
+                        
+                              </td>
+                            </tr>
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                    </div>
+
+
+                    <!-- Add Existing Groups -->                   
+                    <div *ngIf="shareTab === 'groups'" class="row g-3 mb-5">
+                      
+                      <div class="col-md-12">
+
+                        <!-- Warning Messgae For Add Duplicate Group To Group -->
+                        <div *ngIf="duplicateGroupMsg" class="alert alert-warning py-2 mb-2" role="alert">
+                          {{ duplicateGroupMsg }}
+                        </div>
+
+                        <div class="mb-3">
+                          
+                        </div>
+
+                        <c-card class="px-3">
+
+                          <!-- Sticky Select All Groups -->
+                          <div class="bg-white position-sticky py-2 border-bottom d-flex align-items-center justify-content-between" style="z-index: 1;">
+                            <div class="form-check mb-0">
+                              <input class="form-check-input" type="checkbox" id="selectAllGroups" [checked]="areAllGroupsSelected()" (change)="toggleSelectAllGroups($event)" />
+                              <label class="form-check-label fw-semibold" for="selectAllGroups">Select All Groups</label>
                             </div>
-                          </td>
-                          <td>{{ client.address }}</td>
-                          <td>
 
-                            <!-- Remove Client Button -->
-                            <button title="Remove client" [disabled]="removingClientId === client._id" (click)="removeClientFromGroup(client._id)">
-                              <ng-container *ngIf="removingClientId !== client._id">
-                                <svg cIcon name="cil-trash" size="sm"></svg>
-                              </ng-container>
-                              <ng-container *ngIf="removingClientId === client._id">
-                                <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
-                              </ng-container>
-                            </button>
-                    
-                          </td>
-                        </tr>
-                      </tbody>
 
-                    </table>
+                            <div class="d-flex">
+
+                              <!-- Search Group -->
+                              <input type="text" class="form-control w-100 me-4" placeholder="Search Group..." [(ngModel)]="groupSearchText" />
+
+                              <!-- Add Group Button -->
+                              <button cButton color="primary" (click)="addGroupToGroup()" [disabled]="selectedGroupsToAdd.length === 0 || isAddingGroup" class="w-50">
+                                <ng-container *ngIf="!isAddingGroup; else loading">Add</ng-container>
+                                <ng-template #loading>
+                                  <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                  </div>
+                                </ng-template>
+                              </button>
+
+                            </div>
+
+                          </div>
+                        
+                          <!-- Scrollable Group List -->
+                          <div class="overflow-auto" style="max-height: 300px;">
+                            <div *ngFor="let group of filteredGroupLists" class="form-check my-1">
+                              <input class="form-check-input" type="checkbox" [value]="group" [checked]="isGroupSelected(group)" (change)="onGroupCheckboxChange($event, group)" id="groupCheckbox{{ group._id }}" />
+                              <label class="form-check-label" [for]="'groupCheckbox' + group._id">
+                                {{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }} ({{ group.clients?.length || 0 }} Clients)
+                              </label>
+                            </div>
+                          </div>
+                        
+                        </c-card>
+
+                      </div>
+
+                    </div>
 
                   </div>
+
+              
+                  
 
                 </c-modal-body>
               

@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { GroupsService } from '../../services/groups.service';
+type ShareTab = 'groups' | 'clients';
+
 
 @Component({
   selector: 'app-groups',
@@ -24,6 +26,10 @@ export class GroupsComponent {
   loadingGroups: boolean = false;
   selectedClientsToAdd: any[] = [];
 
+  activeTab: string = 'groups';
+  shareTab: ShareTab = 'groups';
+
+
   // client
   addClientForm!: FormGroup;
   clientList: any[] = [];
@@ -38,12 +44,26 @@ export class GroupsComponent {
   selectedGroupName: string = '';
   loadingGroupId: string | null = null;
   isSubmittingGroup = false;
-  groupSearchText: string = '';
+  clientSearchTexts: string = '';
+
 
 
   currentPage = 1;
   pageSize = 10;
   totalItems = 0;
+
+
+  // Group select feature
+  groupsArray: any[] = [];
+  assignedGroups: any[] = [];
+  selectedGroupsToAdd: any[] = [];
+  duplicateGroupMsg: string | null = null;
+  isAddingGroup: boolean = false;
+  groupSearchText: string = '';
+  filteredGroups: any[] = [];
+  parentGroupId: string = ''; 
+  childGroups: any[] = [];
+
 
   constructor(private fb: FormBuilder, private groupsService: GroupsService) {
     // Group Form
@@ -54,12 +74,14 @@ export class GroupsComponent {
     // Client Form
     this.addClientForm = this.fb.group({
       clients: ['', Validators.required],
+      groups: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
     this.getAllGroups();
     this.getAllClients();
+    this.getAllGroupsNoPagination();
   }
 
   // Add Group Modal
@@ -203,6 +225,7 @@ export class GroupsComponent {
     }
   }
 
+
   // Client Section
 
   toggleManageClientModal() {
@@ -297,7 +320,7 @@ export class GroupsComponent {
     });
   }
 
-  // Search Section
+  // Search Section parent 
   get filteredGroupList(): any[] {
     if (!this.searchTerm.trim()) {
       return this.groupList;
@@ -347,16 +370,116 @@ export class GroupsComponent {
 
   // Search Clients
   get filteredClientList(): any[] {
-    if (!this.groupSearchText.trim()) {
+    if (!this.clientSearchTexts.trim()) {
       return this.clientList;
     }
   
-    const term = this.groupSearchText.trim().toLowerCase();
+    const term = this.clientSearchTexts.trim().toLowerCase();
   
     return this.clientList.filter(client =>
       (client.name && client.name.toLowerCase().includes(term)) ||
       (client.email && client.email.toLowerCase().includes(term))
     );
+  }
+
+
+
+  // Group Section
+
+  onGroupSelectChange(): void {
+    this.duplicateGroupMsg = null;
+  }
+  
+  getAllGroupsNoPagination(): void {
+    this.groupsService.getAllGroupsNoPaginationService().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.groupsArray = res.data;
+          this.filteredGroups = [...this.groupsArray];
+          console.log('All groups fetched successfully:', this.groupsArray);          
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching groups (no pagination):', err);
+      }
+    });
+  }
+
+    // Search Group
+    get filteredGroupLists(): any[] {
+      if (!this.groupSearchText.trim()) {
+        return this.groupsArray;
+      }
+    
+      const term = this.groupSearchText.trim().toLowerCase();
+    
+      return this.groupsArray.filter(group =>
+        group.groupName && group.groupName.toLowerCase().includes(term)
+      );
+    }
+
+  addGroupToGroup(): void {
+    if (!this.selectedGroup || this.selectedGroupsToAdd.length === 0) return;
+
+    const groupId = this.selectedGroup._id;
+    const selectedGroupIds = this.selectedGroupsToAdd.map(group => group._id);
+
+    // Filter out duplicates
+    const alreadyAssignedIds = this.assignedGroups.map(g => g._id);
+    const newGroupIds = selectedGroupIds.filter(id => !alreadyAssignedIds.includes(id));
+
+    if (newGroupIds.length === 0) {
+      this.duplicateGroupMsg = 'Selected group(s) are already assigned to the group.';
+      return;
+    }
+
+    this.isAddingGroup = true;
+    this.duplicateGroupMsg = null;
+
+    this.groupsService.addGroupToGroupService(groupId, newGroupIds).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.assignedGroups = res.data?.groups || [];
+          this.selectedGroupsToAdd = []; 
+        }
+        this.isAddingGroup = false;
+      },
+      error: (err) => {
+        console.error('Failed to add group:', err);
+        this.isAddingGroup = false;
+      },
+    });
+  }
+
+
+  isGroupSelected(group: any): boolean {
+    return this.selectedGroupsToAdd.some(c => c._id === group._id);
+  }
+
+  onGroupCheckboxChange(event: any, group: any): void {
+    if (event.target.checked) {
+      if (!this.isGroupSelected(group)) {
+        this.selectedGroupsToAdd.push(group);
+      }
+    } else {
+      this.selectedGroupsToAdd = this.selectedGroupsToAdd.filter(c => c._id !== group._id);
+    }
+  }
+
+   // Check if all groups are already selected
+   areAllGroupsSelected(): boolean {
+    return this.groupList.length > 0 && this.groupList.every(group =>
+      this.selectedGroupsToAdd.some(selected => selected._id === group._id)
+    );
+  }
+
+  // Toggle select/deselect all groups
+  toggleSelectAllGroups(event: any): void {
+    if (event.target.checked) {
+      this.selectedGroupsToAdd = [...this.groupList];
+    } else {
+      this.selectedGroupsToAdd = [];
+    }
   }
   
 
