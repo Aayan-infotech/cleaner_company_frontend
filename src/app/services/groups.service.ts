@@ -28,6 +28,11 @@ export class GroupsService {
     });
   }
 
+  // GEt all  Groups with No Pagination
+  getAllGroupsNoPaginationService(): Observable<any> {
+    return this.http.get<any>(`${apiUrls.groupsManageApi}get-all-no-paginated`);
+  }
+
   // Get Group By Id
   getGroupByIdService(id: any): Observable<any> {
     return this.http.get<any>(`${apiUrls.groupsManageApi}getById/${id}`);
@@ -45,7 +50,7 @@ export class GroupsService {
 
   // Add clients into Section
 
-  // Get All Clienst
+  // Get All Clients
   getAllClientsService(): Observable<any> {
     return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all-clients`);
   }
@@ -55,9 +60,24 @@ export class GroupsService {
     return this.http.post(`${apiUrls.groupsManageApi}addClients/${groupId}`, { clients });
   }
 
+  // Add Group in Group
+  addGroupToGroupService(groupId: string, groups: string[]): Observable<any> {
+    return this.http.post(`${apiUrls.groupsManageApi}addGroups/${groupId}`, { groups });
+  }
+
+  // All Childs Group in Parent Group
+  getAllChildGroupByParentGroupIdService(groupId: string): Observable<any> {
+    return this.http.get<any>(`${apiUrls.groupsManageApi}getGroups/${groupId}`);
+  }
+
   // Remove Client By Id
   removeClientFromGroup(groupId: string, clientId: string): Observable<any> {
     return this.http.delete(`${apiUrls.groupsManageApi}delete/${groupId}/${clientId}`);
+  }
+
+  // Remove Group By Id
+  removeGroupFromGroup(groupId: string, subGroupId: string): Observable<any> {
+    return this.http.delete(`${apiUrls.groupsManageApi}delete-group/${groupId}/${subGroupId}`);
   }
 
 }

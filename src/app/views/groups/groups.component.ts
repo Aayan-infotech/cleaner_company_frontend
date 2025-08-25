@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, Input } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { GroupsService } from '../../services/groups.service';
+type ShareTab = 'groups' | 'clients';
+
 
 @Component({
   selector: 'app-groups',
@@ -24,6 +26,10 @@ export class GroupsComponent {
   loadingGroups: boolean = false;
   selectedClientsToAdd: any[] = [];
 
+  activeTab: string = 'groups';
+  shareTab: ShareTab = 'groups';
+
+
   // client
   addClientForm!: FormGroup;
   clientList: any[] = [];
@@ -38,12 +44,30 @@ export class GroupsComponent {
   selectedGroupName: string = '';
   loadingGroupId: string | null = null;
   isSubmittingGroup = false;
-  groupSearchText: string = '';
-
+  clientSearchTexts: string = '';
 
   currentPage = 1;
   pageSize = 10;
   totalItems = 0;
+
+
+  // Group select feature
+  addGroupForm!: FormGroup;
+  groupsArray: any[] = [];
+  assignedGroups: any[] = [];
+  selectedGroupsToAdd: any[] = [];
+  duplicateGroupMsg: string | null = null;
+  isAddingGroup: boolean = false;
+  groupSearchText: string = '';
+  filteredGroups: any[] = [];
+  parentGroupId: string = '';
+  childGroups: any[] = [];
+  removingGroupId: string | null = null;
+  groupId!: string;
+  loadingChildren = false;
+  parentGroupName = '';
+  
+
 
   constructor(private fb: FormBuilder, private groupsService: GroupsService) {
     // Group Form
@@ -55,11 +79,17 @@ export class GroupsComponent {
     this.addClientForm = this.fb.group({
       clients: ['', Validators.required],
     });
+
+    // Group Form
+    this.addGroupForm = this.fb.group({
+      groups: ['', Validators.required],
+    });
   }
 
   ngOnInit(): void {
     this.getAllGroups();
     this.getAllClients();
+    this.getAllGroupsNoPagination();
   }
 
   // Add Group Modal
@@ -79,7 +109,6 @@ export class GroupsComponent {
   }
 
   // Client Modal
-
   toggleGroupDetails() {
     this.visibleGroupDetails = !this.visibleGroupDetails;
   }
@@ -97,6 +126,7 @@ export class GroupsComponent {
         this.totalItems = res.pagination?.totalGroups || 0;
         this.currentPage = res.pagination?.page || 1;
         this.loadingGroups = false;
+        console.log("only groups with pagination:", this.groupList);
       },
       error: (err) => {
         console.error('Error fetch get all groups', err);
@@ -182,6 +212,7 @@ export class GroupsComponent {
         this.toggleGroupDetails();
         this.loadingGroupId = null;
         this.visibleGroupDetails = true;
+        console.log("groupbyId data:", this.groupData);
       },
       error: (err) => {
         console.error('Error fetching group by ID:', err);
@@ -203,12 +234,13 @@ export class GroupsComponent {
     }
   }
 
+
   // Client Section
 
   toggleManageClientModal() {
     this.visible = !this.visible;
   }
-
+  
   handleClientModalChange(visible: boolean): void {
     this.clientModalVisible = visible;
   }
@@ -217,6 +249,7 @@ export class GroupsComponent {
     this.groupsService.getAllClientsService().subscribe({
       next: (res) => {
         this.clientList = res.data || [];
+        console.log('All clients ssssuccessfully:', this.clientList);
       },
       error: (err) => {
         console.error('Failed to load clients:', err);
@@ -229,7 +262,10 @@ export class GroupsComponent {
     this.selectedClientToAdd = null;
     this.clientModalVisible = true;
     this.getAllClients();
+    this.getAllGroupsNoPagination();
+    this.getAllGroupsInGroupById(group._id);
     this.assignedClients = group.clients || [];
+    this.assignedGroups = group.groups || [];
   }
 
   closeClientModal(): void {
@@ -237,6 +273,7 @@ export class GroupsComponent {
     this.selectedGroup = null;
     this.selectedClientToAdd = null;
     this.assignedClients = [];
+    this.assignedGroups = [];
   }
 
   onClientSelectChange(): void {
@@ -265,7 +302,7 @@ export class GroupsComponent {
       next: (res) => {
         if (res.success) {
           this.assignedClients = res.data?.clients || [];
-          this.selectedClientsToAdd = []; 
+          this.selectedClientsToAdd = [];
         }
         this.isAddingClient = false;
       },
@@ -275,7 +312,6 @@ export class GroupsComponent {
       },
     });
   }
-
 
   removeClientFromGroup(clientId: string): void {
     const groupId = this.selectedGroup?._id;
@@ -297,7 +333,7 @@ export class GroupsComponent {
     });
   }
 
-  // Search Section
+  // Search Section parent 
   get filteredGroupList(): any[] {
     if (!this.searchTerm.trim()) {
       return this.groupList;
@@ -347,17 +383,177 @@ export class GroupsComponent {
 
   // Search Clients
   get filteredClientList(): any[] {
-    if (!this.groupSearchText.trim()) {
+    if (!this.clientSearchTexts.trim()) {
       return this.clientList;
     }
-  
-    const term = this.groupSearchText.trim().toLowerCase();
-  
+
+    const term = this.clientSearchTexts.trim().toLowerCase();
+
     return this.clientList.filter(client =>
       (client.name && client.name.toLowerCase().includes(term)) ||
       (client.email && client.email.toLowerCase().includes(term))
     );
   }
+
+
+
+  // Group Section
+
+  onGroupSelectChange(): void {
+    this.duplicateGroupMsg = null;
+  }
+
+  getAllGroupsNoPagination(): void {
+    this.groupsService.getAllGroupsNoPaginationService().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.groupsArray = res.data;
+          this.filteredGroups = [...this.groupsArray];
+          console.log('All groups without pagination fetched successfully:', this.groupsArray);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching groups (no pagination):', err);
+      }
+    });
+  }
+
+  get filteredGroupLists(): any[] {
+    if (!this.groupsArray) return [];
+    const parentId = this.selectedGroup?._id;
   
+    let list = this.groupsArray.filter(group => group._id !== parentId);
+  
+    if (!this.groupSearchText.trim()) {
+      return list;
+    }
+  
+    const term = this.groupSearchText.trim().toLowerCase();
+    return list.filter(group =>
+      group.groupName && group.groupName.toLowerCase().includes(term)
+    );
+  }
+  
+
+  addGroupToGroup(): void {
+    if (!this.selectedGroup || this.selectedGroupsToAdd.length === 0) return;
+  
+    const groupId = this.selectedGroup._id;
+    const selectedGroupIds = this.selectedGroupsToAdd.map(group => group._id);
+  
+    const alreadyAssignedIds = this.assignedGroups.map(g => g._id);
+    const newGroupIds = selectedGroupIds.filter(id => !alreadyAssignedIds.includes(id));
+    if (newGroupIds.length === 0) {
+      this.duplicateGroupMsg = 'Selected group(s) are already assigned to the group.';
+      return;
+    }
+  
+    this.isAddingGroup = true;
+    this.duplicateGroupMsg = null;
+  
+    this.groupsService.addGroupToGroupService(groupId, newGroupIds).subscribe({
+      next: (res) => {
+        if (res.success) {
+          // local update from API response
+          this.assignedGroups = res.data?.groups || [];
+          this.selectedGroupsToAdd = [];
+          // ✅ defensive re-fetch (keeps childGroups + assignedGroups consistent)
+          this.getAllGroupsInGroupById(groupId);
+        }
+        this.isAddingGroup = false;
+      },
+      error: (err) => {
+        console.error('Failed to add group:', err);
+        this.isAddingGroup = false;
+      },
+    });
+  }  
+
+  getAllGroupsInGroupById(parentGroupId?: string): void {
+    const id = parentGroupId ?? this.selectedGroup?._id ?? this.groupId;
+    if (!id) {
+      console.warn('No parent group id provided.');
+      return;
+    }
+  
+    this.loadingChildren = true;
+    this.groupsService.getAllChildGroupByParentGroupIdService(id).subscribe({
+      next: (res) => {
+        this.loadingChildren = false;
+        if (res?.success) {
+          this.parentGroupName = res.data?.groupName ?? '';
+          this.childGroups     = res.data?.groups ?? [];
+          this.assignedGroups  = res.data?.groups ?? [];   // ✅ keep table in sync
+          this.getAllGroupsNoPagination();                 // keep the source list fresh
+        } else {
+          this.childGroups = [];
+          this.assignedGroups = [];
+        }
+      },
+      error: (err) => {
+        this.loadingChildren = false;
+        this.childGroups = [];
+        this.assignedGroups = [];
+        console.error('Error fetching child groups:', err);
+      }
+    });
+  }  
+
+  removeGroupFromGroup(subGroupId: string): void {
+    const groupId = this.selectedGroup?._id;
+    if (!groupId) return;
+
+    this.removingGroupId = subGroupId;
+
+    this.groupsService.removeGroupFromGroup(groupId, subGroupId).subscribe({
+      next: (res) => {
+        this.assignedGroups = this.assignedGroups.filter(
+          (g: any) => g._id !== subGroupId
+        );
+        this.removingGroupId = null;
+      },
+      error: (err) => {
+        console.error('Failed to remove group:', err);
+        this.removingGroupId = null;
+      },
+    });
+  }
+
+  isGroupSelected(group: any): boolean {
+    return this.selectedGroupsToAdd.some(c => c._id === group._id);
+  }
+
+  onGroupCheckboxChange(event: any, group: any): void {
+    if (event.target.checked) {
+      if (!this.isGroupSelected(group)) {
+        this.selectedGroupsToAdd.push(group);
+      }
+    } else {
+      this.selectedGroupsToAdd = this.selectedGroupsToAdd.filter(c => c._id !== group._id);
+    }
+  }
+
+  // Check if all groups are already selected
+  areAllGroupsSelected(): boolean {
+    const parentId = this.selectedGroup?._id;
+    const list = this.groupsArray.filter(group => group._id !== parentId);
+  
+    return list.length > 0 && list.every(group =>
+      this.selectedGroupsToAdd.some(selected => selected._id === group._id)
+    );
+  }
+
+  // Toggle select/deselect all groups
+  toggleSelectAllGroups(event: any): void {
+    const parentId = this.selectedGroup?._id;
+    const list = this.groupsArray.filter(group => group._id !== parentId);
+  
+    if (event.target.checked) {
+      this.selectedGroupsToAdd = [...list];
+    } else {
+      this.selectedGroupsToAdd = [];
+    }
+  }
+
 
 }
