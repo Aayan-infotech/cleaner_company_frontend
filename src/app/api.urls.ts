@@ -19,7 +19,7 @@ export const apiUrls = {
     empCertificatesApi: 'http://44.198.242.234:5966/api/certificate/',
     empMgmtApi: 'http://44.198.242.234:5966/api/employee/',
     crmMgmtApi: 'http://44.198.242.234:5966/api/manage-crm/',
-    groupsManageApi: 'http://localhost:5966/api/group/',
+    groupsManageApi: 'http://44.198.242.234:5966/api/group/',
     marketingCategoriesApi: 'http://44.198.242.234:5966/api/manage-marketing-categories/',
     timetrackerApi: 'http://44.198.242.234:5966/api/timeTrack/',
     leaveApi: 'http://44.198.242.234:5966/api/leave/',
