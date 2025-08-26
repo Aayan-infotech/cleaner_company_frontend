@@ -8,7 +8,7 @@ import { CrmService } from '../../services/crm.service';
   styleUrls: ['./crm.component.scss'],
 })
 export class CrmComponent implements OnInit {
-  
+
   crmForm: FormGroup;
   crmList: any[] = [];
   searchTerm: string = '';
@@ -27,7 +27,8 @@ export class CrmComponent implements OnInit {
   currentPage = 1;
   pageSize = 10;
   totalCrms: number = 0;
-  
+  selectedClients: Set<string> = new Set();
+
   constructor(
     private fb: FormBuilder,
     private crmService: CrmService,
@@ -92,7 +93,7 @@ export class CrmComponent implements OnInit {
   toggleLiveDemo(): void {
     this.visible = !this.visible;
     if (!this.visible) {
-      this.isEditMode = false; 
+      this.isEditMode = false;
       this.crmForm.reset();
       this.phones.clear();
       this.secondaryPhones.clear();
@@ -105,7 +106,7 @@ export class CrmComponent implements OnInit {
 
   fetchAllCRM(page: number = 1): void {
     this.loading = true;
-  
+
     this.crmService.getAllCRM(page, this.pageSize).subscribe({
       next: (response) => {
         this.crmList = response.data || [];
@@ -158,14 +159,14 @@ export class CrmComponent implements OnInit {
       this.images = Array.from(event.target.files);
     }
   }
- 
+
   onSubmit(): void {
     if (this.crmForm.valid) {
       const formData = {
         ...this.crmForm.value,
         images: this.selectedFiles // ⬅ Add images manually
       };
-  
+
       if (this.isEditMode && this.editClientId) {
         this.crmService.updateCRM(this.editClientId, formData).subscribe(
           () => {
@@ -253,7 +254,7 @@ export class CrmComponent implements OnInit {
       }
     });
   }
-  
+
   viewCrm(clientId: string): void {
     this.getCrmById(clientId);
   }
@@ -275,4 +276,60 @@ export class CrmComponent implements OnInit {
         )
     );
   }
+
+  // Check if a client is selected
+  isClientSelected(clientId: string): boolean {
+    return this.selectedClients.has(clientId);
+  }
+  
+  // Toggle selection for a single client
+  toggleClientSelection(clientId: string, event: any): void {
+    if (event.target.checked) {
+      this.selectedClients.add(clientId);
+    } else {
+      this.selectedClients.delete(clientId);
+    }
+  }
+  
+  // Check if all clients are selected
+  areAllClientsSelected(): boolean {
+    return this.filteredCRMList.length > 0 &&
+           this.filteredCRMList.every(client => this.selectedClients.has(client._id));
+  }
+  
+  // Toggle select all
+  toggleSelectAllClients(event: any): void {
+    if (event.target.checked) {
+      this.filteredCRMList.forEach(client => this.selectedClients.add(client._id));
+    } else {
+      this.selectedClients.clear();
+    }
+  }
+  
+  // Bulk delete
+  deleteSelectedClients(): void {
+    if (this.selectedClients.size === 0) {
+      alert('No clients selected for deletion.');
+      return;
+    }
+  
+    if (confirm(`Are you sure you want to delete ${this.selectedClients.size} selected clients?`)) {
+      const idsToDelete = Array.from(this.selectedClients);
+  
+      this.crmService.deleteMultipleCRMsService(idsToDelete).subscribe({
+        next: (response) => {
+          console.log('Successfully deleted multiple CRMs:', response.message);
+  
+          this.fetchAllCRM();
+  
+          this.selectedClients.clear();
+        },
+        error: (error) => {
+          console.error('Error deleting multiple CRMs:', error.error?.message || error.message);
+        }
+      });
+    }
+  }
+
+
 }

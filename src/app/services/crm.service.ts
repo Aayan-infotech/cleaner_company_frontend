@@ -7,7 +7,7 @@ import { apiUrls } from '../api.urls';
   providedIn: 'root',
 })
 export class CrmService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Create a new CRM entry
   createCRM(data: any): Observable<any> {
@@ -20,7 +20,7 @@ export class CrmService {
     return this.http.get<any>(`${apiUrls.crmMgmtApi}get-all`, {
       params: {
         page: page.toString(),
-        limit: limit.toString(),  
+        limit: limit.toString(),
       }
     });
   }
@@ -82,4 +82,11 @@ export class CrmService {
 
     return formData;
   }
+
+
+  // Delete multiple CRMs
+  deleteMultipleCRMsService(ids: string[]): Observable<any> {
+    return this.http.request('delete', `${apiUrls.crmMgmtApi}delete-multiple`, { body: { ids }});
+  }
+
 }
