@@ -26,8 +26,8 @@ export class GroupsComponent {
   loadingGroups: boolean = false;
   selectedClientsToAdd: any[] = [];
 
-  activeTab: string = 'groups';
-  shareTab: ShareTab = 'groups';
+  activeTab: string = 'clients';
+  shareTab: ShareTab = 'clients';
 
 
   // client
@@ -126,7 +126,6 @@ export class GroupsComponent {
         this.totalItems = res.pagination?.totalGroups || 0;
         this.currentPage = res.pagination?.page || 1;
         this.loadingGroups = false;
-        console.log("only groups with pagination:", this.groupList);
       },
       error: (err) => {
         console.error('Error fetch get all groups', err);
@@ -212,7 +211,6 @@ export class GroupsComponent {
         this.toggleGroupDetails();
         this.loadingGroupId = null;
         this.visibleGroupDetails = true;
-        console.log("groupbyId data:", this.groupData);
       },
       error: (err) => {
         console.error('Error fetching group by ID:', err);
@@ -249,7 +247,6 @@ export class GroupsComponent {
     this.groupsService.getAllClientsService().subscribe({
       next: (res) => {
         this.clientList = res.data || [];
-        console.log('All clients ssssuccessfully:', this.clientList);
       },
       error: (err) => {
         console.error('Failed to load clients:', err);
@@ -396,7 +393,6 @@ export class GroupsComponent {
   }
 
 
-
   // Group Section
 
   onGroupSelectChange(): void {
@@ -409,7 +405,6 @@ export class GroupsComponent {
         if (res.success) {
           this.groupsArray = res.data;
           this.filteredGroups = [...this.groupsArray];
-          console.log('All groups without pagination fetched successfully:', this.groupsArray);
         }
       },
       error: (err) => {
@@ -483,8 +478,8 @@ export class GroupsComponent {
         if (res?.success) {
           this.parentGroupName = res.data?.groupName ?? '';
           this.childGroups     = res.data?.groups ?? [];
-          this.assignedGroups  = res.data?.groups ?? [];   // ✅ keep table in sync
-          this.getAllGroupsNoPagination();                 // keep the source list fresh
+          this.assignedGroups  = res.data?.groups ?? [];  
+          this.getAllGroupsNoPagination();                 
         } else {
           this.childGroups = [];
           this.assignedGroups = [];

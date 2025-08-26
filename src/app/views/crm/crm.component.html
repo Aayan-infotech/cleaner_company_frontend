@@ -1,12 +1,13 @@
 <c-row>
   <c-col xs>
     <c-card class="mb-4">
-      
+
       <!-- Header Section -->
       <c-card-header class="d-flex justify-content-between align-items-center">
         <span>Manage CRM</span>
-        <div  class="d-flex align-items-center gap-2">
-          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search" style="min-width: 200px;" />
+        <div class="d-flex align-items-center gap-2">
+          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search"
+            style="min-width: 200px;" />
 
 
           <button cButton color="primary" routerLink="/jobEstimate" size="sm" class="ms-4">Estimate</button>
@@ -14,18 +15,18 @@
           <button cButton color="primary" class="me-2" routerLink="/marketing" size="sm">Marketing</button>
           <button cButton color="primary" routerLink="/group" size="sm">Group</button>
         </div>
-      </c-card-header>      
+      </c-card-header>
 
       <!-- Start Add client Modal -->
       <c-modal id="liveDemoModal" size="lg" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
-        <c-modal-header class="bg-secondary text-white">
+        <c-modal-header>
           <h5 cModalTitle>{{ isEditMode ? 'Edit Client Details' : 'Add Client' }}</h5>
           <button (click)="toggleLiveDemo()" cButtonClose aria-label="Close"></button>
         </c-modal-header>
-    
+
         <c-modal-body>
           <form [formGroup]="crmForm" class="p-3">
-        
+
             <!-- Primary Details -->
             <div class="mb-4 p-4 border rounded shadow-sm bg-white">
               <h5 class="mb-3">Primary Details</h5>
@@ -33,55 +34,36 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="name" class="form-label fw-bold">Name<span class="text-danger">*</span></label>
-                  <input
-                    id="name"
-                    class="form-control"
-                    formControlName="name"
-                    type="text"
-                    placeholder="Enter name"
-                  />
+                  <input id="name" class="form-control" formControlName="name" type="text" placeholder="Enter name" />
                   <small *ngIf="crmForm.get('name')?.invalid && crmForm.get('name')?.touched" class="text-danger">
                     Name is required.
                   </small>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="email" class="form-label fw-bold">Email<span class="text-danger">*</span></label>
-                  <input
-                    id="email"
-                    class="form-control"
-                    formControlName="email"
-                    type="email"
-                    placeholder="Enter email"
-                  />
+                  <input id="email" class="form-control" formControlName="email" type="email"
+                    placeholder="Enter email" />
                   <small *ngIf="crmForm.get('email')?.invalid && crmForm.get('email')?.touched" class="text-danger">
                     Valid email is required.
                   </small>
                 </div>
               </div>
-        
+
               <div class="mb-3">
                 <label for="address" class="form-label fw-bold">Address<span class="text-danger">*</span></label>
-                <textarea
-                  id="address"
-                  class="form-control"
-                  formControlName="address"
-                  rows="3"
-                  placeholder="Enter address"
-                ></textarea>
+                <textarea id="address" class="form-control" formControlName="address" rows="3"
+                  placeholder="Enter address"></textarea>
                 <small *ngIf="crmForm.get('address')?.invalid && crmForm.get('address')?.touched" class="text-danger">
                   Address is required.
                 </small>
               </div>
-        
+
               <!-- Primary Phones -->
               <div class="border p-3 rounded mb-4 bg-light">
                 <h6 class="fw-bold">Phone Numbers</h6>
                 <div formArrayName="phones">
-                  <div
-                    *ngFor="let phone of phones.controls; let i = index"
-                    [formGroupName]="i"
-                    class="mb-3 p-3 rounded border bg-white"
-                  >
+                  <div *ngFor="let phone of phones.controls; let i = index" [formGroupName]="i"
+                    class="mb-3 p-3 rounded border bg-white">
                     <div class="row align-items-center">
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Type<span class="text-danger">*</span></label>
@@ -96,15 +78,13 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Number<span class="text-danger">*</span></label>
-                        <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        <input class="form-control" formControlName="number" type="text" maxlength="10"
+                          placeholder="Enter 10-digit phone number"
+                          oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                       </div>
                     </div>
                     <div class="text-end mt-2">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        (click)="removePhone(i)"
-                      >
+                      <button type="button" class="btn btn-sm btn-danger" (click)="removePhone(i)">
                         Remove Phone
                       </button>
                     </div>
@@ -116,8 +96,8 @@
                   </button>
                 </div>
               </div>
-        
-               <div class="row">                
+
+              <div class="row">
                 <!-- Payment Option -->
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Payment Option</label>
@@ -134,9 +114,9 @@
                   <input id="file" class="form-control" type="file" (change)="onFileSelected($event)" />
                 </div>
               </div>
-              
+
             </div>
-        
+
             <!-- Secondary Details -->
             <div class="mb-4 p-4 border rounded shadow-sm bg-light">
               <h5 class="mb-3">Secondary Details</h5>
@@ -146,44 +126,28 @@
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label fw-bold">Secondary Name<span class="text-danger">*</span></label>
-                    <input
-                      class="form-control"
-                      formControlName="secondaryName"
-                      type="text"
-                      placeholder="Enter name"
-                    />
+                    <input class="form-control" formControlName="secondaryName" type="text" placeholder="Enter name" />
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label fw-bold">Secondary Email<span class="text-danger">*</span></label>
-                    <input
-                      class="form-control"
-                      formControlName="secondaryEmail"
-                      type="email"
-                      placeholder="Enter email"
-                    />
+                    <input class="form-control" formControlName="secondaryEmail" type="email"
+                      placeholder="Enter email" />
                   </div>
                 </div>
-        
+
                 <div class="row">
                   <div class="col-md-12 mb-3">
                     <label class="form-label fw-bold">Secondary Address<span class="text-danger">*</span></label>
-                    <textarea
-                      class="form-control"
-                      formControlName="secondaryAddress"
-                      rows="3"
-                      placeholder="Enter address"
-                    ></textarea>
+                    <textarea class="form-control" formControlName="secondaryAddress" rows="3"
+                      placeholder="Enter address"></textarea>
                   </div>
                 </div>
-        
+
                 <!-- Secondary Phones -->
                 <div formArrayName="secondaryPhones" class="border rounded p-3 bg-light">
                   <h6 class="fw-bold">Secondary Phone Numbers</h6>
-                  <div
-                    *ngFor="let phone of secondaryPhones.controls; let i = index"
-                    [formGroupName]="i"
-                    class="mb-3 p-3 rounded border bg-white"
-                  >
+                  <div *ngFor="let phone of secondaryPhones.controls; let i = index" [formGroupName]="i"
+                    class="mb-3 p-3 rounded border bg-white">
                     <div class="row">
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Type</label>
@@ -198,25 +162,19 @@
                       </div>
                       <div class="col-md-6">
                         <label class="form-label fw-bold">Phone Number</label>
-                        <input class="form-control" formControlName="number" type="text" maxlength="10" placeholder="Enter 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
+                        <input class="form-control" formControlName="number" type="text" maxlength="10"
+                          placeholder="Enter 10-digit phone number"
+                          oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                       </div>
                     </div>
                     <div class="text-end mt-2">
-                      <button
-                        type="button"
-                        class="btn btn-sm btn-danger"
-                        (click)="removeSecondaryPhone(i)"
-                      >
+                      <button type="button" class="btn btn-sm btn-danger" (click)="removeSecondaryPhone(i)">
                         Remove
                       </button>
                     </div>
                   </div>
                   <div class="text-end">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-primary"
-                      (click)="addSecondaryPhone()"
-                    >
+                    <button type="button" class="btn btn-sm btn-primary" (click)="addSecondaryPhone()">
                       Add Secondary Phone
                     </button>
                   </div>
@@ -246,22 +204,24 @@
           </h5>
           <button (click)="toggleViewCrmModal()" cButtonClose aria-label="Close"></button>
         </c-modal-header>
-      
+
         <c-modal-body *ngIf="selectedClient" class="px-4 py-3">
 
           <!-- Primary Details -->
           <section class="mb-3 pb-3 border-bottom">
 
             <div *ngIf="selectedClient.images?.length" class="text-center mb-2">
-              <img [src]="selectedClient.images[0].url" alt="Profile Picture" title="Profile Picture" class="rounded-circle border border-secondary object-fit-cover" style="width: 130px; height: 100px;" />
+              <img [src]="selectedClient.images[0].url" alt="Profile Picture" title="Profile Picture"
+                class="rounded-circle border border-secondary object-fit-cover"
+                style="width: 100px; height: 100px; border: 3px solid #5e77dd !important;" />
             </div>
 
             <h6 class="fw-semibold mb-3 text-primary">Primary Details</h6>
-      
+
             <p><strong>Name:</strong> {{ selectedClient.name }}</p>
             <p><strong>Email:</strong> {{ selectedClient.email }}</p>
             <p><strong>Address:</strong> {{ selectedClient.address }}</p>
-      
+
             <div *ngIf="selectedClient.phones?.length">
               <h6 class="fw-semibold mt-3 mb-2">Phone Numbers</h6>
               <ul class="ps-3 mb-0">
@@ -270,18 +230,18 @@
                 </li>
               </ul>
             </div>
-      
+
             <p class="mt-3"><strong>Payment Option:</strong> {{ selectedClient.paymentOptions | titlecase }}</p>
           </section>
-      
+
           <!-- Secondary Details -->
           <section>
             <h6 class="fw-semibold mb-3 text-secondary">Secondary Details</h6>
-      
+
             <p><strong>Name:</strong> {{ selectedClient.secondaryName || '-' }}</p>
             <p><strong>Email:</strong> {{ selectedClient.secondaryEmail || '-' }}</p>
             <p><strong>Address:</strong> {{ selectedClient.secondaryAddress || '-' }}</p>
-      
+
             <div *ngIf="selectedClient.secondaryPhones?.length; else noSecondaryPhones">
               <h6 class="fw-semibold mt-3 mb-2">Secondary Phone Numbers</h6>
               <ul class="ps-3 mb-0">
@@ -295,11 +255,11 @@
             </ng-template>
           </section>
         </c-modal-body>
-      
+
         <c-modal-footer>
           <button (click)="toggleViewCrmModal()" cButton color="secondary">Close</button>
         </c-modal-footer>
-      </c-modal>      
+      </c-modal>
       <!-- End View Client Details Modal -->
 
 
@@ -319,9 +279,9 @@
               <th>Actions</th>
             </tr>
           </thead>
-          
+
           <tbody>
-            
+
             <!-- Show Spinner While Loading -->
             <tr *ngIf="loading">
               <td colspan="7" class="text-center py-4">
@@ -340,15 +300,21 @@
 
             <tr *ngFor="let client of filteredCRMList; let i = index">
               <td style="padding-top: 19px;">{{ i + 1 }}</td>
-              
+
               <td class="text-center" (click)="viewCrm(client._id)" style="cursor: pointer;">
-                <div class="rounded-circle border border-primary d-inline-block overflow-hidden" style="width: 48px; height: 48px;">
-                  <img [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'" alt="avatar" class="w-100 h-100 object-fit-cover hover-avatar" />
+                <div class="rounded-circle border border-primary d-inline-block overflow-hidden"
+                  style="width: 48px; height: 48px;">
+                  <img [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'"
+                    alt="avatar" class="w-100 h-100 object-fit-cover hover-avatar" />
                 </div>
               </td>
-              
 
-              <td><span (click)="viewCrm(client._id)" style="cursor: pointer; transition: all 0.1s; padding-top: 19px; padding-left: 15px;" onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';" onmouseout="this.style.color=''; this.style.fontWeight='';">{{ client.name ? (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</span></td>
+
+              <td><span (click)="viewCrm(client._id)"
+                  style="cursor: pointer; transition: all 0.1s; padding-top: 19px; padding-left: 15px;"
+                  onmouseover="this.style.color='#007bff'; this.style.fontWeight='bold';"
+                  onmouseout="this.style.color=''; this.style.fontWeight='';">{{ client.name ?
+                  (client.name.charAt(0).toUpperCase() + client.name.slice(1)) : '' }}</span></td>
               <td style="padding-top: 19px;">{{ client.email }}</td>
               <td style="padding-top: 19px;">
                 <div *ngFor="let phone of client.phones">
@@ -357,7 +323,7 @@
               </td>
               <td style="padding-top: 19px;">{{ client.address }}</td>
               <td style="padding-top: 19px;">
-                
+
                 <!-- <button size="sm" (click)="viewCrm(client._id)" >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
                     <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
@@ -365,7 +331,8 @@
                   </svg>
                 </button> -->
 
-                <button class="mx-2" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil" size="sm"></svg></button>
+                <button class="mx-2" size="sm" (click)="editCRM(client)"> <svg cIcon name="cil-pencil"
+                    size="sm"></svg></button>
                 <button size="sm" (click)="deleteCRM(client._id)"><svg cIcon name="cil-trash" size="sm"></svg></button>
               </td>
             </tr>
@@ -376,7 +343,7 @@
             <tr>
               <td class="px-3" colspan="10">
                 <div class="d-flex justify-content-between align-items-center">
-          
+
                   <!-- Pagination -->
                   <div class="mt-3">
                     <c-pagination aria-label="CRM pagination">
@@ -384,24 +351,24 @@
                       <li cPageItem [class.disabled]="currentPage === 1">
                         <a cPageLink (click)="changePage(currentPage - 1)" style="cursor:pointer;">Previous</a>
                       </li>
-          
+
                       <!-- Page Numbers -->
                       <li *ngFor="let page of totalPagesArray()" cPageItem [class.active]="currentPage === page">
                         <a cPageLink (click)="changePage(page)" style="cursor:pointer;">{{ page }}</a>
                       </li>
-          
+
                       <!-- Next Button -->
                       <li cPageItem [class.disabled]="currentPage === totalPages">
                         <a cPageLink (click)="changePage(currentPage + 1)" style="cursor:pointer;">Next</a>
                       </li>
                     </c-pagination>
                   </div>
-          
+
                   <!-- Total Clients Count -->
                   <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
                     Total Clients: <span class="text-dark">{{ totalCrms }}</span>
                   </div>
-          
+
                 </div>
               </td>
             </tr>

@@ -60,116 +60,17 @@
                   <!-- Tabs -->
                   <ul class="nav nav-tabs mb-3">
                     <li class="nav-item">
-                        <button class="nav-link" [ngClass]="{ active: shareTab === 'groups' }" (click)="shareTab = 'groups'">Groups</button>
+                        <button class="nav-link" [ngClass]="{ active: shareTab === 'clients' }" (click)="shareTab = 'clients'">Clients</button>
                     </li>
 
                     <li class="nav-item">
-                        <button class="nav-link" [ngClass]="{ active: shareTab === 'clients' }" (click)="shareTab = 'clients'">Clients</button>
+                      <button class="nav-link" [ngClass]="{ active: shareTab === 'groups' }" (click)="shareTab = 'groups'">Groups</button>
                     </li>
                   </ul>
 
 
                   <!-- Tab Content -->
                   <div>
-
-                    <!-- Add Existing Groups -->                   
-                    <div *ngIf="shareTab === 'groups'" class="row g-3 mb-5">
-                      
-                      <div class="col-md-12">
-
-                        <!-- Warning Messgae For Add Duplicate Group To Group -->
-                        <div *ngIf="duplicateGroupMsg" class="alert alert-warning py-2 mb-2" role="alert">
-                          {{ duplicateGroupMsg }}
-                        </div>
-
-                        <c-card class="px-3">
-
-                          <!-- Sticky Select All Groups -->
-                          <div class="bg-white position-sticky py-2 border-bottom d-flex align-items-center justify-content-between" style="z-index: 1;">
-                            <div class="form-check mb-0">
-                              <input class="form-check-input" type="checkbox" id="selectAllGroups" [checked]="areAllGroupsSelected()" (change)="toggleSelectAllGroups($event)" />
-                              <label class="form-check-label fw-semibold" for="selectAllGroups">Select All Groups</label>
-                            </div>
-
-
-                            <div class="d-flex">
-
-                              <!-- Search Group -->
-                              <input type="text" class="form-control w-100 me-4" placeholder="Search Group..." [(ngModel)]="groupSearchText" />
-
-                              <!-- Add Group Button -->
-                              <button cButton color="primary" (click)="addGroupToGroup()" [disabled]="selectedGroupsToAdd.length === 0 || isAddingGroup" class="w-50">
-                                <ng-container *ngIf="!isAddingGroup; else loading">Add Group</ng-container>
-                                <ng-template #loading>
-                                  <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
-                                    <span class="visually-hidden">Loading...</span>
-                                  </div>
-                                </ng-template>
-                              </button>
-
-                            </div>
-
-                          </div>
-                        
-                          <!-- Scrollable Group List -->
-                          <div class="overflow-auto" style="max-height: 300px;">
-                            <div *ngFor="let group of filteredGroupLists" class="form-check my-1">
-                              <input class="form-check-input" type="checkbox" [value]="group" [checked]="isGroupSelected(group)" (change)="onGroupCheckboxChange($event, group)" id="groupCheckbox{{ group._id }}" />
-                              <label class="form-check-label" [for]="'groupCheckbox' + group._id">
-                                {{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }} ({{ group.clients?.length || 0 }} Clients)
-                              </label>
-                            </div>
-                          </div>
-                        
-                        </c-card>
-
-                      </div>
-
-
-                      <!-- Assigned Groups Table -->
-                      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table mb-0 border">
-                          <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
-                            <tr style="background-color: #9da5b1;">
-                              <th>#</th>
-                              <th>Name</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-
-                          <tbody>
-                            <!-- Show message when no Groups are assigned -->
-                            <tr *ngIf="assignedGroups.length === 0">
-                              <td colspan="3" class="text-center text-muted py-3">
-                                No groups have been added yet.
-                              </td>
-                            </tr>
-
-                            <!-- Show cliegroupsnts when available -->
-                            <tr *ngFor="let group of assignedGroups; let i = index">
-                              <td>{{ i + 1 }}</td>
-                              <td>{{ group.groupName }}</td>
-
-                              <td>
-                                <!-- Remove Group Button -->
-                                <button title="Remove group" [disabled]="removingGroupId === group._id" (click)="removeGroupFromGroup(group._id)">
-                                  <ng-container *ngIf="removingGroupId !== group._id">
-                                    <svg cIcon name="cil-trash" size="sm"></svg>
-                                  </ng-container>
-                                  <ng-container *ngIf="removingGroupId === group._id">
-                                    <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
-                                  </ng-container>
-                                </button>
-                              </td>
-
-                            </tr>
-                          </tbody>
-
-                        </table>
-
-                      </div>
-
-                    </div>
 
                     <!-- Add Existing Clients -->                   
                     <div *ngIf="shareTab === 'clients'" class="row g-3">
@@ -288,6 +189,105 @@
                       </div>
 
                     </div>                    
+
+                    <!-- Add Existing Groups -->                   
+                    <div *ngIf="shareTab === 'groups'" class="row g-3">
+                      
+                      <div class="col-md-12 mb-5">
+
+                        <!-- Warning Messgae For Add Duplicate Group To Group -->
+                        <div *ngIf="duplicateGroupMsg" class="alert alert-warning py-2 mb-2" role="alert">
+                          {{ duplicateGroupMsg }}
+                        </div>
+
+                        <c-card class="px-3">
+
+                          <!-- Sticky Select All Groups -->
+                          <div class="bg-white position-sticky py-2 border-bottom d-flex align-items-center justify-content-between" style="z-index: 1;">
+                            <div class="form-check mb-0">
+                              <input class="form-check-input" type="checkbox" id="selectAllGroups" [checked]="areAllGroupsSelected()" (change)="toggleSelectAllGroups($event)" />
+                              <label class="form-check-label fw-semibold" for="selectAllGroups">Select All Groups</label>
+                            </div>
+
+
+                            <div class="d-flex">
+
+                              <!-- Search Group -->
+                              <input type="text" class="form-control w-100 me-4" placeholder="Search Group..." [(ngModel)]="groupSearchText" />
+
+                              <!-- Add Group Button -->
+                              <button cButton color="primary" (click)="addGroupToGroup()" [disabled]="selectedGroupsToAdd.length === 0 || isAddingGroup" class="w-50">
+                                <ng-container *ngIf="!isAddingGroup; else loading">Add Group</ng-container>
+                                <ng-template #loading>
+                                  <div class="spinner-border spinner-border-sm text-light" role="status" style="width: 1rem; height: 1rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                  </div>
+                                </ng-template>
+                              </button>
+
+                            </div>
+
+                          </div>
+                        
+                          <!-- Scrollable Group List -->
+                          <div class="overflow-auto my-2" style="max-height: 300px;">
+                            <div *ngFor="let group of filteredGroupLists" class="form-check my-1">
+                              <input class="form-check-input" type="checkbox" [value]="group" [checked]="isGroupSelected(group)" (change)="onGroupCheckboxChange($event, group)" id="groupCheckbox{{ group._id }}" />
+                              <label class="form-check-label" [for]="'groupCheckbox' + group._id">
+                                {{ group.groupName ? (group.groupName.charAt(0).toUpperCase() + group.groupName.slice(1)) : '' }} ({{ group.clients?.length || 0 }} Clients)
+                              </label>
+                            </div>
+                          </div>
+                        
+                        </c-card>
+
+                      </div>
+
+
+                      <!-- Assigned Groups Table -->
+                      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table mb-0 border">
+                          <thead class="bg-light" style="position: sticky; top: 0; z-index: 10;">
+                            <tr style="background-color: #9da5b1;">
+                              <th>#</th>
+                              <th>Name</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                            <!-- Show message when no Groups are assigned -->
+                            <tr *ngIf="assignedGroups.length === 0">
+                              <td colspan="3" class="text-center text-muted py-3">
+                                No groups have been added yet.
+                              </td>
+                            </tr>
+
+                            <!-- Show cliegroupsnts when available -->
+                            <tr *ngFor="let group of assignedGroups; let i = index">
+                              <td>{{ i + 1 }}</td>
+                              <td>{{ group.groupName }}</td>
+
+                              <td>
+                                <!-- Remove Group Button -->
+                                <button title="Remove group" [disabled]="removingGroupId === group._id" (click)="removeGroupFromGroup(group._id)">
+                                  <ng-container *ngIf="removingGroupId !== group._id">
+                                    <svg cIcon name="cil-trash" size="sm"></svg>
+                                  </ng-container>
+                                  <ng-container *ngIf="removingGroupId === group._id">
+                                    <span class="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true"></span>
+                                  </ng-container>
+                                </button>
+                              </td>
+
+                            </tr>
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                    </div>
 
                   </div>
                   
