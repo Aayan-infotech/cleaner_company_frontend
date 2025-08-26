@@ -4,23 +4,22 @@
 
       <!-- Header Section -->
       <c-card-header class="d-flex justify-content-between align-items-center">
-        
+
         <span>
           Manage CRM
-          <button cButton color="danger" variant="outline" (click)="deleteSelectedClients()" size="sm" [disabled]="selectedClients.size === 0" class="ms-4">
+          <button cButton color="danger" (click)="deleteSelectedClients()" size="sm" [disabled]="selectedClients.size === 0" class="ms-4 text-white">
             Delete all selected Clients
           </button>
         </span>
 
         <div class="d-flex align-items-center gap-2">
-          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search"
-            style="min-width: 200px;" />
 
+          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search" style="min-width: 200px;" />
 
           <button cButton color="primary" routerLink="/jobEstimate" size="sm" class="ms-4">Estimate</button>
           <button (click)="toggleLiveDemo()" cButton color="primary" class="mx-2" size="sm">Add Client</button>
           <button cButton color="primary" class="me-2" routerLink="/marketing" size="sm">Marketing</button>
-          <button cButton color="primary" routerLink="/group" size="sm">Group</button>
+          <button cButton color="primary" routerLink="/group" size="sm">Groups</button>
         </div>
       </c-card-header>
 
@@ -269,15 +268,16 @@
       </c-modal>
       <!-- End View Client Details Modal -->
 
-
       <!-- Body Section -->
       <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
           <thead>
+
             <tr>
               <th>
                 <c-form-check>
-                  <input cFormCheckInput id="selectAllClients" type="checkbox" [checked]="areAllClientsSelected()" (change)="toggleSelectAllClients($event)" />
+                  <input cFormCheckInput id="selectAllClients" type="checkbox" [checked]="areAllClientsSelected()"
+                    (change)="toggleSelectAllClients($event)" />
                   <span class="ms-2">All</span>
                 </c-form-check>
               </th>
@@ -289,20 +289,16 @@
               <th>Email</th>
               <th>Phones</th>
               <th>Address</th>
-
-              <th>
-                Actions
-                
-              </th>
-
+              <th>Actions</th>
             </tr>
+
           </thead>
 
           <tbody>
 
             <!-- Show Spinner While Loading -->
             <tr *ngIf="loading">
-              <td colspan="7" class="text-center py-4">
+              <td colspan="12" class="text-center py-4">
                 <div class="spinner-border text-primary" role="status">
                   <span class="visually-hidden">Loading...</span>
                 </div>
@@ -311,7 +307,7 @@
 
             <!-- Show No Clients Message -->
             <tr *ngIf="!loading && filteredCRMList.length === 0">
-              <td colspan="7" class="text-center py-4 text-muted">
+              <td colspan="12" class="text-center py-4 text-muted">
                 No Clients
               </td>
             </tr>
@@ -319,7 +315,8 @@
             <tr *ngFor="let client of filteredCRMList; let i = index">
               <td style="padding-top: 19px;">
                 <c-form-check>
-                  <input cFormCheckInput type="checkbox" [checked]="isClientSelected(client._id)" (change)="toggleClientSelection(client._id, $event)" />
+                  <input cFormCheckInput type="checkbox" [checked]="isClientSelected(client._id)"
+                    (change)="toggleClientSelection(client._id, $event)" />
                 </c-form-check>
               </td>
 
@@ -384,10 +381,10 @@
                       </li>
                     </c-pagination>
 
-                    
+
                   </div>
 
-                  
+
 
                   <!-- Total Clients Count -->
                   <div class="text-end fw-semibold text-secondary px-3 py-2 bg-body border rounded shadow-sm">
