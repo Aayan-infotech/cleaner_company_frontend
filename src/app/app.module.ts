@@ -42,6 +42,7 @@ import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
 import { IconModule, IconSetService } from '@coreui/icons-angular';
+import { provideHotToastConfig } from '@ngxpert/hot-toast';
 
 const APP_CONTAINERS = [
   DefaultFooterComponent,
@@ -91,6 +92,18 @@ const APP_CONTAINERS = [
     },
     IconSetService,
     Title,
+
+    provideHotToastConfig({
+      position: 'top-right',
+      duration: 2000,
+      dismissible: true,   
+      theme: 'toast', 
+      style: {
+        borderRadius: '8px',
+        background: '#333',
+        color: '#fff',
+      },
+    }),
   ],
   bootstrap: [AppComponent]
 })

@@ -5,7 +5,7 @@
         <span class="me-auto fw-bold">All Estimate</span>
 
         <div class="d-flex align-items-center ms-auto">
-          <!-- <button (click)="toggleLiveDemo()" cButton color="primary" class="ms-2" size="sm">Add Estimate</button> -->
+          <button (click)="toggleLiveDemo()" cButton color="primary" class="ms-2" size="sm">Add Estimate</button>
         </div>
       </c-card-header>
 
@@ -163,6 +163,7 @@
 
         <c-modal-footer>
           <button (click)="toggleLiveDemo()" cButton color="secondary">Close</button>
+          
           <button (click)="submitEstimate()" [disabled]="estimateForm.invalid || loading" cButton color="primary">
             <ng-container *ngIf="!loading; else loadingTpl">Save</ng-container>
 

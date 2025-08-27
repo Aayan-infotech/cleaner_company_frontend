@@ -163,7 +163,7 @@
         <hr cDropdownDivider />
       </li>
       <li>
-        <a routerLink="/login" cDropdownItem>
+        <a (click)="logout()" cDropdownItem style="cursor: pointer;">
           <svg cIcon class="me-2" name="cilLockLocked"></svg>
           Log Out
         </a>

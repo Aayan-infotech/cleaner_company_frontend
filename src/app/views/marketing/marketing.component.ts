@@ -3,6 +3,7 @@ import { MarketingCategoriesService } from '../../services/marketing-categories.
 import { Template2Service } from '../../services/template2.service';
 import { GroupsService } from '../../services/groups.service';
 import { CrmService } from '../../services/crm.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 type ShareTab = 'group' | 'client';
 
 @Component({
@@ -73,7 +74,7 @@ export class MarketingComponent {
   public selectedTemplateTitle: string = '';
   public selectedTemplateContent: string = '';
   selectedTemplate: any = null;
-  
+
 
   googleFonts: { name: string; css: string }[] = [
     { name: 'Arial', css: "'Arial', sans-serif" },
@@ -120,6 +121,7 @@ export class MarketingComponent {
     private categoriesService: MarketingCategoriesService,
     private templateService: Template2Service,
     private groupsService: GroupsService,
+    private toast: HotToastService,
     private clientService: CrmService,
   ) { };
 
@@ -215,24 +217,24 @@ export class MarketingComponent {
   // Desktop
   toggleDesPreTempDemo(templateId?: string, templateTitleHtml?: string, templateContentHtml?: string) {
     this.visibleDesPreTemp = !this.visibleDesPreTemp;
-  
+
     if (this.visibleDesPreTemp && templateId) {
       const foundTemplate = this.allTemplates.find(t => t._id === templateId);
       if (foundTemplate) {
         this.selectedTemplate = foundTemplate;
       }
     }
-  
+
     if (templateTitleHtml) {
       const div = document.createElement('div');
       div.innerHTML = templateTitleHtml;
       this.selectedTemplateTitle = div.innerText || div.textContent || '';
     }
-  
+
     if (templateContentHtml) {
       this.selectedTemplateContent = templateContentHtml;
     }
-  
+
     // Reset values if modal is closing
     if (!this.visibleDesPreTemp) {
       this.selectedTemplate = null;
@@ -240,7 +242,7 @@ export class MarketingComponent {
       this.selectedTemplateContent = '';
     }
   }
-  
+
   handleDesPreTempChange(event: any) {
     this.visibleDesPreTemp = event;
   }
@@ -340,6 +342,7 @@ export class MarketingComponent {
     setTimeout(() => {
       if (!this.titleContent || !this.descContent) {
         console.error('Missing DOM references');
+        this.toast.error('❌ Title or Description is missing!');
         return;
       }
 
@@ -368,11 +371,12 @@ export class MarketingComponent {
         formData.append('categoryId', this.selectedCategoryId);
       }
 
+      
       this.templateService.createTemplateService(formData).subscribe({
         next: (res) => {
           this.getAllTemplates();
           this.toggleAddTemplateDemo();
-          alert('Template added successfully!');
+          this.toast.success('Template added successfully!');
 
           // Reset all formatting and content
           this.logoFile = null;
@@ -400,7 +404,7 @@ export class MarketingComponent {
         },
         error: (err) => {
           console.error('Save error:', err);
-          alert('Failed to save template!');
+          this.toast.error(err.error?.message || '❌ Failed to save template!');
         }
       });
     }, 0);
@@ -409,9 +413,16 @@ export class MarketingComponent {
   deleteTemplate(templateId: string): void {
     this.deletingTemplateId = templateId;
 
-    this.templateService.deleteTemplateService(templateId).subscribe({
+    this.templateService.deleteTemplateService(templateId)
+    .pipe(
+      this.toast.observe({
+        loading: 'Deleting template... ⏳',
+        success: (res: any) => res.message || 'Template deleted successfully!',
+        error: (err: any) => err.error?.message || 'Failed to delete template',
+      })
+    )
+    .subscribe({
       next: (res) => {
-        alert(res.message || "Template deleted successfully.");
         this.getAllTemplates();
         this.deletingTemplateId = null;
       },
@@ -463,7 +474,7 @@ export class MarketingComponent {
         console.error("Error fetching all clients", err);
       }
     });
-  }  
+  }
 
   filteredClients(): any[] {
     if (!this.searchClientText) return this.allClients;
@@ -513,7 +524,7 @@ export class MarketingComponent {
 
   shareTemplateToSelectedClients(): void {
     if (!this.selectedTemplateId) {
-      alert("Please select a template to share.");
+      this.toast.error("Please select a template to share.");
       return;
     }
 
@@ -521,42 +532,52 @@ export class MarketingComponent {
 
     if (this.shareTab === 'client') {
       if (this.selectedClientIds.length === 0) {
-        alert("Please select at least one client.");
+        this.toast.warning("Please select at least one client.");
         this.isSharing = false;
         return;
       }
 
-      this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds).subscribe({
+      this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds)
+      .pipe(
+        this.toast.observe({
+          loading: `Sharing template with ${this.selectedClientIds.length} clients... ⏳`,
+          success: (res: any) => res.message || "Template shared to clients successfully!",
+          error: (err: any) => err.error?.message || "Failed to share template to clients",
+        })
+      ).subscribe({
         next: (res) => {
-          alert(res.message || "Template shared to clients successfully.");
           this.selectedClientIds = [];
           this.visibleShareTemp = false;
           this.isSharing = false;
         },
         error: (err) => {
           console.error("Error sharing template to clients:", err);
-          alert("Failed to share template to clients.");
           this.isSharing = false;
         }
       });
 
     } else if (this.shareTab === 'group') {
       if (this.selectedGroupIds.length === 0) {
-        alert("Please select at least one group.");
+        this.toast.warning("Please select at least one group.");
         this.isSharing = false;
         return;
       }
 
-      this.templateService.shareTemplateGroupsService(this.selectedTemplateId, this.selectedGroupIds).subscribe({
+      this.templateService.shareTemplateGroupsService(this.selectedTemplateId, this.selectedGroupIds)
+      .pipe(
+        this.toast.observe({
+          loading: `Sharing template with ${this.selectedGroupIds.length} group clients... ⏳`,
+          success: (res: any) => res.message || "Template shared to group's clients successfully!",
+          error: (err: any) => err.error?.message || "Failed to share template to groups",
+        })
+      ).subscribe({
         next: (res) => {
-          alert(res.message || "Template shared to group clients successfully.");
           this.selectedGroupIds = [];
           this.visibleShareTemp = false;
           this.isSharing = false;
         },
         error: (err) => {
           console.error("Error sharing template to groups:", err);
-          alert("Failed to share template to groups.");
           this.isSharing = false;
         }
       });

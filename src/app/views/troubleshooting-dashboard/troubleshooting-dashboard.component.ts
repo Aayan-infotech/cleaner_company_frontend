@@ -4,6 +4,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TroubleCategoryService } from '../../services/trouble-category.service'
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-troubleshooting-dashboard',
@@ -21,6 +22,7 @@ export class TroubleshootingDashboardComponent {
   troubleCategoryService = inject(TroubleCategoryService);
   categoryForm!: FormGroup;
   deletingCategoryId: string | null = null;
+  toast = inject(HotToastService);
 
   ngOnInit(): void {
     this.categoryForm = this.fb.group({
@@ -30,11 +32,22 @@ export class TroubleshootingDashboardComponent {
   }
 
   addCategory() {
-    console.log(this.categoryForm.value)
+
+    if (this.categoryForm.invalid) {
+      this.toast.warning('Please fill all required fields ⚠️');
+      return;
+    }
+
     this.troubleCategoryService.createCategoryService(this.categoryForm.value)
+      .pipe(
+        this.toast.observe({
+          loading: 'Creating category... ⏳',
+          success: 'Category created successfully',
+          error: (err: any) => err.error?.message || 'Failed to create category'
+        })
+      )
       .subscribe({
         next: (res) => {
-          alert("Category Created")
           this.categoryForm.reset();
           this.getAllCategories();
         },
@@ -56,14 +69,21 @@ export class TroubleshootingDashboardComponent {
   deleteTroubleShootingCategoryById(categoryId: any): void {
     this.deletingCategoryId = categoryId;
 
-    this.troubleCategoryService.deleteCategoryService(categoryId).subscribe({
+    this.troubleCategoryService.deleteCategoryService(categoryId)
+    .pipe(
+      this.toast.observe({
+        loading: 'Deleting category... ⏳',
+        success: 'Category deleted successfully',
+        error: (err: any) => err.error?.message || 'Failed to delete category'
+      })
+    ).subscribe({
       next: (res) => {
         this.getAllCategories();
         this.deletingCategoryId = null;
       },
       error: (err) => {
-        console.error("Error fetch Delete Trouble shooting Category", err );  
-        this.deletingCategoryId = null;      
+        console.error("Error fetch Delete Trouble shooting Category", err);
+        this.deletingCategoryId = null;
       }
     })
   }
