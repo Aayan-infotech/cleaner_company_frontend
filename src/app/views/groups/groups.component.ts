@@ -2,6 +2,7 @@ import { Component, OnInit, inject, Input } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { GroupsService } from '../../services/groups.service';
 type ShareTab = 'groups' | 'clients';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-groups',
@@ -68,7 +69,11 @@ export class GroupsComponent {
   parentGroupName = '';
 
 
-  constructor(private fb: FormBuilder, private groupsService: GroupsService) {
+  constructor(
+    private fb: FormBuilder,
+    private groupsService: GroupsService,
+    private toast: HotToastService,
+  ) {
     // Group Form
     this.groupForm = this.fb.group({
       groupName: ['', Validators.required],
@@ -150,14 +155,23 @@ export class GroupsComponent {
   }
 
   submitGroup(): void {
-    if (this.groupForm.invalid) return;
+    if (this.groupForm.invalid) {
+      this.toast.warning('Please fill all required fields ⚠️');
+      return;
+    }
 
     const data = this.groupForm.value;
     this.isSubmittingGroup = true;
 
     if (this.isEditMode && this.selectedGroupId) {
-      this.groupsService
-        .updateGroupByIdService(this.selectedGroupId, data)
+      this.groupsService.updateGroupByIdService(this.selectedGroupId, data)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating group... ⏳',
+            success: 'Group updated successfully!',
+            error: (err: any) => err.error?.message || 'Failed to update group',
+          })
+        )
         .subscribe({
           next: () => {
             this.getAllGroups();
@@ -170,18 +184,25 @@ export class GroupsComponent {
           },
         });
     } else {
-      this.groupsService.createGroupService(data).subscribe({
-        next: (res) => {
-          this.getAllGroups();
-          this.toggleLiveDemo();
-          this.resetForm();
-          this.isSubmittingGroup = false;
-        },
-        error: (err) => {
-          console.error('Create failed', err);
-          this.isSubmittingGroup = false;
-        },
-      });
+      this.groupsService.createGroupService(data)
+        .pipe(
+          this.toast.observe({
+            loading: 'Creating group... ⏳',
+            success: 'Group created successfully!',
+            error: (err: any) => err.error?.message || 'Failed to create group',
+          })
+        ).subscribe({
+          next: (res) => {
+            this.getAllGroups();
+            this.toggleLiveDemo();
+            this.resetForm();
+            this.isSubmittingGroup = false;
+          },
+          error: (err) => {
+            console.error('Create failed', err);
+            this.isSubmittingGroup = false;
+          },
+        });
     }
   }
 
@@ -191,6 +212,7 @@ export class GroupsComponent {
     this.selectedGroupId = data._id;
     this.isEditMode = true;
     this.visible = true;
+    this.toast.info(`Editing group: ${data.name} ✏️`);
   }
 
   resetForm(): void {
@@ -219,17 +241,19 @@ export class GroupsComponent {
   }
 
   deleteGroupById(id: any): void {
-    if (confirm('Are you sure you want to delete this group?')) {
-      this.groupsService.deleteGroupByIdService(id).subscribe({
-        next: (res) => {
-          this.getAllGroups();
-        },
-        error: (err) => {
-          console.error('Error deleting group:', err);
-        },
+    this.groupsService.deleteGroupByIdService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting group... ⏳',
+          success: 'Group deleted successfully!',
+          error: (err: any) => err.error?.message || 'Failed to delete group',
+        })
+      )
+      .subscribe(() => {
+        this.getAllGroups();
       });
-    }
   }
+
 
 
   // Client Section
@@ -237,7 +261,7 @@ export class GroupsComponent {
   toggleManageClientModal() {
     this.visible = !this.visible;
   }
-  
+
   handleClientModalChange(visible: boolean): void {
     this.clientModalVisible = visible;
   }
@@ -277,7 +301,10 @@ export class GroupsComponent {
   }
 
   addClientToGroup(): void {
-    if (!this.selectedGroup || this.selectedClientsToAdd.length === 0) return;
+    if (!this.selectedGroup || this.selectedClientsToAdd.length === 0) {
+      this.toast.warning('Please select a group and at least one client ⚠️');
+      return;
+    }
 
     const groupId = this.selectedGroup._id;
     const selectedClientIds = this.selectedClientsToAdd.map(client => client._id);
@@ -287,26 +314,34 @@ export class GroupsComponent {
     const newClientIds = selectedClientIds.filter(id => !alreadyAssignedIds.includes(id));
 
     if (newClientIds.length === 0) {
-      this.duplicateClientMsg = 'Selected client(s) are already assigned to the group.';
+      this.toast.info('Selected client are already assigned to the group');
       return;
     }
 
     this.isAddingClient = true;
     this.duplicateClientMsg = null;
 
-    this.groupsService.addClientsToGroup(groupId, newClientIds).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.assignedClients = res.data?.clients || [];
-          this.selectedClientsToAdd = [];
-        }
-        this.isAddingClient = false;
-      },
-      error: (err) => {
-        console.error('Failed to add client:', err);
-        this.isAddingClient = false;
-      },
-    });
+    this.groupsService.addClientsToGroup(groupId, newClientIds)
+      .pipe(
+        this.toast.observe({
+          loading: `Adding ${newClientIds.length} client to group... ⏳`,
+          success: 'Clients added to group successfully!',
+          error: (err: any) => err.error?.message || 'Failed to add clients to group',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.assignedClients = res.data?.clients || [];
+            this.selectedClientsToAdd = [];
+          }
+          this.isAddingClient = false;
+        },
+        error: (err) => {
+          console.error('Failed to add client:', err);
+          this.isAddingClient = false;
+        },
+      });
   }
 
   removeClientFromGroup(clientId: string): void {
@@ -315,18 +350,26 @@ export class GroupsComponent {
 
     this.removingClientId = clientId;
 
-    this.groupsService.removeClientFromGroup(groupId, clientId).subscribe({
-      next: (res) => {
-        this.assignedClients = this.assignedClients.filter(
-          (c) => c._id !== clientId
-        );
-        this.removingClientId = null;
-      },
-      error: (err) => {
-        console.error('Failed to remove client:', err);
-        this.removingClientId = null;
-      },
-    });
+    this.groupsService.removeClientFromGroup(groupId, clientId)
+      .pipe(
+        this.toast.observe({
+          loading: 'Removing client from group... ⏳',
+          success: 'Client removed successfully!',
+          error: (err: any) => err.error?.message || 'Failed to remove client',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.assignedClients = this.assignedClients.filter(
+            (c) => c._id !== clientId
+          );
+          this.removingClientId = null;
+        },
+        error: (err) => {
+          console.error('Failed to remove client:', err);
+          this.removingClientId = null;
+        },
+      });
   }
 
   // Search Section parent 
@@ -415,43 +458,53 @@ export class GroupsComponent {
   get filteredGroupLists(): any[] {
     if (!this.groupsArray) return [];
     const parentId = this.selectedGroup?._id;
-  
+
     let list = this.groupsArray.filter(group => group._id !== parentId);
-  
+
     if (!this.groupSearchText.trim()) {
       return list;
     }
-  
+
     const term = this.groupSearchText.trim().toLowerCase();
     return list.filter(group =>
       group.groupName && group.groupName.toLowerCase().includes(term)
     );
   }
-  
+
 
   addGroupToGroup(): void {
-    if (!this.selectedGroup || this.selectedGroupsToAdd.length === 0) return;
-  
-    const groupId = this.selectedGroup._id;
-    const selectedGroupIds = this.selectedGroupsToAdd.map(group => group._id);
-  
-    const alreadyAssignedIds = this.assignedGroups.map(g => g._id);
-    const newGroupIds = selectedGroupIds.filter(id => !alreadyAssignedIds.includes(id));
-    if (newGroupIds.length === 0) {
-      this.duplicateGroupMsg = 'Selected group(s) are already assigned to the group.';
+    if (!this.selectedGroup || this.selectedGroupsToAdd.length === 0) {
+      this.toast.warning('Please select a group and at least one subgroup ⚠️');
       return;
     }
-  
+
+    const groupId = this.selectedGroup._id;
+    const selectedGroupIds = this.selectedGroupsToAdd.map(group => group._id);
+
+    const alreadyAssignedIds = this.assignedGroups.map(g => g._id);
+    const newGroupIds = selectedGroupIds.filter(id => !alreadyAssignedIds.includes(id));
+
+    if (newGroupIds.length === 0) {
+       this.toast.info('Selected group are already assigned to the group');
+      return;
+    }
+
     this.isAddingGroup = true;
     this.duplicateGroupMsg = null;
-  
-    this.groupsService.addGroupToGroupService(groupId, newGroupIds).subscribe({
+
+    this.groupsService.addGroupToGroupService(groupId, newGroupIds)
+    .pipe(
+      this.toast.observe({
+        loading: `Adding ${newGroupIds.length} group to group... ⏳`,
+        success: 'Group added successfully!',
+        error: (err: any) => err.error?.message || 'Failed to add group',
+      })
+    )
+    .subscribe({
       next: (res) => {
         if (res.success) {
-          // local update from API response
           this.assignedGroups = res.data?.groups || [];
           this.selectedGroupsToAdd = [];
-          // ✅ defensive re-fetch (keeps childGroups + assignedGroups consistent)
           this.getAllGroupsInGroupById(groupId);
         }
         this.isAddingGroup = false;
@@ -461,7 +514,7 @@ export class GroupsComponent {
         this.isAddingGroup = false;
       },
     });
-  }  
+  }
 
   getAllGroupsInGroupById(parentGroupId?: string): void {
     const id = parentGroupId ?? this.selectedGroup?._id ?? this.groupId;
@@ -469,16 +522,16 @@ export class GroupsComponent {
       console.warn('No parent group id provided.');
       return;
     }
-  
+
     this.loadingChildren = true;
     this.groupsService.getAllChildGroupByParentGroupIdService(id).subscribe({
       next: (res) => {
         this.loadingChildren = false;
         if (res?.success) {
           this.parentGroupName = res.data?.groupName ?? '';
-          this.childGroups     = res.data?.groups ?? [];
-          this.assignedGroups  = res.data?.groups ?? [];  
-          this.getAllGroupsNoPagination();                 
+          this.childGroups = res.data?.groups ?? [];
+          this.assignedGroups = res.data?.groups ?? [];
+          this.getAllGroupsNoPagination();
         } else {
           this.childGroups = [];
           this.assignedGroups = [];
@@ -491,7 +544,7 @@ export class GroupsComponent {
         console.error('Error fetching child groups:', err);
       }
     });
-  }  
+  }
 
   removeGroupFromGroup(subGroupId: string): void {
     const groupId = this.selectedGroup?._id;
@@ -499,7 +552,15 @@ export class GroupsComponent {
 
     this.removingGroupId = subGroupId;
 
-    this.groupsService.removeGroupFromGroup(groupId, subGroupId).subscribe({
+    this.groupsService.removeGroupFromGroup(groupId, subGroupId)
+    .pipe(
+      this.toast.observe({
+        loading: 'Removing group from group... ⏳',
+        success: 'Group removed successfully!',
+        error: (err: any) => err.error?.message || 'Failed to remove group',
+      })
+    )
+    .subscribe({
       next: (res) => {
         this.assignedGroups = this.assignedGroups.filter(
           (g: any) => g._id !== subGroupId
@@ -531,7 +592,7 @@ export class GroupsComponent {
   areAllGroupsSelected(): boolean {
     const parentId = this.selectedGroup?._id;
     const list = this.groupsArray.filter(group => group._id !== parentId);
-  
+
     return list.length > 0 && list.every(group =>
       this.selectedGroupsToAdd.some(selected => selected._id === group._id)
     );
@@ -541,7 +602,7 @@ export class GroupsComponent {
   toggleSelectAllGroups(event: any): void {
     const parentId = this.selectedGroup?._id;
     const list = this.groupsArray.filter(group => group._id !== parentId);
-  
+
     if (event.target.checked) {
       this.selectedGroupsToAdd = [...list];
     } else {

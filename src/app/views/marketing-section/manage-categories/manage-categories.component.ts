@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { MarketingCategoriesService } from '../../../services/marketing-categories.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-manage-categories',
@@ -27,8 +28,9 @@ export class ManageCategoriesComponent {
 
   constructor(
     private fb: FormBuilder,
+    private toast: HotToastService,
     private marketingCategoriesService: MarketingCategoriesService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initializeForm();
@@ -71,7 +73,10 @@ export class ManageCategoriesComponent {
 
   // Submit (Create or Update)
   submitCategory(): void {
-    if (this.categoryForm.invalid) return;
+    if (this.categoryForm.invalid) {
+      this.toast.warning('Please fill all required fields ⚠️');
+      return;
+    }
 
     const payload = this.categoryForm.value;
 
@@ -80,6 +85,13 @@ export class ManageCategoriesComponent {
 
       this.marketingCategoriesService
         .updateCategoryByIdService(this.selectedCategoryId, payload)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating category... ⏳',
+            success: 'Category updated successfully!',
+            error: (err: any) => err.error?.message || 'Failed to update category',
+          })
+        )
         .subscribe({
           next: () => {
             this.getAllCategories();
@@ -96,19 +108,26 @@ export class ManageCategoriesComponent {
     } else {
       this.loading = true;
 
-      this.marketingCategoriesService.createCategoryService(payload).subscribe({
-        next: () => {
-          this.getAllCategories();
-          this.toggleAddCategoryModal();
-        },
-        error: (err) => {
-          console.error('Create failed:', err);
-        },
-        complete: () => {
-          this.loading = false;
-          this.resetForm();
-        },
-      });
+      this.marketingCategoriesService.createCategoryService(payload)
+        .pipe(
+          this.toast.observe({
+            loading: 'Creating category... ⏳',
+            success: 'Category created successfully!',
+            error: (err: any) => err.error?.message || 'Failed to create category',
+          })
+        ).subscribe({
+          next: () => {
+            this.getAllCategories();
+            this.toggleAddCategoryModal();
+          },
+          error: (err) => {
+            console.error('Create failed:', err);
+          },
+          complete: () => {
+            this.loading = false;
+            this.resetForm();
+          },
+        });
     }
   }
 
@@ -120,7 +139,7 @@ export class ManageCategoriesComponent {
       next: (res) => {
         this.selectedCategory = res.data;
         this.visibleViewCategory = true;
-        this.loadingCategoryView = null;      
+        this.loadingCategoryView = null;
       },
       error: (err) => {
         console.error('Error fetching category:', err);
@@ -183,14 +202,21 @@ export class ManageCategoriesComponent {
   deleteCategory(id: string): void {
     this.deletingCategoryId = id;
 
-    this.marketingCategoriesService.deleteCategoryById(id).subscribe({
+    this.marketingCategoriesService.deleteCategoryById(id)
+    .pipe(
+      this.toast.observe({
+        loading: 'Deleting category... ⏳',
+        success: 'Category deleted successfully!',
+        error: (err: any) => err.error?.message || 'Failed to delete category',
+      })
+    ).subscribe({
       next: () => {
         this.getAllCategories();
         this.deletingCategoryId = null;
       },
       error: (err) => {
         console.error('Delete failed:', err);
-        this.deletingCategoryId = null; 
+        this.deletingCategoryId = null;
       },
     });
   }

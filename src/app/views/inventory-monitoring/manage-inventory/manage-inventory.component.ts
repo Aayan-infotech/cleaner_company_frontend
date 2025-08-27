@@ -5,8 +5,7 @@ import { InventoryCategoryService } from '../../../services/inventory-category.s
 import { ItemInventoryService } from '../../../services/item-inventory.service';
 import { OrderService } from '../../../services/order.service';
 import { VanService } from '../../../services/van.service';
-
-// new import
+import { HotToastService } from '@ngxpert/hot-toast';
 import { TroubleCategoryService } from '../../../services/trouble-category.service';
 
 export interface Item {
@@ -82,6 +81,7 @@ export class ManageInventoryComponent implements OnInit {
   searchText!: any;
 
   public visible = false;
+  toast = inject(HotToastService);
 
   orderService = inject(OrderService);
   editData: any;
@@ -150,6 +150,7 @@ export class ManageInventoryComponent implements OnInit {
 
   toggleLiveDemoVan() {
     this.visibleVan = !this.visibleVan;
+    if (this.visibleVan) this.resetForm();
   }
 
   handleLiveDemoChangeVan(event: any) {
@@ -285,6 +286,11 @@ export class ManageInventoryComponent implements OnInit {
   // submit inventory Item
   submitItem() {
 
+    if (this.itemForm.invalid) {
+      this.toast.warning('Please fill all required fields ⚠️');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('itemName', this.itemForm.get('itemName')?.value);
     formData.append('partNumber', this.itemForm.get('partNumber')?.value);
@@ -317,59 +323,75 @@ export class ManageInventoryComponent implements OnInit {
 
     // Check edit mode or new item creation
     if (this.isEditMode && this.itemId) {
-      this.itemInventoryService.updateItemService(formData, this.itemId).subscribe({
-        next: () => {
-          alert('Item updated successfully');
-          this.resetForm();
-          this.getAllWarehouseItems();
-          this.getAllVanItems();
-          this.getAllItemsWithVanNames();
-        },
-        error: (err) => {
-          console.error('Error updating item:', err);
-          alert('Failed to update item. Please try again.');
-        }
-      });
+      this.itemInventoryService.updateItemService(formData, this.itemId)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating item... ⏳',
+            success: 'Item updated successfully',
+            error: (err: any) => err.error?.message || 'Failed to update item'
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.resetForm();
+            this.getAllWarehouseItems();
+            this.getAllVanItems();
+            this.getAllItemsWithVanNames();
+          },
+          error: (err) => {
+            console.error('Error updating item:', err);
+          }
+        });
     } else {
-      this.itemInventoryService.createItemService(formData).subscribe({
-        next: () => {
-          alert('Item added successfully');
-          this.resetForm();
-          this.getAllWarehouseItems();
-          this.getAllVanItems();
-          this.getAllItemsWithVanNames();
-          this.getAllItems();
-        },
-        error: (err) => {
-          console.error('Error adding item:', err);
-          alert('Failed to add item. Please try again.');
-        }
-      });
+      this.itemInventoryService.createItemService(formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Adding item... ⏳',
+            success: 'Item added successfully',
+            error: (err: any) => err.error?.message || 'Failed to add item'
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.resetForm();
+            this.getAllWarehouseItems();
+            this.getAllVanItems();
+            this.getAllItemsWithVanNames();
+            this.getAllItems();
+          },
+          error: (err) => {
+            console.error('Error adding item:', err);
+          }
+        });
     }
   }
 
   // submit van 
-  submitVan() {
-    if (this.vanForm.valid) {
-      const vanObj = {
-        vanName: this.vanForm.get('vanName')?.value
-      };
-
-      this.vanService.createVanService(vanObj)
-        .subscribe({
-          next: (res) => {
-            alert('Van added successfully');
-            this.resetForm();
-            this.getAllVans();
-          },
-          error: (err) => {
-            console.error('Error adding van:', err);
-          }
-        });
-    } else {
-      console.log('Invalid form');
+  onAddVanClick() {
+    if (!this.vanForm.valid) {
+      this.toast.warning('Please fill all required fields ⚠️');
+      return;
     }
+
+    const vanObj = {
+      vanName: this.vanForm.get('vanName')?.value
+    };
+
+    this.vanService.createVanService(vanObj)
+      .pipe(
+        this.toast.observe({
+          loading: 'Adding van... ⏳',
+          success: 'Van added successfully!',
+          error: (err: any) => err.error?.message || 'Failed to add van',
+        })
+      )
+      .subscribe(() => {
+        this.resetForm();
+        this.getAllVans();
+        this.toggleLiveDemoVan();
+      });
   }
+
 
   onCategoryChange(event: any) {
     const selectedCategoryId = event.target.value;
@@ -394,30 +416,32 @@ export class ManageInventoryComponent implements OnInit {
   // Add order item Requesti
   addToOrder(itemId: string): void {
     if (this.orderForm.invalid) {
-      alert("Please enter a valid quantity");
+      this.toast.warning("Please enter a valid quantity ⚠️");
       return;
     }
-  
+
     const requestedQuantity = this.orderForm.value.requestedQuantity;
-  
-    this.orderService.createOrderItemService(itemId, requestedQuantity).subscribe({
-      next: (res) => {
-        console.log("Order API Response:", res); 
 
-      if (res?.data) {
-        const order = res.data;
-        // store latest status for that item
-        this.latestOrderStatuses[order.itemId] = order.status; 
-      }
-      
-        alert("Item Ordered Successfully!");
-        this.orderForm.reset();
-
-      },
-      error: (err) => {
-        console.error("Error while ordering item", err);
-      }
-    });
+    this.orderService.createOrderItemService(itemId, requestedQuantity)
+      .pipe(
+        this.toast.observe({
+          loading: 'Placing order... ⏳',
+          success: 'Item ordered successfully',
+          error: (err: any) => err.error?.message || 'Failed to place order'
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          if (res?.data) {
+            const order = res.data;
+            this.latestOrderStatuses[order.itemId] = order.status;
+          }
+          this.orderForm.reset();
+        },
+        error: (err) => {
+          console.error("Error while ordering item", err);
+        }
+      });
   }
 
   clickAddMember() {
@@ -425,6 +449,7 @@ export class ManageInventoryComponent implements OnInit {
   }
 
   resetForm(): void {
+    this.vanForm.reset();
     this.categoryForm.reset();
     this.itemForm.reset();
     this.itemId = null;
@@ -681,13 +706,18 @@ export class ManageInventoryComponent implements OnInit {
   // transfer from warehouse
   transferItem(warehouseId: string, totalQuantity: number, minimumQuantity: number) {
     if (!this.selectedVanId || this.transferQuantity <= 0) {
-      alert(!this.selectedVanId ? 'Please select a van to transfer to.' : 'Please enter a valid quantity to transfer.');
+      this.toast.warning(
+        !this.selectedVanId ? 'Please select a van to transfer to ⚠️' : 'Please enter a valid quantity to transfer ⚠️'
+      );
       return;
     }
 
     const availableQuantity = totalQuantity - minimumQuantity;
+
     if (this.transferQuantity > availableQuantity) {
-      alert(`Cannot transfer more than ${availableQuantity}. Minimum reserved: ${minimumQuantity}.`);
+      this.toast.warning(
+        `Cannot transfer more than ${availableQuantity}. Minimum reserved: ${minimumQuantity} ⚠️`
+      );
       return;
     }
 
@@ -697,9 +727,16 @@ export class ManageInventoryComponent implements OnInit {
       transferQuantity: this.transferQuantity
     };
 
-    this.itemInventoryService.transferItemService(transferData).subscribe({
+    this.itemInventoryService.transferItemService(transferData)
+    .pipe(
+      this.toast.observe({
+        loading: 'Transferring item... ⏳',
+        success: 'Item transferred successfully',
+        error: (err: any) => err.error?.message || 'Failed to transfer item '
+      })
+    )
+    .subscribe({
       next: () => {
-        alert('Item transferred successfully');
         this.resetForm();
         this.getAllWarehouseItems();
         this.getAllItemsWithVanNames();
@@ -707,7 +744,6 @@ export class ManageInventoryComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error transferring item:', err);
-        alert('Error transferring item. Please try again.');
       }
     });
   };

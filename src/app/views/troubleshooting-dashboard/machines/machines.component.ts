@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TroubleCategoryService } from '../../../services/trouble-category.service'
 import { CategoryItemService } from '../../../services/category-item.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-machines',
@@ -11,7 +12,7 @@ import { CategoryItemService } from '../../../services/category-item.service';
 })
 
 export class MachinesComponent implements OnInit {
-  
+
   selectedSection: string = 'shortDescription';
 
   toggleSection(section: string) {
@@ -44,7 +45,7 @@ export class MachinesComponent implements OnInit {
   searchTerm: string = '';
 
   troubleCategoryService = inject(TroubleCategoryService);
-
+  toast = inject(HotToastService);
   public visible = false;
 
   toggleLiveDemo() {
@@ -126,13 +127,14 @@ export class MachinesComponent implements OnInit {
     });
   }
 
-  
+
   // Submit form data
   submit() {
     if (!this.itemsForm.valid) {
-      alert('Please fill in all required fields and add at least one image.');
+      this.toast.warning('Please fill in all required fields and add at least one image ⚠️');
       return;
     }
+
     const formData = new FormData();
     formData.append('name', this.itemsForm.get('name')?.value);
     formData.append('partNumber', this.itemsForm.get('partNumber')?.value);
@@ -156,9 +158,15 @@ export class MachinesComponent implements OnInit {
 
     if (this.isEditMode && this.itemsId && this.categoryId) {
       this.categoryItemService.updateItemByIdService(this.categoryId, this.itemsId, formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating item... ⏳',
+            success: 'Item updated successfully',
+            error: (err: any) => err.error?.message || 'Failed to update item'
+          })
+        )
         .subscribe({
           next: () => {
-            alert('Item updated successfully');
             this.resetForm();
             this.getAllItems();
           },
@@ -169,15 +177,20 @@ export class MachinesComponent implements OnInit {
         });
     } else if (this.categoryId) {
       this.categoryItemService.createItemService(this.categoryId, formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Adding item... ⏳',
+            success: 'Item added successfully',
+            error: (err: any) => err.error?.message || 'Failed to add item'
+          })
+        )
         .subscribe({
           next: () => {
-            alert('Item created successfully');
             this.resetForm();
             this.getAllItems();
           },
           error: (err) => {
             console.error('Error creating item:', err);
-            alert('Failed to create item. Please try again.');
           }
         });
     }
@@ -197,7 +210,7 @@ export class MachinesComponent implements OnInit {
     'assets/images/DIY.jpg',
     'assets/images/stain.jpg',
     'assets/images/cleaningtip.jpg',
-    'assets/images/disinfection-equipment-table.jpg',    
+    'assets/images/disinfection-equipment-table.jpg',
     'assets/images/files.jpg',
     'assets/images/cleaningtip.jpg',
     'assets/images/guide.jpg',
@@ -223,7 +236,7 @@ export class MachinesComponent implements OnInit {
       this.currentIndex = 0;
     }
   }
-  
+
   prevImage() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
@@ -300,24 +313,24 @@ export class MachinesComponent implements OnInit {
   }
 
   deleteItemById(id: any) {
-    if (confirm("Are you sure you want to delete this item?")) {
-      if (this.categoryId) {
-        this.categoryItemService.deleteItemByIdService(this.categoryId, id)
-          .subscribe({
-            next: () => {
-              alert('item deleted successfully');
-              this.getAllItems();
-            },
-            error: (err) => {
-              console.error(err);
-              alert('Failed to delete uploaded item');
-            }
-          });
-      } else {
-        alert('Category ID is missing');
-      }
+    if (!this.categoryId) {
+      this.toast.error('Category ID is missing');
+      return;
     }
+  
+    this.categoryItemService.deleteItemByIdService(this.categoryId, id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting item... ⏳',
+          success: 'Item deleted successfully',
+          error: (err: any) => err.error?.message || 'Failed to delete item'
+        })
+      )
+      .subscribe(() => {
+        this.getAllItems();
+      });
   }
+  
 
   items = [
     {
@@ -356,6 +369,6 @@ export class MachinesComponent implements OnInit {
       (item.partDescription ?? '').toLowerCase().includes(term)
     );
   }
-  
+
 
 }

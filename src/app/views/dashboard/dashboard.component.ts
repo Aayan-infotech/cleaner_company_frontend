@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 import { EmpMgmtService } from '../../services/emp-mgmt.service';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 declare const google: any;
 
@@ -29,6 +30,7 @@ export class DashboardComponent {
   editData: any;
   public visible = false;
   datePipe = inject(DatePipe);
+  toast = inject(HotToastService);
 
   usersService = inject(UsersService);
   empMgmtService = inject(EmpMgmtService);
@@ -164,18 +166,16 @@ export class DashboardComponent {
       };
 
       if (this.editData) {
-        eventData['_id'] = this.editData._id; // If editing an event
-        this.EventsService.updateEventService(
-          eventData,
-          this.editData._id
-        ).subscribe({
+        eventData['_id'] = this.editData._id; 
+        this.EventsService.updateEventService(eventData, this.editData._id).subscribe({
           next: (res) => {
-            alert('Event Updated');
+            this.toast.success('Event Updated Successfully!');
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
           },
           error: (err) => {
+            this.toast.error('Error updating event!');
             console.error('Error updating event:', err);
           },
         });
@@ -183,12 +183,13 @@ export class DashboardComponent {
         eventData['date'] = this.eventForm.get('date')?.value;
         this.EventsService.createEventService(eventData).subscribe({
           next: (res) => {
-            alert('Event Scheduled');
+            this.toast.success('Event Scheduled Successfully!');
             this.getAllCalendar();
             this.resetForm();
             this.toggleLiveDemo3();
           },
           error: (err) => {
+            this.toast.error('Error scheduling event!');
             console.error('Error creating event:', err);
           },
         });
@@ -212,7 +213,7 @@ export class DashboardComponent {
       clientContact: event.clientContact,
       eventType: event.eventType,
     });
-    this.visible = true; // Show the modal for editing
+    this.visible = true; 
   }
 
   clickAddMember() {

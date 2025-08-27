@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { DropDownService } from '../../services/drop-down.service';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { EstimateService } from '../../services/estimate.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-job-estimation-contracts',
@@ -39,6 +40,7 @@ export class JobEstimationContractsComponent implements OnInit {
 
   constructor(
     private estimateService: EstimateService,
+    private toast: HotToastService,
     private fb: FormBuilder
   ) { }
 
@@ -119,7 +121,7 @@ export class JobEstimationContractsComponent implements OnInit {
   // Submit Estimate
   submitEstimate() {
     if (this.estimateForm.invalid) {
-      alert('Please fill out all required fields.');
+      this.toast.error('Please fill all required fields before saving.');
       return;
     }
 
@@ -133,27 +135,24 @@ export class JobEstimationContractsComponent implements OnInit {
         this.toggleLiveDemo();
         this.showRoomSection = false;
         this.loading = false;
+
+        this.toast.success('Estimate created successfully for Job ID: ' + res.data?.jobId, {
+          icon: '📊',
+          theme: 'snackbar',
+        });
+
       },
       error: (err) => {
         console.error('Error creating estimate:', err);
-        alert(err?.error?.message || 'Something went wrong.');
+        this.toast.error(err?.error?.message || 'Failed to create estimate. Try again!', {
+          icon: '⚠️',
+          theme: 'snackbar',
+        });
         this.loading = false;
       },
     });
   }
 
-  // getAllEstimatesData(): void {
-  //   this.estimateService.getAllEstimates().subscribe({
-  //     next: (res) => {
-  //       this.estData = res;
-  //       this.estArray = this.estData.data;
-  //     },
-  //     error: (err) => {
-  //       console.error("Error fetching All Estimates", err);
-  //     }
-  //   })
-  // }
-  
   getAllEstimates(page: number = 1): void {
     this.estimateService.getAllEstimatesService(page, this.pageSize).subscribe({
       next: (res) => {
@@ -193,6 +192,10 @@ export class JobEstimationContractsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching Jobs', err);
+        this.toast.error('Unable to load jobs. Please refresh!', {
+          icon: '⚠️',
+          theme: 'snackbar',
+        });
       },
     });
   }
@@ -205,6 +208,10 @@ export class JobEstimationContractsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching all rooms', err);
+        this.toast.error('Rooms could not be loaded.', {
+          icon: '🏠',
+          theme: 'snackbar',
+        });
       },
     });
   }
@@ -217,6 +224,10 @@ export class JobEstimationContractsComponent implements OnInit {
       },
       error: (err) => {
         console.error("Error fetching services and methods", err);
+        this.toast.error('Failed to load services & methods.', {
+          icon: '🛠️',
+          theme: 'snackbar',
+        });
       }
     })
   }
@@ -233,10 +244,19 @@ export class JobEstimationContractsComponent implements OnInit {
       next: (res) => {
         this.getAllEstimates();
         this.deletingEstimateId = null;
+
+        this.toast.success('Estimate deleted successfully!', {
+          icon: '🗑️',
+          theme: 'snackbar',
+        });
+
       },
       error: (err) => {
         console.error('Error deleting estimate:', err);
-        alert('Failed to delete estimate');
+        this.toast.error('Failed to delete estimate. Please try again.', {
+          icon: '❌',
+          theme: 'snackbar',
+        });
         this.deletingEstimateId = null;
       }
     });

@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { CrmService } from '../../services/crm.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 @Component({
   selector: 'app-crm',
@@ -36,6 +37,7 @@ export class CrmComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private toast: HotToastService,
     private crmService: CrmService,
     private cdr: ChangeDetectorRef
   ) {
@@ -149,14 +151,17 @@ export class CrmComponent implements OnInit {
   }
 
   deleteCRM(clientId: string): void {
-    if (confirm('Are you sure you want to delete this CRM entry?')) {
-      this.crmService.deleteCRMById(clientId).subscribe(
-        () => {
-          this.fetchAllCRM();
-        },
-        (error) => console.error('Error deleting CRM:', error)
-      );
-    }
+    this.crmService.deleteCRMById(clientId)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting client... ⏳',
+          success: 'Client deleted successfully 🗑️',
+          error: 'Failed to delete client ❌',
+        })
+      )
+      .subscribe({
+        next: () => this.fetchAllCRM()
+      });
   }
 
   onFileChange(event: any) {
@@ -169,30 +174,46 @@ export class CrmComponent implements OnInit {
     if (this.crmForm.valid) {
       const formData = {
         ...this.crmForm.value,
-        images: this.selectedFiles // ⬅ Add images manually
+        images: this.selectedFiles 
       };
 
       if (this.isEditMode && this.editClientId) {
-        this.crmService.updateCRM(this.editClientId, formData).subscribe(
-          () => {
+        this.crmService.updateCRM(this.editClientId, formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating client... ⏳',
+            success: 'Client updated successfully ',
+            error: 'Failed to update client ❌',
+          })
+        ) .subscribe({
+          next: () => {
             this.toggleLiveDemo();
             this.fetchAllCRM();
             this.crmForm.reset();
             this.selectedFiles = [];
-          },
-          (error) => console.error('Error updating CRM:', error)
-        );
+          }
+        });
       } else {
-        this.crmService.createCRM(formData).subscribe(
-          () => {
+        this.crmService.createCRM(formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Adding client... ⏳',
+            success: 'Client added successfully',
+            error: 'Failed to add client ❌',
+          })
+        )
+        .subscribe({
+          next: () => {
             this.toggleLiveDemo();
             this.fetchAllCRM();
             this.crmForm.reset();
             this.selectedFiles = [];
-          },
-          (error) => console.error('Error creating CRM:', error)
-        );
+          }
+        });
       }
+    }
+    else {
+      this.toast.warning('Please fill all required fields ⚠️');
     }
   }
 
@@ -232,6 +253,7 @@ export class CrmComponent implements OnInit {
         })
       )
     );
+    this.toast.info(`Editing client: ${client.name} ✏️`);
   }
 
   toggleViewCrmModal() {
@@ -342,30 +364,26 @@ export class CrmComponent implements OnInit {
     }
   }
 
-  // Bulk delete
   deleteSelectedClients(): void {
     if (this.selectedClients.size === 0) {
-      alert('No clients selected for deletion.');
+      this.toast.error('⚠️ No clients selected for deletion.');
       return;
     }
-
-    if (confirm(`Are you sure you want to delete ${this.selectedClients.size} selected clients?`)) {
-      const idsToDelete = Array.from(this.selectedClients);
-
-      this.crmService.deleteMultipleCRMsService(idsToDelete).subscribe({
-        next: (response) => {
-          console.log('Successfully deleted multiple CRMs:', response.message);
-
-          this.fetchAllCRM();
-
-          this.selectedClients.clear();
-        },
-        error: (error) => {
-          console.error('Error deleting multiple CRMs:', error.error?.message || error.message);
-        }
+  
+    const idsToDelete = Array.from(this.selectedClients);
+  
+    this.crmService.deleteMultipleCRMsService(idsToDelete)
+      .pipe(
+        this.toast.observe({
+          loading: `Deleting ${this.selectedClients.size} clients... ⏳`,
+          success: 'Clients deleted successfully!',
+          error: (err: any) => err.error?.message || '❌ Failed to delete clients',
+        })
+      )
+      .subscribe(() => {
+        this.fetchAllCRM();
+        this.selectedClients.clear();
       });
-    }
   }
-
 
 }

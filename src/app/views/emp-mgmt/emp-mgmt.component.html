@@ -20,6 +20,7 @@
                         </h5>
                         <button (click)="toggleLiveDemo()" size="sm" cButtonClose></button>
                     </c-modal-header>
+                   
                     <c-modal-body>
 
                         <form [formGroup]="empMgmtForm">
@@ -218,11 +219,12 @@
                     <c-modal-footer>
 
                         <button (click)="toggleLiveDemo()" cButton color="secondary" size="sm">Close</button>
-                        <button (click)="submitEmpMgmtForm()" (click)="toggleLiveDemo()" *ngIf="showSaveChanges" cButton
-                            color="primary" size="sm">Save</button>
+                        <button (click)="submitEmpMgmtForm()" (click)="toggleLiveDemo()" *ngIf="showSaveChanges" cButton color="primary" size="sm">Save</button>
                     </c-modal-footer>
                 </c-modal>
                 <!-- end Employee Register model -->
+
+
 
                 <!-- Start View Employee Details Model -->
                 <c-modal size="xl" id="liveDemoModal" [visible]="visibleViewEmpDetails"
@@ -492,8 +494,9 @@
                             color="secondary">Close</button>
                     </c-modal-footer>
                 </c-modal>
-
                 <!-- End View Employee Details Model -->
+
+
 
                 <!-- Start Add Certificates Model -->
                 <c-modal style="background-color: #EAE9EE" id="liveDemoModal" [visible]="addCertificatesvisible"
@@ -532,11 +535,11 @@
                         <button (click)="uploadCertificates()" size="sm" cButton color="success">Add</button>
                     </c-modal-footer>
                 </c-modal>
-
                 <!-- End Add Certificates Model -->
 
-                <!-- Notification start -->
 
+
+                <!-- Notification start -->
                 <c-modal style="background-color: #EAE9EE" size="lg" id="liveDemoModal2" [visible]="visible2"
                     (visibleChange)="handleLiveDemoChange2($event)">
                     <c-modal-header>
@@ -572,13 +575,10 @@
                     </c-modal-footer>
 
                 </c-modal>
-
                 <!-- notification end -->
 
+
                 <!-- leave Modal start -->
-
-
-
                 <c-modal style="background-color: #EAE9EE" id="liveDemoModal3" [visible]="visible3"
                     (visibleChange)="handleLiveDemoChange3($event)">
                     <c-modal-header>
@@ -617,13 +617,12 @@
                         </button>
                     </c-modal-footer>
                 </c-modal>
-
-
-
                 <!-- Leave Modal End -->
 
             </c-card-header>
 
+
+            <!-- Body Section -->
             <c-card-body>
                 <div class="mb-3 d-flex justify-content-between align-items-center">
                     <!-- Search Input -->

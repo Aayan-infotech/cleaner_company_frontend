@@ -64,6 +64,7 @@
           </h5>
           <button (click)="toggleLiveDemoItem()" cButtonClose></button>
         </c-modal-header>
+
         <c-modal-body>
           <form cForm [formGroup]="itemForm">
             <c-row>
@@ -388,9 +389,10 @@
             </c-row>
           </form>
         </c-modal-body>
+
         <c-modal-footer>
           <button (click)="toggleLiveDemoItem()" cButton color="secondary" size="sm">Close</button>
-          <button (click)="submitItem()" (click)="toggleLiveDemoItem()" *ngIf="showSaveChanges" cButton [disabled]="itemForm.invalid" color="success" size="sm">Save Item</button>
+          <button (click)="submitItem()" *ngIf="showSaveChanges" cButton [disabled]="itemForm.invalid" color="success" size="sm">Save Item</button>
         </c-modal-footer>
       </c-modal>
       <!-- item end model -->
@@ -398,10 +400,12 @@
 
       <!-- van start model -->
       <c-modal id="liveDemoModal" [visible]="visibleVan" (visibleChange)="handleLiveDemoChangeVan($event)">
+        
         <c-modal-header>
           <h5 cModalTitle>Add New Van</h5>
           <button (click)="toggleLiveDemoVan()" cButtonClose></button>
         </c-modal-header>
+
         <c-modal-body>          
           <form cForm [formGroup]="vanForm">
 
@@ -412,9 +416,10 @@
 
           </form>
         </c-modal-body>
+
         <c-modal-footer>
           <button (click)="toggleLiveDemoVan()" cButton color="secondary" size="sm">Close</button>
-          <button (click)="submitVan()" (click)="toggleLiveDemoVan()" cButton color="success" size="sm">Add Van</button>
+          <button (click)="onAddVanClick()" [disabled]="vanForm.invalid" cButton color="success" size="sm">Add Van</button>
         </c-modal-footer>
       </c-modal>
       <!-- van end model -->

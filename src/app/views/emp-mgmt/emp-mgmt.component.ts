@@ -9,6 +9,7 @@ import { TimetrackService } from '../../services/timetrack.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 export interface Van {
   _id: string;
@@ -48,6 +49,8 @@ export class EmpMgmtComponent implements OnInit {
   TimetrackService: TimetrackService = inject(TimetrackService);
   pushNotificationService = inject(PushNotificationService);
   router: Router = inject(Router);
+
+  private toast = inject(HotToastService);
 
   empMgmtForm!: FormGroup;
   empCertificateForm!: FormGroup;
@@ -238,7 +241,7 @@ export class EmpMgmtComponent implements OnInit {
 
   uploadCertificates(): void {
     if (this.empCertificateForm.invalid) {
-      alert('Please fill in all required fields.');
+      this.toast.error('Please complete all certificate details ⚠️');
       return;
     }
 
@@ -252,14 +255,11 @@ export class EmpMgmtComponent implements OnInit {
     // Use the dynamically set employee ID
     this.EmpCertificate.addEmpCertificateByEmpIdService(this.selectedEmployeeId, formData).subscribe({
       next: (response) => {
-        alert('Certificate uploaded successfully!');
+        this.toast.success('Certificate uploaded successfully 📜');
         this.toggleLiveAddCertificates(); // Close the modal
         this.empCertificateForm.reset(); // Reset the form
       },
-      error: (err) => {
-        console.error(err);
-        alert('Error uploading certificate.');
-      },
+      error: () => this.toast.error('Error uploading certificate ❌')
     });
   }
 
@@ -319,15 +319,13 @@ export class EmpMgmtComponent implements OnInit {
       this.EmpMgmtService.updateEmpMgmtService(this.empId, formData)
         .subscribe({
           next: () => {
-            alert('Employee details Updated successfully');
+            this.toast.success('Employee details updated successfully 👤', { icon: '✅' });
             this.selectedImages = [];
          
             this.getAllEmpMgmts();
             this.resetForm();
           },
-          error: (err: any) => {
-            console.log(err);
-          }
+          error: () => this.toast.error('Failed to update employee ❌', { icon: '⚠️' })
         });
     }
     else {
@@ -335,15 +333,13 @@ export class EmpMgmtComponent implements OnInit {
       this.EmpMgmtService.createEmpMgmtService(formData)
         .subscribe({
           next: (res: any) => {
-            alert('Employee Created successfully');
+            this.toast.success('New employee added to the system 👨‍💼', { icon: '🎉' });
             console.log(formData)
             this.selectedImages = [];
             this.resetForm();
             this.getAllEmpMgmts();
-          },
-          error: (err: any) => {
-            console.log(err);
-          }
+          },          
+          error: () => this.toast.error('Error creating employee ❌', { icon: '⚠️' })
         });
     }
   };
@@ -537,18 +533,14 @@ export class EmpMgmtComponent implements OnInit {
 
 
   deleteEmpMgmtById(id: any) {
-    if (confirm("Are you sure you want to delete this Employee ?")) {
       this.EmpMgmtService.deleteEmpMgmtByIdService(id)
         .subscribe({
           next: (res: any) => {
+            this.toast.success('Employee removed from records 🗑️');
             this.getAllEmpMgmts();
           },
-          error: (error: any) => {
-            console.error(error);
-            alert('Failed to delete Employee.')
-          }
+          error: () => this.toast.error('Failed to delete employee ❌', { icon: '⚠️' })
         });
-    }
   };
 
   toggleStatus(empId: any): void {
@@ -637,7 +629,7 @@ export class EmpMgmtComponent implements OnInit {
 
   sendNotification() {
     if (this.notificationForm.invalid) {
-      alert('Please fill in all required fields.');
+      this.toast.error('Please enter title & body before sending ⚠️');
       return;
     }
 
@@ -651,13 +643,13 @@ export class EmpMgmtComponent implements OnInit {
     this.pushNotificationService.sendNotification(notificationData).subscribe({
       next: (response) => {
         console.log('Notification sent successfully:', response.message);
-        alert('Notification sent successfully');
+        this.toast.success('Notification sent successfully 📩');
         this.toggleLiveDemo2(); // Close the modal after success
         this.notificationForm.reset();
       },
       error: (error) => {
         console.error('Error sending notification:', error);
-        alert('Failed to send notification. Please try again.');
+        this.toast.error('Failed to send notification ❌');
         this.notificationForm.reset();
       },
     });
@@ -681,12 +673,13 @@ export class EmpMgmtComponent implements OnInit {
             this.responseMessage = response.message || 'Leave applied successfully!';
             this.responseClass = 'text-success';
             this.leaveForm.reset();
-            alert("Leave Applied Successfully");
+            this.toast.success('Leave request submitted 🗓️');
             this.toggleLiveDemo3(); // Close the modal after submission
           },
           error: (error: HttpErrorResponse) => {
             this.responseMessage = error.error.message || 'An error occurred!';
             this.responseClass = 'text-danger';
+            this.toast.error('Error applying leave ❌')
           },
         });
       } else {
