@@ -7,14 +7,16 @@
 
         <span>
           Manage CRM
-          <button cButton color="danger" (click)="deleteSelectedClients()" size="sm" [disabled]="selectedClients.size === 0" class="ms-4 text-white">
+          <button cButton color="danger" (click)="deleteSelectedClients()" size="sm"
+            [disabled]="selectedClients.size === 0" class="ms-4 text-white">
             Delete all selected Clients
           </button>
         </span>
 
         <div class="d-flex align-items-center gap-2">
 
-          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search" style="min-width: 200px;" />
+          <input type="text" class="form-control w-auto" [(ngModel)]="searchTerm" placeholder="Search"
+            style="min-width: 200px;" />
 
           <button cButton color="primary" routerLink="/jobEstimate" size="sm" class="ms-4">Estimate</button>
           <button (click)="toggleLiveDemo()" cButton color="primary" class="mx-2" size="sm">Add Client</button>
@@ -22,6 +24,7 @@
           <button cButton color="primary" routerLink="/group" size="sm">Groups</button>
         </div>
       </c-card-header>
+      
 
       <!-- Start Add client Modal -->
       <c-modal id="liveDemoModal" size="lg" [visible]="visible" (visibleChange)="handleLiveDemoChange($event)">
@@ -268,6 +271,35 @@
       </c-modal>
       <!-- End View Client Details Modal -->
 
+
+      <!-- Start Client Profile Picture Modal -->
+      <c-modal id="liveDemoModal" [visible]="visibleProfilePicView" (visibleChange)="handleProfilePicView($event)">
+        <c-modal-header>
+          <h5 cModalTitle>Profile picture</h5>
+          <button (click)="toggleProfilePicView()" cButtonClose></button>
+        </c-modal-header>
+
+        <c-modal-body>
+          <ng-container *ngIf="selectedClient?.images?.length > 0; else noPic">
+            <div class="d-flex flex-column align-items-center"> 
+              <img [src]="selectedClient.images[0].url" alt="Profile Picture" class="rounded-circle shadow mb-3" style="width: 180px; height: 180px; object-fit: cover; border: 2px solid gray" />
+
+              <h5 class="fw-bold mb-0">{{ selectedClient?.name }}</h5>
+            </div>
+          </ng-container>
+
+          <ng-template #noPic>
+            <p class="text-muted">No profile picture available</p>
+          </ng-template>
+        </c-modal-body>
+
+        <c-modal-footer class="py-1">
+          <button (click)="toggleProfilePicView()" cButton color="secondary">Close</button>
+        </c-modal-footer>
+      </c-modal>
+      <!-- End Client Profile Picture Modal -->
+
+
       <!-- Body Section -->
       <c-card-body>
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
@@ -276,8 +308,7 @@
             <tr>
               <th>
                 <c-form-check>
-                  <input cFormCheckInput id="selectAllClients" type="checkbox" [checked]="areAllClientsSelected()"
-                    (change)="toggleSelectAllClients($event)" />
+                  <input cFormCheckInput id="selectAllClients" type="checkbox" [checked]="areAllClientsSelected()" (change)="toggleSelectAllClients($event)" />
                   <span class="ms-2">All</span>
                 </c-form-check>
               </th>
@@ -322,7 +353,7 @@
 
               <td style="padding-top: 19px;">{{ i + 1 }}</td>
 
-              <td class="text-center" (click)="viewCrm(client._id)" style="cursor: pointer;">
+              <td class="text-center" (click)="viewCrmProfilePic(client._id)" style="cursor: pointer;">
                 <div class="rounded-circle border border-primary d-inline-block overflow-hidden"
                   style="width: 48px; height: 48px;">
                   <img [src]="client.images?.length ? client.images[0].url : 'assets/img/default-avatar.png'"
