@@ -3,13 +3,13 @@ import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms'
 import { GroupsService } from '../../services/groups.service';
 type ShareTab = 'groups' | 'clients';
 
-
 @Component({
   selector: 'app-groups',
   standalone: false,
   templateUrl: './groups.component.html',
   styleUrl: './groups.component.scss',
 })
+
 export class GroupsComponent {
   groupForm: FormGroup;
   isEditMode = false;
@@ -66,7 +66,6 @@ export class GroupsComponent {
   groupId!: string;
   loadingChildren = false;
   parentGroupName = '';
-  
 
 
   constructor(private fb: FormBuilder, private groupsService: GroupsService) {

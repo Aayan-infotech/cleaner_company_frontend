@@ -29,6 +29,11 @@ export class CrmComponent implements OnInit {
   totalCrms: number = 0;
   selectedClients: Set<string> = new Set();
 
+  // Profile Picture View Section
+  public visibleProfilePicView = false;
+
+  
+
   constructor(
     private fb: FormBuilder,
     private crmService: CrmService,
@@ -247,7 +252,7 @@ export class CrmComponent implements OnInit {
         if (!client) return;
         this.selectedClient = client;
         this.isEditMode = true;
-        this.toggleViewCrmModal();
+        this.toggleViewCrmModal();        
       },
       error: (error) => {
         console.error('Error fetching CRM by ID:', error);
@@ -258,6 +263,37 @@ export class CrmComponent implements OnInit {
   viewCrm(clientId: string): void {
     this.getCrmById(clientId);
   }
+
+  
+  // Profile Picture View Section
+  toggleProfilePicView() {
+    this.visibleProfilePicView = !this.visibleProfilePicView;
+  }
+
+  handleProfilePicView(event: any) {
+    this.visibleProfilePicView = event;
+  }
+
+  getCrmProfilePicById(clientId: string): void {
+    this.crmService.getCRMById(clientId).subscribe({
+      
+      next: (response) => {
+        const client = response.data;
+        if (!client) return;
+  
+        this.selectedClient = client;
+        this.visibleProfilePicView = true; 
+      },
+      error: (error) => {
+        console.error('Error fetching CRM by ID:', error);
+      }
+    });
+  }
+
+  viewCrmProfilePic(clientId: string): void {
+    this.getCrmProfilePicById(clientId);
+  }
+
 
   // search function
   get filteredCRMList(): any[] {
@@ -281,7 +317,7 @@ export class CrmComponent implements OnInit {
   isClientSelected(clientId: string): boolean {
     return this.selectedClients.has(clientId);
   }
-  
+
   // Toggle selection for a single client
   toggleClientSelection(clientId: string, event: any): void {
     if (event.target.checked) {
@@ -290,13 +326,13 @@ export class CrmComponent implements OnInit {
       this.selectedClients.delete(clientId);
     }
   }
-  
+
   // Check if all clients are selected
   areAllClientsSelected(): boolean {
     return this.filteredCRMList.length > 0 &&
-           this.filteredCRMList.every(client => this.selectedClients.has(client._id));
+      this.filteredCRMList.every(client => this.selectedClients.has(client._id));
   }
-  
+
   // Toggle select all
   toggleSelectAllClients(event: any): void {
     if (event.target.checked) {
@@ -305,23 +341,23 @@ export class CrmComponent implements OnInit {
       this.selectedClients.clear();
     }
   }
-  
+
   // Bulk delete
   deleteSelectedClients(): void {
     if (this.selectedClients.size === 0) {
       alert('No clients selected for deletion.');
       return;
     }
-  
+
     if (confirm(`Are you sure you want to delete ${this.selectedClients.size} selected clients?`)) {
       const idsToDelete = Array.from(this.selectedClients);
-  
+
       this.crmService.deleteMultipleCRMsService(idsToDelete).subscribe({
         next: (response) => {
           console.log('Successfully deleted multiple CRMs:', response.message);
-  
+
           this.fetchAllCRM();
-  
+
           this.selectedClients.clear();
         },
         error: (error) => {
