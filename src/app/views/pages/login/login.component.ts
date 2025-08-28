@@ -31,11 +31,9 @@ export class LoginComponent {
     });
   }
 
-
   submit() {
     this.errorMessage = '';
 
-    // Check if email and password are entered
     if (!this.loginForm.value.email || !this.loginForm.value.password) {
       this.toast.warning('Please enter email and password');
       return;
@@ -46,7 +44,9 @@ export class LoginComponent {
         this.toast.observe({
           loading: 'Logging in... ⏳',
           success: 'Login successful',
-          error: (err: any) => err.error?.message || 'Invalid email or password',
+          error: (err: any) => {
+            return 'Invalid email or password';
+          },
         })
       )
       .subscribe({
