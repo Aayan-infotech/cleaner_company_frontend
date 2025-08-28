@@ -567,24 +567,28 @@ export class EmpMgmtComponent implements OnInit {
 
   toggleStatus(empId: any): void {
     console.log('Toggling status for employee ID:', empId);
-    this.EmpMgmtService.toggleEmpStatus(empId).subscribe({
-      next: (response: any) => {
-        console.log('Status updated successfully:', response);
-        const updatedEmployee = this.empMgmtData.find((emp: any) => emp._id === empId);
-        if (updatedEmployee) {
-          updatedEmployee.employee_employeeStatus = updatedEmployee.employee_employeeStatus === 'Active' ? 'Block' : 'Active';
-        }
-        alert('Employee status updated successfully');
-      },
-      error: (err: any) => {
-        console.error('Error updating status:', err);
-        alert('Failed to update employee status');
-      },
-    });
+    this.EmpMgmtService.toggleEmpStatus(empId)
+      .pipe(
+        this.toast.observe({
+          loading: 'Updating employee status... ⏳',
+          success: 'Employee status updated successfully',
+          error: (err: any) => err?.error?.message || 'Failed to update employee status',
+        })
+      )
+      .subscribe({
+        next: (response: any) => {
+          const updatedEmployee = this.empMgmtData.find((emp: any) => emp._id === empId);
+          if (updatedEmployee) {
+            updatedEmployee.employee_employeeStatus = updatedEmployee.employee_employeeStatus === 'Active' ? 'Block' : 'Active';
+          }
+        },
+        error: (err: any) => {
+          console.error('Error updating status:', err);
+        },
+      });
   }
   // Manage Employee Code End
-
-
+  
 
   //timetrack start
   fetchTimeLogs() {
