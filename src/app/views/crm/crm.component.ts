@@ -33,7 +33,7 @@ export class CrmComponent implements OnInit {
   // Profile Picture View Section
   public visibleProfilePicView = false;
 
-  
+
 
   constructor(
     private fb: FormBuilder,
@@ -155,8 +155,8 @@ export class CrmComponent implements OnInit {
       .pipe(
         this.toast.observe({
           loading: 'Deleting client... ⏳',
-          success: 'Client deleted successfully 🗑️',
-          error: 'Failed to delete client ❌',
+          success: 'Client deleted successfully',
+          error: 'Failed to delete client',
         })
       )
       .subscribe({
@@ -174,46 +174,46 @@ export class CrmComponent implements OnInit {
     if (this.crmForm.valid) {
       const formData = {
         ...this.crmForm.value,
-        images: this.selectedFiles 
+        images: this.selectedFiles
       };
 
       if (this.isEditMode && this.editClientId) {
         this.crmService.updateCRM(this.editClientId, formData)
-        .pipe(
-          this.toast.observe({
-            loading: 'Updating client... ⏳',
-            success: 'Client updated successfully ',
-            error: 'Failed to update client ❌',
-          })
-        ) .subscribe({
-          next: () => {
-            this.toggleLiveDemo();
-            this.fetchAllCRM();
-            this.crmForm.reset();
-            this.selectedFiles = [];
-          }
-        });
+          .pipe(
+            this.toast.observe({
+              loading: 'Updating client... ⏳',
+              success: 'Client updated successfully ',
+              error: 'Failed to update client',
+            })
+          ).subscribe({
+            next: () => {
+              this.toggleLiveDemo();
+              this.fetchAllCRM();
+              this.crmForm.reset();
+              this.selectedFiles = [];
+            }
+          });
       } else {
         this.crmService.createCRM(formData)
-        .pipe(
-          this.toast.observe({
-            loading: 'Adding client... ⏳',
-            success: 'Client added successfully',
-            error: 'Failed to add client ❌',
-          })
-        )
-        .subscribe({
-          next: () => {
-            this.toggleLiveDemo();
-            this.fetchAllCRM();
-            this.crmForm.reset();
-            this.selectedFiles = [];
-          }
-        });
+          .pipe(
+            this.toast.observe({
+              loading: 'Adding client... ⏳',
+              success: 'Client added successfully',
+              error: 'Failed to add client',
+            })
+          )
+          .subscribe({
+            next: () => {
+              this.toggleLiveDemo();
+              this.fetchAllCRM();
+              this.crmForm.reset();
+              this.selectedFiles = [];
+            }
+          });
       }
     }
     else {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
     }
   }
 
@@ -253,7 +253,6 @@ export class CrmComponent implements OnInit {
         })
       )
     );
-    this.toast.info(`Editing client: ${client.name} ✏️`);
   }
 
   toggleViewCrmModal() {
@@ -274,7 +273,7 @@ export class CrmComponent implements OnInit {
         if (!client) return;
         this.selectedClient = client;
         this.isEditMode = true;
-        this.toggleViewCrmModal();        
+        this.toggleViewCrmModal();
       },
       error: (error) => {
         console.error('Error fetching CRM by ID:', error);
@@ -286,7 +285,7 @@ export class CrmComponent implements OnInit {
     this.getCrmById(clientId);
   }
 
-  
+
   // Profile Picture View Section
   toggleProfilePicView() {
     this.visibleProfilePicView = !this.visibleProfilePicView;
@@ -298,13 +297,13 @@ export class CrmComponent implements OnInit {
 
   getCrmProfilePicById(clientId: string): void {
     this.crmService.getCRMById(clientId).subscribe({
-      
+
       next: (response) => {
         const client = response.data;
         if (!client) return;
-  
+
         this.selectedClient = client;
-        this.visibleProfilePicView = true; 
+        this.visibleProfilePicView = true;
       },
       error: (error) => {
         console.error('Error fetching CRM by ID:', error);
@@ -366,18 +365,18 @@ export class CrmComponent implements OnInit {
 
   deleteSelectedClients(): void {
     if (this.selectedClients.size === 0) {
-      this.toast.error('⚠️ No clients selected for deletion.');
+      this.toast.error('No clients selected for deletion.');
       return;
     }
-  
+
     const idsToDelete = Array.from(this.selectedClients);
-  
+
     this.crmService.deleteMultipleCRMsService(idsToDelete)
       .pipe(
         this.toast.observe({
           loading: `Deleting ${this.selectedClients.size} clients... ⏳`,
           success: 'Clients deleted successfully!',
-          error: (err: any) => err.error?.message || '❌ Failed to delete clients',
+          error: (err: any) => err.error?.message || 'Failed to delete clients',
         })
       )
       .subscribe(() => {

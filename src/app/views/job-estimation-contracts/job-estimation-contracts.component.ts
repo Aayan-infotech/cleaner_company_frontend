@@ -127,7 +127,15 @@ export class JobEstimationContractsComponent implements OnInit {
 
     this.loading = true;
 
-    this.estimateService.submitEstimate(this.estimateForm.value).subscribe({
+    this.estimateService.submitEstimate(this.estimateForm.value)
+    .pipe(
+      this.toast.observe({
+        loading: 'Creating estimate... ⏳',
+        success: (res: any) => `Estimate created successfully`,
+        error: (err: any) => err?.error?.message || 'Failed to create estimate',
+      })
+    )
+    .subscribe({
       next: (res) => {
         this.getAllEstimates();
         this.estimateForm.reset();
@@ -135,19 +143,9 @@ export class JobEstimationContractsComponent implements OnInit {
         this.toggleLiveDemo();
         this.showRoomSection = false;
         this.loading = false;
-
-        this.toast.success('Estimate created successfully for Job ID: ' + res.data?.jobId, {
-          icon: '📊',
-          theme: 'snackbar',
-        });
-
       },
       error: (err) => {
         console.error('Error creating estimate:', err);
-        this.toast.error(err?.error?.message || 'Failed to create estimate. Try again!', {
-          icon: '⚠️',
-          theme: 'snackbar',
-        });
         this.loading = false;
       },
     });
@@ -191,11 +189,7 @@ export class JobEstimationContractsComponent implements OnInit {
         this.jobsList = res.data || [];
       },
       error: (err) => {
-        console.error('Error fetching Jobs', err);
-        this.toast.error('Unable to load jobs. Please refresh!', {
-          icon: '⚠️',
-          theme: 'snackbar',
-        });
+        console.error('Error fetching Jobs', err);      
       },
     });
   }
@@ -208,10 +202,6 @@ export class JobEstimationContractsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching all rooms', err);
-        this.toast.error('Rooms could not be loaded.', {
-          icon: '🏠',
-          theme: 'snackbar',
-        });
       },
     });
   }
@@ -223,13 +213,9 @@ export class JobEstimationContractsComponent implements OnInit {
         this.servicesList = res.data || [];
       },
       error: (err) => {
-        console.error("Error fetching services and methods", err);
-        this.toast.error('Failed to load services & methods.', {
-          icon: '🛠️',
-          theme: 'snackbar',
-        });
+        console.error("Error fetching services and methods", err);        
       }
-    })
+    });
   }
 
   getMethodsForService(serviceId: string): any[] {
@@ -240,23 +226,21 @@ export class JobEstimationContractsComponent implements OnInit {
   deleteEstimate(id: any) {
     this.deletingEstimateId = id;
 
-    this.estimateService.deleteEstimateService(id).subscribe({
+    this.estimateService.deleteEstimateService(id)
+    .pipe(
+      this.toast.observe({
+        loading: 'Deleting estimate... ⏳',
+        success: 'Estimate deleted successfully',
+        error: (err: any) => err.error?.message || 'Failed to delete estimate',
+      })
+    )
+    .subscribe({
       next: (res) => {
         this.getAllEstimates();
         this.deletingEstimateId = null;
-
-        this.toast.success('Estimate deleted successfully!', {
-          icon: '🗑️',
-          theme: 'snackbar',
-        });
-
       },
       error: (err) => {
         console.error('Error deleting estimate:', err);
-        this.toast.error('Failed to delete estimate. Please try again.', {
-          icon: '❌',
-          theme: 'snackbar',
-        });
         this.deletingEstimateId = null;
       }
     });

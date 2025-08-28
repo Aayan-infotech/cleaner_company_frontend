@@ -342,7 +342,7 @@ export class MarketingComponent {
     setTimeout(() => {
       if (!this.titleContent || !this.descContent) {
         console.error('Missing DOM references');
-        this.toast.error('❌ Title or Description is missing!');
+        this.toast.error('Title or Description is missing!');
         return;
       }
 
@@ -371,42 +371,48 @@ export class MarketingComponent {
         formData.append('categoryId', this.selectedCategoryId);
       }
 
-      
-      this.templateService.createTemplateService(formData).subscribe({
-        next: (res) => {
-          this.getAllTemplates();
-          this.toggleAddTemplateDemo();
-          this.toast.success('Template added successfully!');
 
-          // Reset all formatting and content
-          this.logoFile = null;
-          this.logoDataUrl = '';
-          this.selectedFont = 'Arial';
-          this.selectedFontColor = '#000000';
-          this.selectedTextColor = '#000000';
-          this.fontSize = 16;
-          this.isBold = false;
-          this.isItalic = false;
-          this.backgroundColor = '#5f00ba';
-          this.selectedCategoryId = '';
-          this.titleText = 'Title';
-          this.descText = 'Description';
+      this.templateService.createTemplateService(formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Saving template... ⏳',
+            success: 'Template added successfully!',
+            error: (err: any) => err.error?.message || 'Failed to save template!',
+          })
+        )
+        .subscribe({
+          next: (res) => {
+            this.getAllTemplates();
+            this.toggleAddTemplateDemo();
 
-          // Reset contenteditable content with plain text
-          setTimeout(() => {
-            if (this.titleContent?.nativeElement) {
-              this.titleContent.nativeElement.innerHTML = 'Title';
-            }
-            if (this.descContent?.nativeElement) {
-              this.descContent.nativeElement.innerHTML = 'Description';
-            }
-          });
-        },
-        error: (err) => {
-          console.error('Save error:', err);
-          this.toast.error(err.error?.message || '❌ Failed to save template!');
-        }
-      });
+            // Reset all formatting and content
+            this.logoFile = null;
+            this.logoDataUrl = '';
+            this.selectedFont = 'Arial';
+            this.selectedFontColor = '#000000';
+            this.selectedTextColor = '#000000';
+            this.fontSize = 16;
+            this.isBold = false;
+            this.isItalic = false;
+            this.backgroundColor = '#5f00ba';
+            this.selectedCategoryId = '';
+            this.titleText = 'Title';
+            this.descText = 'Description';
+
+            // Reset contenteditable content with plain text
+            setTimeout(() => {
+              if (this.titleContent?.nativeElement) {
+                this.titleContent.nativeElement.innerHTML = 'Title';
+              }
+              if (this.descContent?.nativeElement) {
+                this.descContent.nativeElement.innerHTML = 'Description';
+              }
+            });
+          },
+          error: (err) => {
+            console.error('Save error:', err);
+          }
+        });
     }, 0);
   }
 
@@ -414,23 +420,23 @@ export class MarketingComponent {
     this.deletingTemplateId = templateId;
 
     this.templateService.deleteTemplateService(templateId)
-    .pipe(
-      this.toast.observe({
-        loading: 'Deleting template... ⏳',
-        success: (res: any) => res.message || 'Template deleted successfully!',
-        error: (err: any) => err.error?.message || 'Failed to delete template',
-      })
-    )
-    .subscribe({
-      next: (res) => {
-        this.getAllTemplates();
-        this.deletingTemplateId = null;
-      },
-      error: (err) => {
-        console.error('Error deleting template:', err);
-        this.deletingTemplateId = null;
-      }
-    });
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting template... ⏳',
+          success: (res: any) => res.message || 'Template deleted successfully!',
+          error: (err: any) => err.error?.message || 'Failed to delete template',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.getAllTemplates();
+          this.deletingTemplateId = null;
+        },
+        error: (err) => {
+          console.error('Error deleting template:', err);
+          this.deletingTemplateId = null;
+        }
+      });
   }
 
   // Get All Groups
@@ -538,23 +544,23 @@ export class MarketingComponent {
       }
 
       this.templateService.shareTemplateClitesService(this.selectedTemplateId, this.selectedClientIds)
-      .pipe(
-        this.toast.observe({
-          loading: `Sharing template with ${this.selectedClientIds.length} clients... ⏳`,
-          success: (res: any) => res.message || "Template shared to clients successfully!",
-          error: (err: any) => err.error?.message || "Failed to share template to clients",
-        })
-      ).subscribe({
-        next: (res) => {
-          this.selectedClientIds = [];
-          this.visibleShareTemp = false;
-          this.isSharing = false;
-        },
-        error: (err) => {
-          console.error("Error sharing template to clients:", err);
-          this.isSharing = false;
-        }
-      });
+        .pipe(
+          this.toast.observe({
+            loading: `Sharing template with ${this.selectedClientIds.length} clients... ⏳`,
+            success: (res: any) => res.message || "Template shared to clients successfully!",
+            error: (err: any) => err.error?.message || "Failed to share template to clients",
+          })
+        ).subscribe({
+          next: (res) => {
+            this.selectedClientIds = [];
+            this.visibleShareTemp = false;
+            this.isSharing = false;
+          },
+          error: (err) => {
+            console.error("Error sharing template to clients:", err);
+            this.isSharing = false;
+          }
+        });
 
     } else if (this.shareTab === 'group') {
       if (this.selectedGroupIds.length === 0) {
@@ -564,23 +570,23 @@ export class MarketingComponent {
       }
 
       this.templateService.shareTemplateGroupsService(this.selectedTemplateId, this.selectedGroupIds)
-      .pipe(
-        this.toast.observe({
-          loading: `Sharing template with ${this.selectedGroupIds.length} group clients... ⏳`,
-          success: (res: any) => res.message || "Template shared to group's clients successfully!",
-          error: (err: any) => err.error?.message || "Failed to share template to groups",
-        })
-      ).subscribe({
-        next: (res) => {
-          this.selectedGroupIds = [];
-          this.visibleShareTemp = false;
-          this.isSharing = false;
-        },
-        error: (err) => {
-          console.error("Error sharing template to groups:", err);
-          this.isSharing = false;
-        }
-      });
+        .pipe(
+          this.toast.observe({
+            loading: `Sharing template with ${this.selectedGroupIds.length} group clients... ⏳`,
+            success: (res: any) => res.message || "Template shared to group's clients successfully!",
+            error: (err: any) => err.error?.message || "Failed to share template to groups",
+          })
+        ).subscribe({
+          next: (res) => {
+            this.selectedGroupIds = [];
+            this.visibleShareTemp = false;
+            this.isSharing = false;
+          },
+          error: (err) => {
+            console.error("Error sharing template to groups:", err);
+            this.isSharing = false;
+          }
+        });
     }
   }
 

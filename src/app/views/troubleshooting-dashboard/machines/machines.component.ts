@@ -131,7 +131,7 @@ export class MachinesComponent implements OnInit {
   // Submit form data
   submit() {
     if (!this.itemsForm.valid) {
-      this.toast.warning('Please fill in all required fields and add at least one image ⚠️');
+      this.toast.warning('Please fill in all required fields and add at least one image');
       return;
     }
 
