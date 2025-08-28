@@ -175,9 +175,9 @@ export class EmpMgmtComponent implements OnInit {
   chatMessages: any[] = [];
   newMessage = '';
   userRole = 'admin'; // Set dynamically based on logged-in user
-  adminId : any
+  adminId: any
   private subscription!: Subscription;
-  
+
   ngOnInit(): void {
     this.adminId = localStorage.getItem('user_id');
     this.empMgmtForm = this.fb.group({
@@ -224,24 +224,23 @@ export class EmpMgmtComponent implements OnInit {
     }
     this.getAllEmpMgmts();
     this.getAllVanMgmts();
- 
+
   };
 
 
 
   // upload Certificates code Start
-
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      this.selectedImagesCertificate = [file]; // Keep only one file for now
+      this.selectedImagesCertificate = [file];
       this.empCertificateForm.patchValue({ certificate_file: file });
     }
   }
 
   uploadCertificates(): void {
     if (this.empCertificateForm.invalid) {
-      this.toast.error('Please complete all certificate details ⚠️');
+      this.toast.error('Please complete all certificate details');
       return;
     }
 
@@ -253,14 +252,23 @@ export class EmpMgmtComponent implements OnInit {
     formData.append('certificate_note', note);
 
     // Use the dynamically set employee ID
-    this.EmpCertificate.addEmpCertificateByEmpIdService(this.selectedEmployeeId, formData).subscribe({
-      next: (response) => {
-        this.toast.success('Certificate uploaded successfully 📜');
-        this.toggleLiveAddCertificates(); // Close the modal
-        this.empCertificateForm.reset(); // Reset the form
-      },
-      error: () => this.toast.error('Error uploading certificate ❌')
-    });
+    this.EmpCertificate.addEmpCertificateByEmpIdService(this.selectedEmployeeId, formData)
+      .pipe(
+        this.toast.observe({
+          loading: 'Uploading certificate... ⏳',
+          success: 'Certificate uploaded successfully',
+          error: (err: any) => err?.error?.message || 'Error uploading certificate',
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.toggleLiveAddCertificates();
+          this.empCertificateForm.reset();
+        },
+        error: (err) => {
+          console.error('Error uploading certificate:', err);
+        }
+      });
   }
 
   // upload Certificates code End
@@ -286,10 +294,11 @@ export class EmpMgmtComponent implements OnInit {
   };
 
   // Manage Employee Code Start
-
   submitEmpMgmtForm() {
+
     console.log(this.empMgmtForm.value)
     const formData = new FormData();
+
     // fill fields
     formData.append('employee_name', this.empMgmtForm.get('employee_name')?.value,);
     formData.append('employee_email', this.empMgmtForm.get('employee_email')?.value,);
@@ -308,42 +317,56 @@ export class EmpMgmtComponent implements OnInit {
     formData.append('role_assigned', this.empMgmtForm.get('role_assigned')?.value,);
 
 
-
-
     this.selectedImages.forEach((file) => {
       formData.append('employee_photo', file, file.name);
     });
 
     if (this.empId) {
+
       // Update Employee
       this.EmpMgmtService.updateEmpMgmtService(this.empId, formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Updating employee... ⏳',
+            success: 'Employee updated successfully',
+            error: (err: any) => err?.error?.message || 'Failed to update employee',
+          })
+        )
         .subscribe({
           next: () => {
-            this.toast.success('Employee details updated successfully 👤', { icon: '✅' });
             this.selectedImages = [];
-         
             this.getAllEmpMgmts();
             this.resetForm();
           },
-          error: () => this.toast.error('Failed to update employee ❌', { icon: '⚠️' })
+          error: () => {
+            console.error('Error updating employee');
+          }
         });
     }
     else {
+
       // Create new Employee
       this.EmpMgmtService.createEmpMgmtService(formData)
+        .pipe(
+          this.toast.observe({
+            loading: 'Creating employee... ⏳',
+            success: 'Employee created successfully',
+            error: (err: any) => err?.error?.message || 'Failed to create employee',
+          })
+        )
         .subscribe({
           next: (res: any) => {
-            this.toast.success('New employee added to the system 👨‍💼', { icon: '🎉' });
             console.log(formData)
             this.selectedImages = [];
             this.resetForm();
             this.getAllEmpMgmts();
-          },          
-          error: () => this.toast.error('Error creating employee ❌', { icon: '⚠️' })
+          },
+          error: () => {
+            console.error('Error creating employee');
+          }
         });
     }
   };
-
 
   onVanChange(event: Event): void {
     const selectedVanId = (event.target as HTMLSelectElement).value;
@@ -352,13 +375,10 @@ export class EmpMgmtComponent implements OnInit {
     const selectedVan = this.vanArray.find(van => van._id === selectedVanId);
     if (selectedVan) {
       this.empMgmtForm.patchValue({
-        employee_vanAssigned: selectedVan._id, // Store only the van ID in the form
+        employee_vanAssigned: selectedVan._id,
       });
     }
   }
-
-
-
 
   clickAddMember() {
     this.empMgmtForm.reset();
@@ -382,7 +402,6 @@ export class EmpMgmtComponent implements OnInit {
         this.empMgmtData = res.data || [];
         this.totalEmployees = res.pagination?.total || 0;
         this.totalPages1 = res.pagination?.totalPages || 1;
-        console.log("all Empss::", this.empMgmtData);        
       },
       error: (err) => {
         console.error('Error fetching Employees:', err);
@@ -392,14 +411,14 @@ export class EmpMgmtComponent implements OnInit {
       }
     });
   }
-  
+
   onSearch(): void {
-    this.currentPage1 = 1; 
+    this.currentPage1 = 1;
     this.getAllEmpMgmts();
   }
 
   onFilterChange(): void {
-    this.currentPage1 = 1; // Reset to the first page on status filter change
+    this.currentPage1 = 1;
     this.getAllEmpMgmts();
   }
 
@@ -414,7 +433,6 @@ export class EmpMgmtComponent implements OnInit {
       .subscribe((res: any) => {
         this.vanMgmtData = res;
         this.vanArray = this.vanMgmtData.data || [];
-        console.log("All Vans:", this.vanArray);
       });
   }
 
@@ -424,8 +442,6 @@ export class EmpMgmtComponent implements OnInit {
 
         this.editData = data
         const assignedVanId = this.editData.data.employee_vanAssigned?._id;
-        //console.log(this.editData.data);
-
 
         this.empId = this.editData.data._id;
         this.empMgmtForm.patchValue({
@@ -447,7 +463,6 @@ export class EmpMgmtComponent implements OnInit {
           employee_addNote: this.editData.data.employee_addNote,
 
         });
-
 
         this.isEditMode = true;
         this.isViewClicked = false;
@@ -482,7 +497,7 @@ export class EmpMgmtComponent implements OnInit {
           employee_role: this.editData.data.employee_role,
           employee_vanAssigned: this.editData.data.employee_vanAssigned,
           employee_SocialSecurityNumber: this.editData.data.employee_SocialSecurityNumber,
-          role_assigned :this.editData.data.role_assigned,
+          role_assigned: this.editData.data.role_assigned,
           employee_EmContactName: this.editData.data.employee_EmContactName,
           employee_EmContactNumber: this.editData.data.employee_EmContactNumber,
           employee_EmContactEmail: this.editData.data.employee_EmContactEmail,
@@ -514,8 +529,8 @@ export class EmpMgmtComponent implements OnInit {
               timestamp: chat.timestamp?.toDate ? chat.timestamp.toDate() : chat.timestamp,
             }));
           });
-          
-          
+
+
         } else {
           console.error('Employee ID is null or undefined');
         }
@@ -531,16 +546,23 @@ export class EmpMgmtComponent implements OnInit {
       });
   }
 
-
   deleteEmpMgmtById(id: any) {
-      this.EmpMgmtService.deleteEmpMgmtByIdService(id)
-        .subscribe({
-          next: (res: any) => {
-            this.toast.success('Employee removed from records 🗑️');
-            this.getAllEmpMgmts();
-          },
-          error: () => this.toast.error('Failed to delete employee ❌', { icon: '⚠️' })
-        });
+    this.EmpMgmtService.deleteEmpMgmtByIdService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting employee... ⏳',
+          success: 'Employee deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete employee',
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.getAllEmpMgmts();
+        },
+        error: () => {
+          console.error('Error deleting employee');
+        }
+      });
   };
 
   toggleStatus(empId: any): void {
@@ -560,13 +582,11 @@ export class EmpMgmtComponent implements OnInit {
       },
     });
   }
-
   // Manage Employee Code End
-  
+
 
 
   //timetrack start
-
   fetchTimeLogs() {
     if (this.empId) {
       this.TimetrackService.getTimeLogsByEmployeeId(this.empId, this.currentPage, this.recordsPerPage)
@@ -596,13 +616,12 @@ export class EmpMgmtComponent implements OnInit {
       this.fetchTimeLogs();
     }
   }
-
   //timetrack end
 
-  // notification start
 
+  // notification start
   handleNotificationClick(employeeId: any) {
-    this.getUserToken(employeeId); // Fetch the token
+    this.getUserToken(employeeId);
   }
 
   getUserToken(id: any) {
@@ -611,16 +630,12 @@ export class EmpMgmtComponent implements OnInit {
         this.employeeId = response.deviceToken?.employeeId || 'No UserIf found'
         this.deviceToken = response.deviceToken?.token || 'No token found';
         this.errorMessage = null;
-        //  console.log(this.deviceToken);
-        // Open the modal if token retrieval is successful
         this.toggleLiveDemo2();
       },
       error: (error: any) => {
-        // console.error('Error fetching token:', error);
         this.errorMessage = 'Failed to fetch the device token. Please try again.';
         this.deviceToken = null;
-        // Show an alert if token retrieval fails
-        alert('He needs to Login first through Mobile APP');
+        this.toast.error('He needs to Login first through Mobile APP')
       },
     };
 
@@ -629,103 +644,108 @@ export class EmpMgmtComponent implements OnInit {
 
   sendNotification() {
     if (this.notificationForm.invalid) {
-      this.toast.error('Please enter title & body before sending ⚠️');
+      this.toast.error('Please enter title & body before sending');
       return;
     }
 
     const notificationData = {
-      employeeId: this.employeeId || '', // Fallback to an empty string if null
-      token: this.deviceToken || '', // Fallback to an empty string if null
+      employeeId: this.employeeId || '',
+      token: this.deviceToken || '',
       title: this.notificationForm.value.title,
       body: this.notificationForm.value.body,
     };
 
-    this.pushNotificationService.sendNotification(notificationData).subscribe({
-      next: (response) => {
-        console.log('Notification sent successfully:', response.message);
-        this.toast.success('Notification sent successfully 📩');
-        this.toggleLiveDemo2(); // Close the modal after success
-        this.notificationForm.reset();
-      },
-      error: (error) => {
-        console.error('Error sending notification:', error);
-        this.toast.error('Failed to send notification ❌');
-        this.notificationForm.reset();
-      },
-    });
+    this.pushNotificationService.sendNotification(notificationData)
+      .pipe(
+        this.toast.observe({
+          loading: 'Sending notification... ⏳',
+          success: 'Notification sent successfully',
+          error: (err: any) => err?.error?.message || 'Failed to send notification',
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.toggleLiveDemo2();
+          this.notificationForm.reset();
+        },
+        error: (error) => {
+          console.error('Error sending notification:', error);
+          this.notificationForm.reset();
+        },
+      });
   }
-
-
   //notification end
 
 
   //leave start
-
   applyLeave(): void {
     if (this.leaveForm.valid) {
       const { startDate, endDate } = this.leaveForm.value;
-      
-      // Check if empId is valid
+
       if (this.empId) {
-        const employeeId = this.empId; // Use empId directly
-        this.TimetrackService.applyLeave(employeeId, startDate, endDate).subscribe({
-          next: (response) => {
-            this.responseMessage = response.message || 'Leave applied successfully!';
-            this.responseClass = 'text-success';
-            this.leaveForm.reset();
-            this.toast.success('Leave request submitted 🗓️');
-            this.toggleLiveDemo3(); // Close the modal after submission
-          },
-          error: (error: HttpErrorResponse) => {
-            this.responseMessage = error.error.message || 'An error occurred!';
-            this.responseClass = 'text-danger';
-            this.toast.error('Error applying leave ❌')
-          },
-        });
+        const employeeId = this.empId;
+        this.TimetrackService.applyLeave(employeeId, startDate, endDate)
+          .pipe(
+            this.toast.observe({
+              loading: 'Submitting leave request... ⏳',
+              success: 'Leave request submitted',
+              error: (err: any) => err?.error?.message || 'Error applying leave',
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              this.responseMessage = response.message || 'Leave applied successfully!';
+              this.responseClass = 'text-success';
+              this.leaveForm.reset();
+              this.toggleLiveDemo3();
+            },
+            error: (error: HttpErrorResponse) => {
+              this.responseMessage = error.error.message || 'An error occurred!';
+              this.responseClass = 'text-danger';
+            },
+          });
       } else {
-        // Handle case when empId is invalid
-        alert("Employee ID is missing or invalid.");
+        this.toast.error("Employee ID is missing or invalid");
       }
     }
   }
-  
-
-  
-
   // leave end
 
-// chat
+  // chat
+  sendMessage() {
+    if (!this.newMessage.trim()) {
+      this.toast.error('Message cannot be empty');
+      console.error('Message cannot be empty');
+      return;
+    }
 
-sendMessage() {
-  if (!this.newMessage.trim()) {
-    console.error('Message cannot be empty');
-    return;
+    if (!this.empId || !this.adminId) {
+      this.toast.error('Employee ID or Admin ID is missing');
+      console.error('Employee ID or Admin ID is missing');
+      return;
+    }
+
+    this.ChatService
+      .sendMessage(this.adminId, this.newMessage, this.empId, this.adminId)
+      .then(() => {
+        this.newMessage = '';
+        this.toast.success('Message sent successfully');
+      })
+      .catch((error) => {
+        this.toast.error('Error sending message');
+        console.error('Error sending message:', error);
+      });
   }
 
-  if (!this.empId || !this.adminId) {
-    console.error('Employee ID or Admin ID is missing');
-    return;
+  getBubbleClass(senderId: string): string {
+    return senderId === this.empId ? 'bg-info text-white' : 'bg-light';
   }
 
-  this.ChatService
-    .sendMessage(this.adminId, this.newMessage, this.empId, this.adminId)
-    .then(() => {
-      this.newMessage = ''; // Clear the input field after sending the message
-    })
-    .catch((error) => {
-      console.error('Error sending message:', error);
-    });
-}
-
-getBubbleClass(senderId: string): string {
-  return senderId === this.empId ? 'bg-info text-white' : 'bg-light';
-}
-
-ngOnDestroy(): void {
-  if (this.subscription) {
-    this.subscription.unsubscribe();
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
-}
 }
 
 

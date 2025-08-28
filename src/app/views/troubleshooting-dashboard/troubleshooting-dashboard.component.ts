@@ -34,7 +34,7 @@ export class TroubleshootingDashboardComponent {
   addCategory() {
 
     if (this.categoryForm.invalid) {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
       return;
     }
 

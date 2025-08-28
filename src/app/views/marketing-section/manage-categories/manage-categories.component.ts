@@ -74,7 +74,7 @@ export class ManageCategoriesComponent {
   // Submit (Create or Update)
   submitCategory(): void {
     if (this.categoryForm.invalid) {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
       return;
     }
 

@@ -16,8 +16,8 @@ export class LoginComponent {
   authService = inject(AuthService);
   loginForm!: FormGroup;
   errorMessage: string = '';
-  showPassword: boolean = false; 
-  toast = inject(HotToastService); 
+  showPassword: boolean = false;
+  toast = inject(HotToastService);
 
 
   togglePasswordVisibility(): void {
@@ -31,22 +31,31 @@ export class LoginComponent {
     });
   }
 
+
   submit() {
     this.errorMessage = '';
 
-    console.log(this.loginForm.value);
-    this.authService.loginService(this.loginForm.value).subscribe({
-      next: (res) => {
-       this.toast.success('Login Successfully');
-        localStorage.setItem('user_id', res.data._id);
-        this.router.navigate(['dashboard']);
-        this.loginForm.reset();
-      },
-      error: (err) => {
-        console.log(err);
-        this.toast.error('Invalid email or password');  
-      },
-    });
+    // Check if email and password are entered
+    if (!this.loginForm.value.email || !this.loginForm.value.password) {
+      this.toast.warning('Please enter email and password');
+      return;
+    }
+
+    this.authService.loginService(this.loginForm.value)
+      .pipe(
+        this.toast.observe({
+          loading: 'Logging in... ⏳',
+          success: 'Login successful',
+          error: (err: any) => err.error?.message || 'Invalid email or password',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          localStorage.setItem('user_id', res.data._id);
+          this.router.navigate(['dashboard']);
+          this.loginForm.reset();
+        }
+      });
   }
 
 }

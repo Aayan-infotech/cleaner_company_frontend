@@ -156,7 +156,7 @@ export class GroupsComponent {
 
   submitGroup(): void {
     if (this.groupForm.invalid) {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
       return;
     }
 
@@ -212,7 +212,6 @@ export class GroupsComponent {
     this.selectedGroupId = data._id;
     this.isEditMode = true;
     this.visible = true;
-    this.toast.info(`Editing group: ${data.name} ✏️`);
   }
 
   resetForm(): void {
@@ -302,7 +301,7 @@ export class GroupsComponent {
 
   addClientToGroup(): void {
     if (!this.selectedGroup || this.selectedClientsToAdd.length === 0) {
-      this.toast.warning('Please select a group and at least one client ⚠️');
+      this.toast.warning('Please select a group and at least one client');
       return;
     }
 
@@ -474,7 +473,7 @@ export class GroupsComponent {
 
   addGroupToGroup(): void {
     if (!this.selectedGroup || this.selectedGroupsToAdd.length === 0) {
-      this.toast.warning('Please select a group and at least one subgroup ⚠️');
+      this.toast.warning('Please select a group and at least one subgroup');
       return;
     }
 

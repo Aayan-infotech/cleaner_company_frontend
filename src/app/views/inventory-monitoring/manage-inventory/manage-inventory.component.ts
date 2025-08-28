@@ -244,16 +244,23 @@ export class ManageInventoryComponent implements OnInit {
       categoryName: this.categoryForm.get('categoryName')?.value
     };
 
-    this.inventoryCategoryService.createInventoryCategoryService(categoryObj).subscribe({
-      next: (res) => {
-        alert('Inventory Category Added successfully');
-        this.resetForm();
-        this.getAllCategories();
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
+    this.inventoryCategoryService.createInventoryCategoryService(categoryObj)
+      .pipe(
+        this.toast.observe({
+          loading: 'Adding category... ⏳',
+          success: 'Inventory Category added successfully',
+          error: (err: any) => err?.error?.message || 'Failed to add category',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.resetForm();
+          this.getAllCategories();
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
   }
 
   onFileChanged(event: any, type: string): void {
@@ -261,7 +268,7 @@ export class ManageInventoryComponent implements OnInit {
 
     if (type === 'Images') {
       if (files.length > 9) {
-        alert('You can only select up to 9 images.');
+        this.toast.error('You can only select up to 9 images');
         event.target.value = '';
         return;
       }
@@ -270,12 +277,17 @@ export class ManageInventoryComponent implements OnInit {
         Images: this.selectedImages
       });
 
+      this.toast.success(`${this.selectedImages.length} image(s) selected`);
+
     } else if (type === 'pdfs') {
       this.selectedPdfs = files as File[];
       this.itemForm.patchValue({ pdfs: this.selectedPdfs });
+      this.toast.success(`${this.selectedPdfs.length} PDF(s) selected`);
+
     } else if (type === 'videos') {
       this.selectedVideos = files as File[];
       this.itemForm.patchValue({ videos: this.selectedVideos });
+      this.toast.success(`${this.selectedVideos.length} video(s) selected`);
     }
 
     this.itemForm.patchValue({
@@ -287,7 +299,7 @@ export class ManageInventoryComponent implements OnInit {
   submitItem() {
 
     if (this.itemForm.invalid) {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
       return;
     }
 
@@ -369,7 +381,7 @@ export class ManageInventoryComponent implements OnInit {
   // submit van 
   onAddVanClick() {
     if (!this.vanForm.valid) {
-      this.toast.warning('Please fill all required fields ⚠️');
+      this.toast.warning('Please fill all required fields');
       return;
     }
 
@@ -416,7 +428,7 @@ export class ManageInventoryComponent implements OnInit {
   // Add order item Requesti
   addToOrder(itemId: string): void {
     if (this.orderForm.invalid) {
-      this.toast.warning("Please enter a valid quantity ⚠️");
+      this.toast.warning("Please enter a valid quantity");
       return;
     }
 
@@ -485,7 +497,6 @@ export class ManageInventoryComponent implements OnInit {
         this.totalItems = res.pagination?.total || 0;
         this.currentPage = res.pagination?.page || 1;
         this.isFetching = false;
-        console.log("Paginated Items:", this.itemArray);
       },
       error: (err) => {
         console.error("Error fetch get all items", err);
@@ -521,7 +532,6 @@ export class ManageInventoryComponent implements OnInit {
         next: (res) => {
           this.vanData = res;
           this.vanArray = this.vanData.data || [];
-          console.log("All vans:::", this.vanData);
         },
         error: (error) => {
           console.error("Error fetching Vans:", error);
@@ -586,7 +596,6 @@ export class ManageInventoryComponent implements OnInit {
         this.vanItemsData = res;
         this.filterItems();
         this.getAllItems();
-        console.log("All Van's Item data::::::::::", this.vanItemsData);
       },
       error: (err) => {
         console.error("Error fetching van items:", err);
@@ -601,8 +610,6 @@ export class ManageInventoryComponent implements OnInit {
         this.vanNameItemData = res;
         this.vanNameItemArray = this.vanNameItemData.data.filter((item: Item) => item.vanName && item.vanName.trim() !== '');
         this.filterItems();
-
-        console.log("Get all items with van name:", this.vanNameItemData);
       },
       error: (err) => {
         console.error("Error fetch all items with van:", err);
@@ -635,28 +642,31 @@ export class ManageInventoryComponent implements OnInit {
           Images: this.editData.data.Images,
           pdfs: this.editData.data.pdfs,
           videos: this.editData.data.videos
-
         });
         this.isEditMode = true;
-        console.log("selected itemsss:", this.editData);
-
       });
   }
 
-  // update item's details by ID 
+  // Update item's details by ID 
   updateItem(itemId: string, updatedData: any): void {
 
     if (!itemId) {
       console.error('Invalid itemId:', itemId);
-      alert('Invalid item ID. Please ensure you have selected a valid item to update.');
+      this.toast.error('Invalid item ID. Please ensure you have selected a valid item to update.');
       return;
     }
 
     this.itemInventoryService.updateItemService(updatedData, itemId)
+      .pipe(
+        this.toast.observe({
+          loading: 'Updating item... ⏳',
+          success: 'Item updated successfully',
+          error: (err: any) => err?.error?.message || 'Failed to update item',
+        })
+      )
       .subscribe({
         next: (updatedItem) => {
 
-          alert('Item updated successfully');
           this.getAllItems();
           this.resetForm();
         },
@@ -666,48 +676,55 @@ export class ManageInventoryComponent implements OnInit {
       });
   }
 
-  // delete category by ID
+  // Delete category by ID
   delteInventoryCategoryByID(id: any) {
-    if (confirm('Are you sure you want to delete this category?')) {
-      this.inventoryCategoryService.deleteInventoryCategoryService(id)
-        .subscribe({
-          next: (res) => {
-            alert('Category deleted successfully');
-            this.getAllCategories();
-          },
-          error: (err) => {
-            console.error(err);
-            console.error('Failed to deleting Category:', err);
-          }
-        });
-    }
+
+    this.inventoryCategoryService.deleteInventoryCategoryService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting category... ⏳',
+          success: 'Category deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete category',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.getAllCategories();
+        },
+        error: (err) => {
+          console.error('Failed to deleting Category:', err);
+        }
+      });
   }
 
   // Delete Item by ID
   deleteItem(id: any) {
-    if (confirm('Are you sure you want to delete this Item?')) {
-      this.itemInventoryService.deleteItemService(id)
-        .subscribe({
-          next: (res) => {
-            alert('Item deleted successfully');
-            this.getAllWarehouseItems();
-            this.getAllVanItems();
-            this.getAllItemsWithVanNames();
-            this.getAllItems();
-          },
-          error: (err) => {
-            console.error(err);
-            console.error('Failed to deleting Item:', err);
-          }
-        });
-    }
+    this.itemInventoryService.deleteItemService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting item... ⏳',
+          success: 'Item deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete item',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.getAllWarehouseItems();
+          this.getAllVanItems();
+          this.getAllItemsWithVanNames();
+          this.getAllItems();
+        },
+        error: (err) => {
+          console.error('Failed to deleting Item:', err);
+        }
+      });
   }
 
   // transfer from warehouse
   transferItem(warehouseId: string, totalQuantity: number, minimumQuantity: number) {
     if (!this.selectedVanId || this.transferQuantity <= 0) {
       this.toast.warning(
-        !this.selectedVanId ? 'Please select a van to transfer to ⚠️' : 'Please enter a valid quantity to transfer ⚠️'
+        !this.selectedVanId ? 'Please select a van to transfer to' : 'Please enter a valid quantity to transfer'
       );
       return;
     }
@@ -716,7 +733,7 @@ export class ManageInventoryComponent implements OnInit {
 
     if (this.transferQuantity > availableQuantity) {
       this.toast.warning(
-        `Cannot transfer more than ${availableQuantity}. Minimum reserved: ${minimumQuantity} ⚠️`
+        `Cannot transfer more than ${availableQuantity}. Minimum reserved: ${minimumQuantity}`
       );
       return;
     }
@@ -728,24 +745,24 @@ export class ManageInventoryComponent implements OnInit {
     };
 
     this.itemInventoryService.transferItemService(transferData)
-    .pipe(
-      this.toast.observe({
-        loading: 'Transferring item... ⏳',
-        success: 'Item transferred successfully',
-        error: (err: any) => err.error?.message || 'Failed to transfer item '
-      })
-    )
-    .subscribe({
-      next: () => {
-        this.resetForm();
-        this.getAllWarehouseItems();
-        this.getAllItemsWithVanNames();
-        this.toggleLiveDemo2(warehouseId);
-      },
-      error: (err) => {
-        console.error('Error transferring item:', err);
-      }
-    });
+      .pipe(
+        this.toast.observe({
+          loading: 'Transferring item... ⏳',
+          success: 'Item transferred successfully',
+          error: (err: any) => err.error?.message || 'Failed to transfer item '
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.resetForm();
+          this.getAllWarehouseItems();
+          this.getAllItemsWithVanNames();
+          this.toggleLiveDemo2(warehouseId);
+        },
+        error: (err) => {
+          console.error('Error transferring item:', err);
+        }
+      });
   };
 
   // transfer from van
