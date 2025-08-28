@@ -31,6 +31,7 @@ export class DashboardComponent {
   public visible = false;
   datePipe = inject(DatePipe);
   toast = inject(HotToastService);
+  employees: any[] = [];
 
   usersService = inject(UsersService);
   empMgmtService = inject(EmpMgmtService);
@@ -57,7 +58,7 @@ export class DashboardComponent {
     dateClick: (arg) => this.handleDateClick(arg),
     events: this.eventArray,
   };
-  
+
   toggleWeekends() {
     this.calendarOptions.weekends = !this.calendarOptions.weekends; // toggle the boolean!
   }
@@ -76,7 +77,7 @@ export class DashboardComponent {
   };
   selectedEventType = '';
 
-  constructor() {}
+  constructor() { }
 
   // Lifecycle hook - Initialize form and fetch events
   ngOnInit(): void {
@@ -98,9 +99,9 @@ export class DashboardComponent {
     });
 
     this.getAllCalendar();
-    this.getAllUsers();
     (window as any).initAutocomplete = this.initAutocomplete.bind(this);
     this.loadGoogleMaps();
+    this.getAllEmployees();
   }
 
   onEmployeeChange(event: Event) {
@@ -110,25 +111,16 @@ export class DashboardComponent {
     this.eventForm.patchValue({ employeeId: selectedId });
   }
 
-  getAllUsers() {
-    this.empMgmtService
-      .getAllEmpMgmtsService(
-        this.currentPage1,
-        this.limit,
-        this.statusFilter || '',
-        this.searchQuery || ''
-      )
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.empData = res;
-          this.empArray = this.empData.data.employees;
-          console.log('User Array:', this.empArray);
-        },
-        error: (err) => {
-          console.error('Error fetching users:', err);
-        },
-      });
+  getAllEmployees(): void {
+    this.empMgmtService.getAllEmployeesService().subscribe({
+      next: (res) => {
+        this.employees = res.data || [];
+        console.log('All Employees:', this.employees);
+      },
+      error: (err) => {
+        console.error('Error fetching employees:', err);
+      }
+    });
   }
 
   handleDateClick(arg: DateClickArg) {
@@ -161,38 +153,52 @@ export class DashboardComponent {
         address: this.eventForm.get('address')?.value,
         clientContact: this.eventForm.get('clientContact')?.value,
         eventType: this.eventForm.get('eventType')?.value,
-        lat: this.eventForm.get('lat')?.value, // Include latitude
-        lng: this.eventForm.get('lng')?.value, // Include longitude
+        lat: this.eventForm.get('lat')?.value,
+        lng: this.eventForm.get('lng')?.value,
       };
 
       if (this.editData) {
-        eventData['_id'] = this.editData._id; 
-        this.EventsService.updateEventService(eventData, this.editData._id).subscribe({
-          next: (res) => {
-            this.toast.success('Event Updated Successfully!');
-            this.getAllCalendar();
-            this.resetForm();
-            this.toggleLiveDemo3();
-          },
-          error: (err) => {
-            this.toast.error('Error updating event!');
-            console.error('Error updating event:', err);
-          },
-        });
+        eventData['_id'] = this.editData._id;
+        this.EventsService.updateEventService(eventData, this.editData._id)
+          .pipe(
+            this.toast.observe({
+              loading: 'Updating event... ⏳',
+              success: 'Event Updated Successfully!',
+              error: 'Error updating event!',
+            })
+          )
+          .subscribe({
+            next: (res) => {
+              this.getAllCalendar();
+              this.resetForm();
+              this.toggleLiveDemo3();
+            },
+            error: (err) => {
+              console.error('Error updating event:', err);
+            },
+          });
       } else {
+
         eventData['date'] = this.eventForm.get('date')?.value;
-        this.EventsService.createEventService(eventData).subscribe({
-          next: (res) => {
-            this.toast.success('Event Scheduled Successfully!');
-            this.getAllCalendar();
-            this.resetForm();
-            this.toggleLiveDemo3();
-          },
-          error: (err) => {
-            this.toast.error('Error scheduling event!');
-            console.error('Error creating event:', err);
-          },
-        });
+
+        this.EventsService.createEventService(eventData)
+          .pipe(
+            this.toast.observe({
+              loading: 'Scheduling event... ⏳',
+              success: 'Event Scheduled Successfully!',
+              error: 'Error scheduling event!',
+            })
+          )
+          .subscribe({
+            next: (res) => {
+              this.getAllCalendar();
+              this.resetForm();
+              this.toggleLiveDemo3();
+            },
+            error: (err) => {
+              console.error('Error creating event:', err);
+            },
+          });
       }
     }
   }
@@ -213,7 +219,7 @@ export class DashboardComponent {
       clientContact: event.clientContact,
       eventType: event.eventType,
     });
-    this.visible = true; 
+    this.visible = true;
   }
 
   clickAddMember() {
@@ -240,9 +246,8 @@ export class DashboardComponent {
             const [hours, minutes] = timeStr.split(':').map(Number);
             const period = hours >= 12 ? 'PM' : 'AM';
             const adjustedHours = hours % 12 || 12;
-            return `${adjustedHours}:${
-              minutes < 10 ? '0' : ''
-            }${minutes} ${period}`;
+            return `${adjustedHours}:${minutes < 10 ? '0' : ''
+              }${minutes} ${period}`;
           };
 
           const startTime = formatTimeToAMPM(event.startTime);
@@ -282,8 +287,8 @@ export class DashboardComponent {
   filterEvents() {
     const filteredEvents = this.selectedEventType
       ? this.eventArray.filter(
-          (event) => event.eventType === this.selectedEventType
-        )
+        (event) => event.eventType === this.selectedEventType
+      )
       : this.eventArray; // Show all events if no type is selected
 
     this.calendarOptions = { ...this.calendarOptions, events: filteredEvents };
@@ -294,8 +299,14 @@ export class DashboardComponent {
       initialView: 'dayGridMonth',
       events: this.eventArray,
       eventClick: (info) => {
-        alert(
-          `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
+        this.toast.info(
+          `Event: ${info.event.title}<br>Type: ${info.event.extendedProps['eventType']}`,
+          {
+            duration: 2000,              
+            dismissible: true,   
+            position: 'top-right',    
+            icon: '🗓️',
+          }
         );
       },
       eventContent: function (arg) {
@@ -307,8 +318,15 @@ export class DashboardComponent {
   }
 
   deleteEvent(id: any) {
-    if (confirm('Are you sure you want to delete this event?')) {
-      this.EventsService.deleteEventService(id).subscribe({
+    this.EventsService.deleteEventService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting event... ⏳',
+          success: 'Event deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete event',
+        })
+      )
+      .subscribe({
         next: () => {
           this.getAllCalendar();
         },
@@ -316,7 +334,6 @@ export class DashboardComponent {
           console.error('Error deleting event:', err);
         },
       });
-    }
   }
 
   // google for address
@@ -378,5 +395,5 @@ export class DashboardComponent {
       });
     });
   }
-  
+
 }

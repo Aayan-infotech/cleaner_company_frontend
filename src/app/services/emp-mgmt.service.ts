@@ -35,6 +35,10 @@ export class EmpMgmtService {
     }>(`${apiUrls.empMgmtApi}getAllEmployees`, { params });
   }
 
+  getAllEmployeesService(): Observable<any> {
+    return this.http.get<any>(`${apiUrls.empMgmtApi}get-all-employees`);
+  }
+
   // Get a user by ID
   getEmpMgmtByIdService(id: any): Observable<any> {
     return this.http.get<any>(`${apiUrls.empMgmtApi}getEmployee/${id}`);

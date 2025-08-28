@@ -13,6 +13,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import listPlugin from '@fullcalendar/list';
 import { DatePipe } from '@angular/common';
 import { EstimateService } from '../../services/estimate.service';
+import { HotToastService } from '@ngxpert/hot-toast';
 
 declare const google: any;
 
@@ -140,6 +141,7 @@ export class JobSchedulingManagementComponent {
 
   constructor(
     private apiService: ApiService,
+    private toast: HotToastService,
     private estimateService: EstimateService
   ) { }
 
@@ -175,27 +177,19 @@ export class JobSchedulingManagementComponent {
     const selectedId = selectedOption.getAttribute('data-id');
     this.eventForm.patchValue({ employeeId: selectedId });
   }
-  
+
   getAllUsers() {
-    this.empMgmtService
-      .getAllEmpMgmtsService(
-        this.currentPage1,
-        this.limit,
-        this.statusFilter || '',
-        this.searchQuery || ''
-      )
-      .subscribe({
-        next: (res) => {
-          console.log(res);
-          this.empData = res;
-          this.empArray = this.empData.data.employees;
-          
-        },
-        error: (err) => {
-          console.error('Error fetching users:', err);
-        },
-      });
+    this.empMgmtService.getAllEmployeesService().subscribe({
+      next: (res) => {
+        this.empData = res;
+        this.empArray = res.data;
+      },
+      error: (err) => {
+        console.error('Error fetching users:', err);
+      },
+    });
   }
+
 
   handleDateClick(arg: DateClickArg) {
     this.resetForm();
@@ -227,39 +221,50 @@ export class JobSchedulingManagementComponent {
         address: this.eventForm.get('address')?.value,
         clientContact: this.eventForm.get('clientContact')?.value,
         eventType: this.eventForm.get('eventType')?.value,
-        lat: this.eventForm.get('lat')?.value, 
-        lng: this.eventForm.get('lng')?.value, 
+        lat: this.eventForm.get('lat')?.value,
+        lng: this.eventForm.get('lng')?.value,
       };
 
       if (this.editData) {
-        eventData['_id'] = this.editData._id; 
-        this.EventsService.updateEventService(
-          eventData,
-          this.editData._id
-        ).subscribe({
-          next: (res) => {
-            alert('Event Updated');
-            this.getAllCalendar();
-            this.resetForm();
-            this.toggleLiveDemo3();
-          },
-          error: (err) => {
-            console.error('Error updating event:', err);
-          },
-        });
+        eventData['_id'] = this.editData._id;
+        this.EventsService.updateEventService(eventData, this.editData._id)
+          .pipe(
+            this.toast.observe({
+              loading: 'Updating event... ⏳',
+              success: 'Event updated successfully',
+              error: (err: any) => err?.error?.message || 'Error updating event',
+            })
+          )
+          .subscribe({
+            next: (res) => {
+              this.getAllCalendar();
+              this.resetForm();
+              this.toggleLiveDemo3();
+            },
+            error: (err) => {
+              console.error('Error updating event:', err);
+            },
+          });
       } else {
         eventData['date'] = this.eventForm.get('date')?.value;
-        this.EventsService.createEventService(eventData).subscribe({
-          next: (res) => {
-            alert('Event Scheduled');
-            this.getAllCalendar();
-            this.resetForm();
-            this.toggleLiveDemo3();
-          },
-          error: (err) => {
-            console.error('Error creating event:', err);
-          },
-        });
+        this.EventsService.createEventService(eventData)
+          .pipe(
+            this.toast.observe({
+              loading: 'Scheduling event... ⏳',
+              success: 'Event scheduled successfully',
+              error: (err: any) => err?.error?.message || 'Error scheduling event',
+            })
+          )
+          .subscribe({
+            next: (res) => {
+              this.getAllCalendar();
+              this.resetForm();
+              this.toggleLiveDemo3();
+            },
+            error: (err) => {
+              console.error('Error creating event:', err);
+            },
+          });
       }
     }
   }
@@ -280,7 +285,7 @@ export class JobSchedulingManagementComponent {
       clientContact: event.clientContact,
       eventType: event.eventType,
     });
-    this.visible = true; 
+    this.visible = true;
   }
 
   clickAddMember() {
@@ -321,7 +326,7 @@ export class JobSchedulingManagementComponent {
             Holiday: '#a8faf3',
             Office: '#2996f7',
           };
-          const eventColor = eventTypeColors[event.eventType] || '#007bff'; 
+          const eventColor = eventTypeColors[event.eventType] || '#007bff';
           const formattedEvent = {
             _id: event._id,
             title: event.title,
@@ -341,7 +346,7 @@ export class JobSchedulingManagementComponent {
           };
           return formattedEvent;
         }) || [];
-        
+
       this.updateCalendarOptions();
     });
   }
@@ -351,7 +356,7 @@ export class JobSchedulingManagementComponent {
       ? this.eventArray.filter(
         (event) => event.eventType === this.selectedEventType
       )
-      : this.eventArray; 
+      : this.eventArray;
 
     this.calendarOptions = { ...this.calendarOptions, events: filteredEvents };
   }
@@ -361,8 +366,14 @@ export class JobSchedulingManagementComponent {
       initialView: 'dayGridMonth',
       events: this.eventArray,
       eventClick: (info) => {
-        alert(
-          `Event: ${info.event.title}\nType: ${info.event.extendedProps['eventType']}`
+        this.toast.info(
+          `Event: ${info.event.title}<br>Type: ${info.event.extendedProps['eventType']}`,
+          {
+            duration: 2000,
+            dismissible: true,
+            position: 'top-right',
+            icon: '🗓️',
+          }
         );
       },
       eventContent: function (arg) {
@@ -374,8 +385,14 @@ export class JobSchedulingManagementComponent {
   }
 
   deleteEvent(id: any) {
-    if (confirm('Are you sure you want to delete this event?')) {
-      this.EventsService.deleteEventService(id).subscribe({
+    this.EventsService.deleteEventService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting event... ⏳',
+          success: 'Event deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete event',
+        })
+      ).subscribe({
         next: () => {
           this.getAllCalendar();
         },
@@ -383,7 +400,6 @@ export class JobSchedulingManagementComponent {
           console.error('Error deleting event:', err);
         },
       });
-    }
   }
 
   // google for address
@@ -395,7 +411,7 @@ export class JobSchedulingManagementComponent {
       script.defer = true;
       document.body.appendChild(script);
     } else {
-      this.initAutocomplete(); 
+      this.initAutocomplete();
     }
   }
 
@@ -479,9 +495,8 @@ export class JobSchedulingManagementComponent {
             const [hours, minutes] = timeStr.split(':').map(Number);
             const period = hours >= 12 ? 'PM' : 'AM';
             const adjustedHours = hours % 12 || 12;
-            return `${adjustedHours}:${
-              minutes < 10 ? '0' : ''
-            }${minutes} ${period}`;
+            return `${adjustedHours}:${minutes < 10 ? '0' : ''
+              }${minutes} ${period}`;
           };
 
           const startTime = formatTimeToAMPM(event.startTime);
