@@ -117,7 +117,7 @@
         <table [hover]="true" [responsive]="true" [striped]="true" align="middle" cTable class="mb-0 border">
           <thead cTableColor="light">
             <tr>
-              <th></th>
+              <th>SNo.</th>
               <th>Name</th>
               <th>Part No</th>
               <th>Short Desc</th>
@@ -127,8 +127,8 @@
           <tbody>
 
             <!-- Data Available -->
-            <tr *ngFor="let items of filteredItemsArray">
-              <td></td>
+            <tr *ngFor="let items of filteredItemsArray; let i = index">
+              <td>{{ i + 1 }}</td>
               <td>{{ items.name }}</td>
               <td>{{ items.partNumber }}</td>
               <td>{{ items.shortDescription | slice:0:20 }}... </td>
