@@ -6,6 +6,7 @@ import { apiUrls } from '../api.urls';
 @Injectable({
   providedIn: 'root',
 })
+
 export class CrmService {
   constructor(private http: HttpClient) { }
 
@@ -86,7 +87,7 @@ export class CrmService {
 
   // Delete multiple CRMs
   deleteMultipleCRMsService(ids: string[]): Observable<any> {
-    return this.http.request('delete', `${apiUrls.crmMgmtApi}delete-multiple`, { body: { ids }});
+    return this.http.request('delete', `${apiUrls.crmMgmtApi}delete-multiple`, { body: { ids } });
   }
 
 }

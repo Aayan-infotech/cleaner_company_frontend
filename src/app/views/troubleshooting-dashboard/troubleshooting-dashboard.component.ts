@@ -12,6 +12,7 @@ import { HotToastService } from '@ngxpert/hot-toast';
   templateUrl: './troubleshooting-dashboard.component.html',
   styleUrl: './troubleshooting-dashboard.component.scss'
 })
+
 export class TroubleshootingDashboardComponent {
 
   icons = { cilChartPie, cilArrowRight };
@@ -34,7 +35,7 @@ export class TroubleshootingDashboardComponent {
   addCategory() {
 
     if (this.categoryForm.invalid) {
-      this.toast.warning('Please fill all required fields');
+      this.toast.warning('Please enter category name');
       return;
     }
 
@@ -70,22 +71,22 @@ export class TroubleshootingDashboardComponent {
     this.deletingCategoryId = categoryId;
 
     this.troubleCategoryService.deleteCategoryService(categoryId)
-    .pipe(
-      this.toast.observe({
-        loading: 'Deleting category... ⏳',
-        success: 'Category deleted successfully',
-        error: (err: any) => err.error?.message || 'Failed to delete category'
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting category... ⏳',
+          success: 'Category deleted successfully',
+          error: (err: any) => err.error?.message || 'Failed to delete category'
+        })
+      ).subscribe({
+        next: (res) => {
+          this.getAllCategories();
+          this.deletingCategoryId = null;
+        },
+        error: (err) => {
+          console.error("Error fetch Delete Trouble shooting Category", err);
+          this.deletingCategoryId = null;
+        }
       })
-    ).subscribe({
-      next: (res) => {
-        this.getAllCategories();
-        this.deletingCategoryId = null;
-      },
-      error: (err) => {
-        console.error("Error fetch Delete Trouble shooting Category", err);
-        this.deletingCategoryId = null;
-      }
-    })
   }
 
 }
