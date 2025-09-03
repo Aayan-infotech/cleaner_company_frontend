@@ -42,7 +42,7 @@ export class ManageInventoryComponent implements OnInit {
   categoryfb = inject(FormBuilder);
   inventoryCategoryService = inject(InventoryCategoryService);  // not in Use
   categoryService = inject(TroubleCategoryService);
-  categoryForm!: FormGroup;
+
   categoryData!: any;
   categoriesArray: any[] = [];
 
@@ -105,17 +105,6 @@ export class ManageInventoryComponent implements OnInit {
   latestOrderStatuses: { [key: string]: string } = {};
 
   constructor(private cdr: ChangeDetectorRef) { }
-
-  // start category
-  public visiblecategory = false;
-
-  toggleLiveDemoCategory() {
-    this.visiblecategory = !this.visiblecategory;
-  }
-
-  handleLiveDemoChangeCategory(event: any) {
-    this.visiblecategory = event;
-  }
 
   // start inventory item 
   public visibleItem = false;
@@ -192,17 +181,13 @@ export class ManageInventoryComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.categoryForm = this.categoryfb.group({
-      categoryName: ['', Validators.required]
-    });
-
     this.itemForm = this.fb.group({
       itemName: ['', Validators.required],
       partNumber: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       categoryId: ['', Validators.required],
       maxQty: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       minQty: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      vanId: ['', Validators.required],
+      // vanId: ['', Validators.required],
       inStock: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       amtOrder: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       forWarehouse: [false, Validators.requiredTrue],
@@ -236,31 +221,6 @@ export class ManageInventoryComponent implements OnInit {
     this.getAllVanItems();
     this.getAllVans();
     this.getAllItemsWithVanNames();
-  }
-
-  // submit inventory category 
-  submitCategory() {
-    const categoryObj = {
-      categoryName: this.categoryForm.get('categoryName')?.value
-    };
-
-    this.inventoryCategoryService.createInventoryCategoryService(categoryObj)
-      .pipe(
-        this.toast.observe({
-          loading: 'Adding category... ⏳',
-          success: 'Inventory Category added successfully',
-          error: (err: any) => err?.error?.message || 'Failed to add category',
-        })
-      )
-      .subscribe({
-        next: (res) => {
-          this.resetForm();
-          this.getAllCategories();
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
   }
 
   onFileChanged(event: any, type: string): void {
@@ -309,7 +269,7 @@ export class ManageInventoryComponent implements OnInit {
     formData.append('categoryId', this.itemForm.get('categoryId')?.value);
     formData.append('maxQty', this.itemForm.get('maxQty')?.value);
     formData.append('minQty', this.itemForm.get('minQty')?.value);
-    formData.append('vanId', this.itemForm.get('vanId')?.value);
+    // formData.append('vanId', this.itemForm.get('vanId')?.value);
     formData.append('inStock', this.itemForm.get('inStock')?.value);
     formData.append('amtOrder', this.itemForm.get('amtOrder')?.value);
     formData.append('forWarehouse', this.itemForm.get('forWarehouse')?.value);
@@ -425,7 +385,7 @@ export class ManageInventoryComponent implements OnInit {
     }
   }
 
-  // Add order item Requesti
+  // Add order item Request
   addToOrder(itemId: string): void {
     if (this.orderForm.invalid) {
       this.toast.warning("Please enter a valid quantity");
@@ -462,7 +422,6 @@ export class ManageInventoryComponent implements OnInit {
 
   resetForm(): void {
     this.vanForm.reset();
-    this.categoryForm.reset();
     this.itemForm.reset();
     this.itemId = null;
     this.isEditMode = false;
@@ -629,7 +588,7 @@ export class ManageInventoryComponent implements OnInit {
           categoryId: this.editData.data.categoryId,
           maxQty: this.editData.data.maxQty,
           minQty: this.editData.data.minQty,
-          vanId: this.editData.data.vanId,
+          // vanId: this.editData.data.vanId,
           inStock: this.editData.data.inStock,
           amtOrder: this.editData.data.amtOrder,
           forWarehouse: this.editData.data.forWarehouse,

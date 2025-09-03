@@ -8,6 +8,7 @@ import { HotToastService } from '@ngxpert/hot-toast';
   templateUrl: './manage-categories.component.html',
   styleUrl: './manage-categories.component.scss',
 })
+
 export class ManageCategoriesComponent {
   categoryForm!: FormGroup;
   allCategories: any[] = [];
