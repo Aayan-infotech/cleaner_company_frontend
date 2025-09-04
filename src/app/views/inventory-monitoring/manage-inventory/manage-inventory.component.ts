@@ -7,6 +7,7 @@ import { OrderService } from '../../../services/order.service';
 import { VanService } from '../../../services/van.service';
 import { HotToastService } from '@ngxpert/hot-toast';
 import { TroubleCategoryService } from '../../../services/trouble-category.service';
+import { ItemInventoryTransferService } from '../../../services/item-inventory-transfer.service';
 
 export interface Item {
   categoryName: string;
@@ -104,7 +105,11 @@ export class ManageInventoryComponent implements OnInit {
 
   latestOrderStatuses: { [key: string]: string } = {};
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  // transfer item section
+  transfers: any[] = [];
+  selectedTransfer: any = null;
+  loading: boolean = false;
+  
 
   // start inventory item 
   public visibleItem = false;
@@ -179,6 +184,11 @@ export class ManageInventoryComponent implements OnInit {
   }
   // end order
 
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private transferService: ItemInventoryTransferService,
+  ) { }
+
   ngOnInit(): void {
 
     this.itemForm = this.fb.group({
@@ -221,6 +231,7 @@ export class ManageInventoryComponent implements OnInit {
     this.getAllVanItems();
     this.getAllVans();
     this.getAllItemsWithVanNames();
+    this.getAllTransferItems()
   }
 
   onFileChanged(event: any, type: string): void {
@@ -309,6 +320,7 @@ export class ManageInventoryComponent implements OnInit {
             this.getAllWarehouseItems();
             this.getAllVanItems();
             this.getAllItemsWithVanNames();
+            this.getAllTransferItems(); 
           },
           error: (err) => {
             console.error('Error updating item:', err);
@@ -416,6 +428,54 @@ export class ManageInventoryComponent implements OnInit {
       });
   }
 
+  // Transfer Item's qty
+  transferItemInventory(itemId: string, inStock: number, minQty: number) {
+    if (!this.selectedVanId) {
+      this.toast.warning('Please select a van to transfer to');
+      return;
+    }
+    if (!this.transferQuantity || this.transferQuantity <= 0) {
+      this.toast.warning('Please enter a valid quantity to transfer');
+      return;
+    }
+    if (this.transferQuantity > inStock) {
+      this.toast.error('Not enough stock in warehouse');
+      return;
+    }
+    if (inStock - this.transferQuantity < minQty) {
+      this.toast.error(`Transfer not allowed. At least ${minQty} items must remain in warehouse`);
+      return;
+    }
+  
+    const payload = {
+      itemId: itemId,
+      vanId: this.selectedVanId,
+      quantity: this.transferQuantity
+    };
+  
+    this.transferService.transferToVanService(payload)
+      .pipe(
+        this.toast.observe({
+          loading: 'Transferring item... ⏳',
+          success: 'Item transferred successfully',
+          error: (err: any) => err?.error?.message || 'Failed to transfer item'
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.resetForm();
+          this.getAllWarehouseItems();  
+          this.getAllVanItems();         
+          this.getAllItemsWithVanNames(); 
+          this.getAllTransferItems();    
+          this.toggleLiveDemo2(itemId); 
+        },
+        error: (err) => {
+          console.error('Error transferring item:', err);
+        }
+      });
+  }
+
   clickAddMember() {
     this.resetForm();
   }
@@ -519,7 +579,6 @@ export class ManageInventoryComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
   onCategorySelect(event: Event): void {
     const selectedId = (event.target as HTMLSelectElement).value;
     this.selectedCategoryId = selectedId;
@@ -576,6 +635,53 @@ export class ManageInventoryComponent implements OnInit {
     });
   };
 
+  // Get all transfer Item Inventory
+  getAllTransferItems(): void {
+    this.transferService.getAllTransfersService().subscribe({
+      next: (res) => {
+        const rawTransfers = res?.data || [];
+  
+        // Flatten transfers into a simple array for table
+        this.transfers = rawTransfers.flatMap((transfer: any) =>
+          (transfer.items || []).map((itemWrapper: any) => {
+            const item = itemWrapper.itemId || {};
+            const category = item.categoryId || {};
+  
+            return {
+              transferId: transfer._id,
+              vanId: transfer.vanId?._id,
+              vanName: transfer.vanId?.vanName || 'N/A',
+  
+              itemId: item._id,
+              itemName: item.itemName,
+              partNumber: item.partNumber,
+  
+              categoryId: category._id,
+              categoryName: category.categoryName || 'N/A',
+  
+              minimumQuantity: item.minQty,
+              totalQuantity: item.inStock,
+              maxQty: item.maxQty,
+  
+              qtyTransferred: itemWrapper.qty,
+  
+              cost: item.cost,
+              price: item.price,
+  
+              createdAt: transfer.createdAt,
+              updatedAt: transfer.updatedAt
+            };
+          })
+        );
+  
+        console.log("Flattened Transfers for Table:", this.transfers);
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message || 'Failed to fetch transfers');
+      }
+    });
+  }
+  
   // get item by id 
   getItemById(id: any) {
     this.itemInventoryService.getItemByIdService(id)
@@ -605,6 +711,18 @@ export class ManageInventoryComponent implements OnInit {
         this.isEditMode = true;
       });
   }
+
+  // Get transfer by ID
+  getTransferById(id: string): void {
+    this.transferService.getTransferByIdService(id).subscribe({
+      next: (res) => {
+        this.selectedTransfer = res?.data;
+      },
+      error: (err) => {
+        this.toast.error(err?.error?.message || 'Transfer not found');
+      }
+    });
+  };
 
   // Update item's details by ID 
   updateItem(itemId: string, updatedData: any): void {
@@ -678,6 +796,26 @@ export class ManageInventoryComponent implements OnInit {
         }
       });
   }
+
+  // Delete transfer by ID
+  deleteTransfer(id: string): void {
+    this.transferService.deleteTransferByIdService(id)
+      .pipe(
+        this.toast.observe({
+          loading: 'Deleting Transfer item... ⏳',
+          success: 'Item deleted successfully',
+          error: (err: any) => err?.error?.message || 'Failed to delete item',
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.getAllTransferItems();
+        },
+        error: (err) => {
+          console.error("Error fetch Delete transfer Item", err);
+        }
+      });
+  };
 
   // transfer from warehouse
   transferItem(warehouseId: string, totalQuantity: number, minimumQuantity: number) {

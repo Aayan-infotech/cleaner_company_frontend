@@ -483,7 +483,8 @@
                   <th>Name</th>
                   <th>Category name</th>
                   <th>Min Qty</th>
-                  <th>Total WH Qty</th>               
+                  <th>Stock</th>
+                  <th>Max Qty</th>               
                   <th>Quantity To Order</th>
                   <!-- <th>Ord Status</th> -->
                   <th>Transfer</th>
@@ -504,10 +505,11 @@
                     </td>
 
                     <td>{{ i + 1 }}</td>
-                    <td>{{warehouse.itemName}}</td>
+                    <td>{{ warehouse.itemName }}</td>
                     <td>{{ warehouse.categoryId?.categoryName || 'N/A' }}</td>                 
                     <td>{{ warehouse.minQty }}</td> 
-                    <td>{{warehouse.maxQty }}</td> 
+                    <td>{{ warehouse.inStock }}</td>
+                    <td>{{ warehouse.maxQty }}</td> 
 
                     <!-- Order section -->
                     <td>
@@ -523,7 +525,7 @@
 
                     <!-- Transfer -->
                     <td>
-                      <button (click)="getItemById(warehouse._id); toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
+                      <button (click)="toggleLiveDemo2(warehouse._id)" cButton color="warning" size="sm" shape="rounded-pill" >Transfer</button>
 
                       <!-- transfer start model -->
                       <c-modal id="liveDemoModal{{warehouse._id}}" [visible]="visible2[warehouse._id]" (visibleChange)="handleLiveDemoChange2($event, warehouse._id)">
@@ -555,7 +557,7 @@
                         </c-modal-body>
                         <c-modal-footer class="py-1">
                           <button (click)="toggleLiveDemo2(warehouse._id)" cButton color="secondary" size="sm">Cancel</button>
-                          <button (click)="transferItem(warehouse._id, warehouse.totalQuantity, warehouse.minimumQuantity)" cButton color="primary" size="sm">Transfer</button>
+                          <button (click)="transferItemInventory(warehouse._id, warehouse.inStock, warehouse.minQty)" cButton color="primary" size="sm">Transfer</button>
 
                         </c-modal-footer>
                       </c-modal>
@@ -639,39 +641,40 @@
               <thead cTableColor="light">
                 <tr>
                   <th></th>
+                  <th>SNo.</th>
                   <th>Item name</th>
                   <th>Van name</th>
                   <th>Category name</th>
-                  <!-- <th>Min Qty</th>   -->
-                  <th>Total Qty On Hand</th>                                
-                  <th>Quantity To Order</th>
+                  <th>Total Qty On Hand</th>         
                   <th>Transfer</th>
                   <th>Action</th>
                 </tr>
               </thead>
 
               <tbody>
-                <tr *ngFor="let van of vanNameItemArray | filter:searchText">
+                <tr *ngFor="let van of transfers | filter:searchText; let i = index ">
+
                   <td>
-                    <div>
-                      <input cFormCheckInput id="nolabelCheck" (click)="getItemById(van._id)" name="nolabelCheck" type="checkbox" />
-                    </div>
+                    <input cFormCheckInput id="nolabelCheck" (click)="getItemById(van._id)" name="nolabelCheck" type="checkbox" />
                   </td>
+
+                  <td>{{ i + 1 }}</td>
                   <td>{{ van.itemName }}</td>
                   <td>{{ van.vanName }}</td>
                   <td>{{ van.categoryName }}</td>
-                  <td>{{ van.minimumQuantity }}</td>
-                  <td>{{ van.totalQuantity }}
-                  </td>                  
-                  <td>
+                  <td>{{ van.qtyTransferred }}</td>
+
+                  <!-- Order Section
+                   <td>
                     <form [formGroup]="orderForm">
                       <c-input-group sizing="sm" style="width: 50% !important;">
                         <input aria-describedby="button-addon2" aria-label="Recipient's username" cFormControl type="number" formControlName="requestedQuantity" placeholder="Add Quantity" />
                         <button cButton color="danger" id="button-addon2" type="button" variant="outline" (click)="addToOrder(van._id)">Order</button>
                       </c-input-group>
                     </form>                    
-                  </td>
+                  </td> -->
 
+                  <!-- Transfer Button -->
                   <td>
                     <button (click)="getItemById(van._id); toggleLiveDemoVan2(van._id)" cButton color="warning" size="sm" shape="rounded-pill">Transfer</button>
                     
@@ -710,20 +713,28 @@
                       </c-modal-footer>
                     </c-modal>
                     <!-- End Transfer Modal -->
-
                   </td>
+
+                  <!-- Action Buttons -->
                   <td>
-                    <button (click)="getItemById(van._id)" (click)="toggleLiveDemoItem()" (click)="clickAddMember()" class="me-1">
+                    <!-- Edit Button -->
+                    <!-- <button (click)="getItemById(van._id)" (click)="toggleLiveDemoItem()" (click)="clickAddMember()" class="me-1">
                       <svg cIcon name="cil-pencil" size="sm"></svg>
-                    </button>
+                    </button> -->
+
+                    <!-- Delete Button -->
                     <button (click)="deleteItem(van._id)">
                       <svg cIcon name="cil-trash" size="sm"></svg>
                     </button>
                   </td>
+
                 </tr>
-                <tr *ngIf="!vanNameItemArray || vanNameItemArray.length === 0">
+
+                <!-- When No Data Available -->
+                <tr *ngIf="!transfers || transfers.length === 0">
                   <td colspan="10" class="text-center text-muted">No Data Available For Van</td>
                 </tr>
+
               </tbody>
             </table>
           </c-card-body>
