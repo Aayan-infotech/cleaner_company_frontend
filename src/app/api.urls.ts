@@ -2,6 +2,7 @@ export const apiUrls = {
     authServiceApi: 'http://44.198.242.234:5966/api/auth/',
     userServiceApi: 'http://44.198.242.234:5966/api/user/',
     itemInventoryApi: 'http://44.198.242.234:5966/api/item/',
+    itemInventoryTransferApi: 'http://44.198.242.234:5966/api/item-inventory-transfer/',
     orderitemQuantity: 'http://44.198.242.234:5966/api/item-order/',
     troubleCategory: 'http://44.198.242.234:5966/api/category/',
     contentVersion: 'http://44.198.242.234:5966/api/version/',
