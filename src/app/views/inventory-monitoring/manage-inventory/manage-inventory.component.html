@@ -652,7 +652,7 @@
               </thead>
 
               <tbody>
-                <tr *ngFor="let van of transfers | filter:searchText; let i = index ">
+                <tr *ngFor="let van of filteredTransfers | filter:searchText; let i = index ">
 
                   <td>
                     <input cFormCheckInput id="nolabelCheck" (click)="getItemById(van._id)" name="nolabelCheck" type="checkbox" />
@@ -731,7 +731,7 @@
                 </tr>
 
                 <!-- When No Data Available -->
-                <tr *ngIf="!transfers || transfers.length === 0">
+                <tr *ngIf="!filteredTransfers || filteredTransfers.length === 0">
                   <td colspan="10" class="text-center text-muted">No Data Available For Van</td>
                 </tr>
 
