@@ -505,7 +505,7 @@ export class ManageInventoryComponent implements OnInit {
   };
 
 
-  // All inventory items
+  // All inventory items Original
   getAllItems(page: number = 1): void {
     this.isFetching = true;
 
@@ -579,15 +579,21 @@ export class ManageInventoryComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Filter Van List with Selected Category
+  get filteredTransfers(): any[] {
+    if (this.selectedCategoryId === 'all' || !this.selectedCategoryId) {
+      return this.transfers; 
+    }
+    return this.transfers.filter(t => t.categoryId === this.selectedCategoryId);
+  }
+
   onCategorySelect(event: Event): void {
     const selectedId = (event.target as HTMLSelectElement).value;
     this.selectedCategoryId = selectedId;
 
     if (selectedId === 'all') {
-      // Show all items
       this.itemArray = [...this.allItems];
     } else {
-      // Filter by category
       this.itemArray = this.allItems.filter(item => item.categoryId?._id === selectedId);
     }
   }
